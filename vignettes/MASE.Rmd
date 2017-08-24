@@ -1,0 +1,167 @@
+---
+title: "Model-Assisted Survey Estimators"
+author: "Kelly McConville, Beck Tang, George Zhu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: mase.bib
+vignette: >
+  %\VignetteIndexEntry{Model-Assisted Survey Estimators}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(mase)
+```
+
+
+## Introduction
+
+A common goal in survey sampling is to estimated finite population parameters, such as the total
+$$
+t_y = \sum_{i \in U} y_i
+$$
+or the mean $\mu_y = N^{-1}t_y$ for some attribute of interest, $y$.  When $y$ is a binary, categorical measure, then $\mu_y$ represents a proportion. 
+
+`mase` provides several model-assisted estimators of the finite population total or mean.  All of the estimator in `mase` can be written as
+$$
+\hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i 
+$$
+
+where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in s)$, the inclusion probability [@cas76; @sar92]. As the model for $\hat{y}_i$ varies, we get different model-assisted estimators.  The estimators in mase along with the assisting model, necessary auxiliary data, and a reference, are given in the following table.
+
+```{r, echo=FALSE, message=FALSE}
+library(readr)
+estimatorsTable <- read_csv("estimatorsTable.csv")
+knitr::kable(estimatorsTable)
+```
+
+
+
+* Add variance estimation.
+
+* Try api dataset (population) in survey package to create examples.
+
+
+## Contents
+
+1. [Data](#getting-started)
+    + [Data Requirements for mase](#data-mase)
+    + [Example Dataset](#example-api)
+    
+2. [Survey Estimators](#survey-estimators)
+    + [Horvitz-Thompson Estimator](#horvitz-thompson)
+    + [Post-stratified Estimator](#post-stratified)
+    + [Ratio Estimator](#ratio-estimator)
+    + [Generalized Regression Estimator](#linear-regression)
+    + [Elastic Net Regression Estimator](#elastic-net)
+    
+## Data
+
+
+
+
+### Data Requirements for mase
+
+* Discuss the required data for each estimator.  Make a table. 
+    + Column: pop data type (raw, totals/means + N)
+    + Row: Estimator type
+    
+May not need table since logistic greg and logistic gregElasticNet are the only ones that need raw data.    
+
+### Example Dataset
+
+```{r, echo=FALSE, message=FALSE}
+library(survey)
+data(api)
+options(digits=2)
+```
+
+The survey package contains a census dataset of all California schools with at least 100 students, *apipop*, and several probability samples of the data.  We will use *apisrs*, a simple random sample without replacement of size 200, and *apistrat*, a stratified random sample of size 200. In these datasets, the primary attribute of interest is the Academic Performance Index.  Additional information about the schools and demographics of the schools are provided.  
+
+For illustration purposes we will treat *apipop* as our finite population of interest and in various examples will use the samples *apisrs* and *apistrat*.
+ We will assume that the attributes of interest are only known for the sample but that the auxiliary data are known for each school.  
+
+Assume we want to estimate ??? in insert two quantities based on api and sch.wide or comp.imp.
+
+
+
+## Survey Estimators
+
+This section presents guidance on when each estimator is most appropriate and shows how to fit the estimators using mase.
+
+### Horvitz-Thompson Estimator
+
+
+* **Inputs**: 
+* **Outputs**: 
+
+If no auxiliary data are available, then $\hat{y}_i = 0$ in the model-assisted estimator of $t_y$ and the estimator simplifies to
+$$
+\hat{t}_y = \sum_{i \in s} \frac{y_i}{\pi_i},
+$$
+the survey-weighted sum of the sampled values [@hor52].  This estimator can be fit in mase using the following code:
+
+```{r}
+ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
+
+
+ht_strat <- horvitzThompson(y = apistrat$api00, pi = apistrat$pw^(-1))
+
+```
+
+Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample.  Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
+
+The variance estimator can be found by adding the argument `var_est = TRUE` and specifying a method with `var_method`.
+
+```{r}
+ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+
+```
+
+For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators.
+
+```{r}
+ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HB")
+```
+
+
+### Post-stratified Estimator
+
+If there is a categorical, auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator.  
+
+For example, there is a binary,categorical variable, `awards`, which specifies whether or not a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
+
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(apistrat, aes(x = awards, y = api00)) + geom_boxplot()+ labs(x="Eligible for Awards Program?", y="API Scores for 2000") + theme_bw() 
+```
+
+To add the awards information, we need to include the sample values (`xsample`) and the population data (`xpop`) can be given in one of three ways as shown in the following R chunk.
+
+```{r, message=FALSE}
+
+#Raw data
+ps_srs_r <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = apipop$awards, datatype = "raw", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+
+#Totals in each category 
+pop_tots <- data.frame(table(apipop$awards))
+ps_srs_t <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_tots, datatype = "totals", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+
+#Means in each category
+pop_means <- data.frame(table(apipop$awards)/length(apipop$awards))
+ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+```
+
+`r ps_srs_r$pop_mean`
+
+
+### Ratio Estimator
+
+### Generalized Regression Estimator
+
+### Elastic Net Regression Estimator
+
+###References

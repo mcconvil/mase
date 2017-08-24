@@ -1,0 +1,46 @@
+Package: mase
+Type: Package
+Title: Model-Assisted Survey Estimators
+Version: 0.1.1
+Date: 2017-03-9
+Author: Kelly McConville, Becky Tang, George Zhu
+Maintainer: Kelly McConville <kmcconv1@swarthmore.edu>
+Description: A set of several common model-assisted survey estimators and
+    variance estimators.
+License: GPL-2
+LazyData: TRUE
+Imports:
+    MASS,
+    glmnet,
+    survey,
+    dplyr,
+    magrittr,
+    rpms,
+    boot,
+    stats
+Suggests:
+    NHANES,
+    roxygen2,
+    testthat,
+    knitr, 
+    rmarkdown,
+    readr,
+    ggplot2
+VignetteBuilder: knitr
+Collate:
+    'gregt.R'
+    'varMase.R'
+    'GREG.R'
+    'gregElasticNett.R'
+    'gregElasticNet.R'
+    'gregTree.R'
+    'htt.R'
+    'horvitzThompson.R'
+    'logisticGregElasticNett.R'
+    'logisticGregt.R'
+    'postStratt.R'
+    'postStrat.R'
+    'ratioEstimatort.R'
+    'ratioEstimator.R'
+RoxygenNote: 6.0.1
+RdMacros: Rdpack
