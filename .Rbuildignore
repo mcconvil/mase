@@ -3,3 +3,5 @@
 ^testingVarianceFunctions$ #Test file
 ^learning$
 ^tests$
+^README\.Rmd$
+^README-.*\.png$

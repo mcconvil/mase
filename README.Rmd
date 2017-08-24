@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# mase
+
+mase contains a collection of model-assisted generalized regression estimators (post-stratification estimator, ratio estimator, linear and logistic regression estimator, elastic net regression estimator, and regression tree estimator) for finite population estimation from a single stage complex sample design.  It also contains the Horvitz-Thompson estimator.
+
+## Installation
+
+You can install mase from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("Swarthmore-Statistics/mase")
+```
+
+## Example
+
+Here's an example fitting the Horvitz-Thompson estimator:
+
+```{r example}
+
+library(mase)
+
+## Estimates the mean and total of the api00 variable using the apisrs dataset in the survey package
+library(survey)
+data(api)
+horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+```
+
+Please check out the vignette for more examples.

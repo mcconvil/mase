@@ -1,79 +1,54 @@
-# MASE
-Model-Assisted Survey Estimators
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+mase
+====
 
-## Description
+mase contains a collection of model-assisted generalized regression estimators (post-stratification estimator, ratio estimator, linear and logistic regression estimator, elastic net regression estimator, and regression tree estimator) for finite population estimation from a single stage complex sample design. It also contains the Horvitz-Thompson estimator.
 
-Package: MASE
+Installation
+------------
 
-Type: Package
+You can install mase from github with:
 
-Title: Model-Assisted Survey Estimators
+``` r
+# install.packages("devtools")
+devtools::install_github("Swarthmore-Statistics/mase")
+```
 
-Version: 0.1
+Example
+-------
 
-Date: 2016-02-14
+Here's an example fitting the Horvitz-Thompson estimator:
 
-Author: Kelly McConville, Becky Tang, George Zhu
+``` r
 
-Maintainer: Kelly McConville <kmcconv1@swarthmore.edu>
+library(mase)
 
+## Estimates the mean and total of the api00 variable using the apisrs dataset in the survey package
+library(survey)
+#> Loading required package: grid
+#> Loading required package: Matrix
+#> Loading required package: survival
+#> 
+#> Attaching package: 'survey'
+#> The following object is masked from 'package:graphics':
+#> 
+#>     dotchart
+data(api)
+horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+#> $pop_total
+#>         [,1]
+#> [1,] 4066887
+#> 
+#> $pop_mean
+#>         [,1]
+#> [1,] 656.585
+#> 
+#> $pop_total_var
+#> [1] 3282462447
+#> 
+#> $pop_mean_var
+#> [1] 85.55736
+```
 
-## Reference manual
-
-[Vignette](https://github.swarthmore.edu/xzhu1/MASE/blob/master/vignettes/Model-Assisted%20Survey%20Estimators.Rmd)
-
-
-## Version Notes (Need to revise)
-
-### 0.1
-
-* Initial commit 
-
-* Added Horvitz-Thompson method
-
-* Added GREG (Linear and Ridge)
-
-* Added LASSO (Lasso and Ridge) 
-
-* Added Ratio method
-
-* Added Post-stratification method
-
-* Added vignette
-
-
-## Known Issues
-
-### 0.1
-
-* Issue on stratified weights for postStratification, g * weight overestimates population total
-
-
-## Future Improvements
-
-### 0.1
-
-* Make inputs for postStrat more user friendly 
-
-* Create a helper function to convert population totals dataframe to the nested list structure
-
-* Design new search algorithm using Binary Search for Ridge Method in GREG in weights cacluation
-
-* Add more testfiles in tests folder
-
-* Modularize certain code chunks for abstraction
-
-* Create a variance estimation function that can be used for all estimators instead of being estimator specific.  Allow users to decide when they run the function if they also want a variance estimator.
-
-* Consider adding the g-weighted variance estimator of Sarndal, Swensson and Wretman (1989)
-
-* Change weight to weights.  Better yet.  Make weight = pi and then make sure to invert pi in functions.
-
-* Need to change horvitzThompson to reflect changes in var.horvitzThompson.
-
-* Need to deal with issue of no N AND no pis in var.horvitzThompson.
-
-* Need to make var.MASE give warnings for issues with pi2.
-
-
+Please check out the vignette for more examples.
