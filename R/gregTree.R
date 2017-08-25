@@ -77,21 +77,26 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   
   
   #Calculate weights
-   w <-
+  #Make sure xpop and xsample have the same columns (in same order)
+  xpop <- xpop[names(xsample)]
+  #Design matrix for population
+  xpop_tree <- treeDesignMatrix(splits = tree$ln_split, data = xpop)
+  #Design matrix for sample
+  xsample_tree <- treeDesignMatrix(splits = tree$ln_split, data = xsample)
+  w <- (1 + t(colSums(xpop_tree)- colSums(xsample_tree*pi^(-1)))%*%solve(t(xsample_tree)%*%diag(pi^(-1))%*%as.matrix(xsample_tree))%*%t(xsample_tree))%*%diag(pi^(-1)) 
 
   #calculating the total estimate for y
   t <- w %*% y
 
 
   #NOTE: check that weights times x's should equal total of x's to check for correct weight values
-
-  #Coefficients
-  coefs <- solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight) %*% y
-
+  # w %*% xsample_tree[,4]
+  # colSums(xpop_tree)
+  
 
   if(var_est==TRUE){
     if(var_method!="bootstrapSRS"){
-    y.hat <- xsample.d%*%solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y
+    y.hat <- predict(object = tree, newdata = xsample)
     e <- y-y.hat
     varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
 
@@ -109,12 +114,12 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                  pop_total_var=varEst,
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
-                 coefficients =  coefs))
+                 tree = tree)
   }else{
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
-                 weights = as.vector(w),
-                 coefficients =  coefs))
+                 weights = as.vector(w), 
+                 tree = tree)
 
   }
 
