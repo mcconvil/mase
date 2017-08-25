@@ -42,6 +42,16 @@ postStrat <- function(
   #Define variables
   x= N_h = N_h_hats = ps_h = poptotal_h = strat_pop_total = NULL  
   
+  
+  ### INPUT VALIDATION ###
+  
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+  
+  
   #Need to provide either datatype="raw", N, or pi.  Give warning if not
   if(datatype=="means" & is.null(N) & is.null(pi)){
     message("Must supply N, pi, raw population data or population totals so that we can estimate N.")

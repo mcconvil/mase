@@ -36,6 +36,16 @@
 ratioEstimator <- function(
   y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, var_method="HB", B = 1000) {
 
+
+    ### INPUT VALIDATION ###
+  
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+  
+  
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
     message("Assuming simple random sampling")

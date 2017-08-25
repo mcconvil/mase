@@ -42,6 +42,14 @@ gregElasticNet  <- function(
   y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="HB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
   
   
+  ### INPUT VALIDATION ###
+  
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+  
   if(!is.element(model, c("linear","logistic"))){
     message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
     return(NULL)

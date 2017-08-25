@@ -44,6 +44,14 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
 ### INPUT VALIDATION ###
   
+  
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+  
+  
   if(!is.element(model, c("linear","logistic"))){
     message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
     return(NULL)

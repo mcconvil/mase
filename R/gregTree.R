@@ -35,26 +35,28 @@
 #' @include varMase.R
 #' @include gregt.R
 
-gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="HB", N = NULL, B = 1000, pval = 0.05, perm_reps = 500, bin_size = NULL){
+gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="HB", B = 1000, pval = 0.05, perm_reps = 500, bin_size = NULL){
 
-
+  
 
 ### INPUT VALIDATION ###
 
-
-  #Need to get N if not provided
-  if(is.null(N)){
-      N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
-    }
-
-
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+  
+  
+  
   #Convert y to a vector
   y <- as.vector(y)
 
   #sample size
   n <- length(y)
 
+  #population size
+  N <- dim(xpop)[1]
 
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
@@ -102,28 +104,29 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
 
     }else if(var_method=="bootstrapSRS"){
       #Find bootstrap variance
-      dat <- cbind(y,pi, xsample.d)
+      dat <- cbind(y,pi, xsample)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat, statistic = gregTreet, R = B, xpop = xpop, parallel = "multicore", ncpus = 2)
 
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
     }
+    
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  pop_total_var=varEst,
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
-                 tree = tree)
+                 tree = tree))
   }else{
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  weights = as.vector(w), 
-                 tree = tree)
+                 tree = tree))
 
   }
 
   }
 
-}
+
 

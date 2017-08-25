@@ -8,12 +8,7 @@ varMase <- function(y, pi, pi2 = NULL, method="HB", N = NULL){
   n <- length(y)
   
   
-  #Make sure the method is valid
-  if(!is.element(method, c("HB", "HH", "HTSRS", "HT"))){
-    message("Method input incorrect, has to be \"HB\", \"HH\", \"HT\" or \"HTSRS\"")
-    return(NULL)
-  }
-  
+
   #Make sure include pi2 if method is HT
   if(method=="HT" & is.null(pi2)){
     message("For HT variance estimator, need to provide second order inclusion probabilities matrix.")
