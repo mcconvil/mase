@@ -1,9 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+Development Mode
+================
+
+mase is still under development. Please use at your own risk!
+
 mase
 ====
 
-mase contains a collection of model-assisted generalized regression estimators (post-stratification estimator, ratio estimator, linear and logistic regression estimator, elastic net regression estimator, and regression tree estimator) for finite population estimation from a single stage complex sample design. It also contains the Horvitz-Thompson estimator.
+mase contains a collection of model-assisted generalized regression estimators (the post-stratification estimator, the ratio estimator, the linear and logistic regression estimator, the elastic net regression estimator, and the regression tree estimator) for finite population estimation of a total or mean from a single stage complex sample design. It also contains the Horvitz-Thompson estimator and several variance estimators.
 
 Installation
 ------------
