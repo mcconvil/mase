@@ -27,13 +27,14 @@ Suggests:
     readr,
     ggplot2
 VignetteBuilder: knitr
-Collate:
+Collate: 
     'gregt.R'
     'varMase.R'
     'GREG.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregTree.R'
+    'gregtreet.R'
     'htt.R'
     'horvitzThompson.R'
     'logisticGregElasticNett.R'
@@ -42,5 +43,6 @@ Collate:
     'postStrat.R'
     'ratioEstimatort.R'
     'ratioEstimator.R'
+    'treeDesignMatrix.R'
 RoxygenNote: 6.0.1
 RdMacros: Rdpack
