@@ -1,6 +1,6 @@
 ---
 title: "Model-Assisted Survey Estimators"
-author: "Kelly McConville, Beck Tang, George Zhu"
+author: "Kelly McConville, Beck Tang, George Zhu, Shirley Cheung, Sida Li"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: mase.bib
