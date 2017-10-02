@@ -55,8 +55,8 @@ knitr::kable(estimatorsTable)
     + [Horvitz-Thompson Estimator](#horvitz-thompson)
     + [Post-stratified Estimator](#post-stratified)
     + [Ratio Estimator](#ratio-estimator)
-    + [Generalized Regression Estimator](#linear-regression)
-    + [Elastic Net Regression Estimator](#elastic-net)
+    + [Generalized Regression Estimator](#linear-regression) 
+    + [Elastic Net Regression Estimator](#elastic-net) 
     
 ## Data
 
@@ -157,11 +157,14 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 
 `r ps_srs_r$pop_mean`
 
-
 ### Ratio Estimator
 
 ### Generalized Regression Estimator
+full regression model some quant some categorial predictors
+no model selection
 
 ### Elastic Net Regression Estimator
+same set of predictors as above, do model selection
+hopefully we get smaller standard deviation
 
 ###References
