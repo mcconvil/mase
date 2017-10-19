@@ -168,10 +168,6 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     
   }
   
-  
-   
-
-  
 ### LOGISTIC REGRESSION ###
   if (model == "logistic"){
     
@@ -184,7 +180,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     if (datatype=="raw"){
       xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
       #Make sure to only take the columns which are also in xsample
-      xpop <- dplyr::select_(xpop, .dots=names(xsample))
+      xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
     }
     
@@ -247,7 +243,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     if (datatype=="raw"){
       xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
       #Make sure to only take the columns which are also in xsample
-      xpop <- dplyr::select_(xpop, .dots=names(xsample))
+      xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
       xpop_d <- apply(xpop_d,2,sum)
     }
