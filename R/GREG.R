@@ -157,14 +157,15 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
      
       
     }
-    }      
+    
+} else{      
     
     
     #Create a new xsample with only the columns in coef_select
     xsample <- xsample[,coef_select, drop = FALSE]#dplyr::select_(xsample, .dots=coef_select)
     xsample.d <- model.matrix(~., data = xsample)
     xsample.dt <- t(xsample.d) 
-    xsample <- data.frame(xsample.d[,-1])
+    xsample <- data.frame(xsample.d[,-1, drop=FALSE])
     
   }
   
@@ -302,4 +303,4 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   }
   
 }
-
+}
