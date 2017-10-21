@@ -46,8 +46,8 @@ postStrat <- function(
   ### INPUT VALIDATION ###
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS", "SRSunconditional"))){
+    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")
     return(NULL)
   }
   

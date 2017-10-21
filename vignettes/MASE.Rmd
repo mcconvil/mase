@@ -160,6 +160,12 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 ### Ratio Estimator (Mickey)
 
 ### Generalized Regression Estimator
+All survey estimators listed above (ie. Horvitz-Thompson, Post-Stratified, Ratio) can be rewritten in the form of the generalized regression estimator:
+$$
+\hat{\mu_{y}} = \frac{1}{N} \left(\sum_{i \in s}\frac{y_{i}-\hat{m}(x_{i})}{\pi_{i}} 
+                + \sum_{i \in U}\hat{m}(x_{i}) \right)
+$$
+
 full regression model some quant some categorial predictors
 no model selection
 
