@@ -157,20 +157,17 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
      
       
     }
-    }      
+    
+} else{      
     
     
     #Create a new xsample with only the columns in coef_select
     xsample <- xsample[,coef_select, drop = FALSE]#dplyr::select_(xsample, .dots=coef_select)
     xsample.d <- model.matrix(~., data = xsample)
     xsample.dt <- t(xsample.d) 
-    xsample <- data.frame(xsample.d[,-1])
+    xsample <- data.frame(xsample.d[,-1, drop=FALSE])
     
   }
-  
-  
-   
-
   
 ### LOGISTIC REGRESSION ###
   if (model == "logistic"){
@@ -184,7 +181,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     if (datatype=="raw"){
       xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
       #Make sure to only take the columns which are also in xsample
-      xpop <- dplyr::select_(xpop, .dots=names(xsample))
+      xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
     }
     
@@ -247,7 +244,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     if (datatype=="raw"){
       xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
       #Make sure to only take the columns which are also in xsample
-      xpop <- dplyr::select_(xpop, .dots=names(xsample))
+      xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
       xpop_d <- apply(xpop_d,2,sum)
     }
@@ -306,4 +303,4 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   }
   
 }
-
+}
