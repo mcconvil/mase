@@ -19,7 +19,7 @@ library(mase)
 
 ## Introduction
 
-A common goal in survey sampling is to estimated finite population parameters, such as the total
+A common goal in survey sampling is to estimate finite population parameters, such as the total
 $$
 t_y = \sum_{i \in U} y_i
 $$
