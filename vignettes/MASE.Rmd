@@ -173,19 +173,19 @@ $$
 \hat{\mu_{y}} = \frac{1}{N} \left(\sum_{i \in s}     
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
-
-linear vs. logistic regression 
+Mention linear vs. logistic regression? How in depth should I go?
 
 To calculate api in our example dataset using GREG, we may apply the mase package, as follows:
 ```{r}
 # GREG applied to simple random sample
-greg_srs <- greg(y = apisrs$api00, xsample = , pi = apisrs$pw^(-1), model = "linear")
+greg_srs <- greg(y = apisrs$api00, 
+                 xsample = data.frame(apisrs$col.grad, apisrs$awards)
+                 xpop = data.frame(apipop$col.grad, apipop$awards), 
+                 pi = apisrs$pw^(-1), model = "linear")
 
 # GREG applied to stratified sample
 greg_strat <- greg(y = apistrat$api00, pi = apisrs$pw^(-1), model = "linear")
 ```
-
-
 
 
 
