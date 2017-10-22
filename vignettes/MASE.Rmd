@@ -25,9 +25,9 @@ t_y = \sum_{i \in U} y_i,
 $$
 where $y_i$ respresents the income for each employer; or the mean 
 $$
-\mu_y = N^{-1}t_y.
+\mu_y = \frac{t_y}{N},
 $$ 
- 
+ where $N$ is the total population size. 
  
  In the case where $t_y$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
 
@@ -36,7 +36,7 @@ $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i ,
 $$
 
-where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in S)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ would give us different model-assisted estimators.  The estimators in `mase` along with the assisting model, necessary auxiliary data, and a reference, are given in the following table:
+where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in S)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ would give us different model-assisted estimators.  The estimators in `mase`, along with the assisting model, necessary auxiliary data, and addional reference, are given in the following table:
 
 ```{r, echo=FALSE, message=FALSE}
 library(readr)
@@ -136,9 +136,47 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 
 ### Post-stratified Estimator (Mickey)
 
+(Reference: Calculating Post-Stgratified Proportions, John Williams, Department of Marketing, University of Otago, 2009)
+
 It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. TO give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
 
-In particular, if there is a categorical auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator. Alternatively, it is often the case that a post-stratified estimator is better in a scenario where the size of the populations are uneven or fail to reflect reality. For instance, there might be a survey sampling of the amount of time men and women participate in yoga. Suppose it turns out that disproportionately more men participated than did women. Then a conventional estimator would fail to give the true mean, given that in reality there is a significant difference. 
+In particular, if there is a categorical auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator. Alternatively, it is often the case that a post-stratified estimator is better in a scenario where the size of the populations are uneven or fail to reflect reality. For instance, there might be a survey sampling of the amount of time men and women in favor of a certain policy. Suppose it turns out that disproportionately more men participated in the survey than did women. Then a conventional estimator that disregards the difference in proportions would fail to give the true mean, given that in reality there is a significant difference. 
+
+Concretely, if we wanted to compute the average support rate of this policy for both men and women, our computation would often often have the following layout. Suppose that $N$ represents the total sample population size accounting for both men and women, $N_m$ for the number of participating men, $N_f$ for the number of participating women. Then we will also notate $\hat{\pi_m}$ for the percentage of men in favor of this policy in this survey and $\hat{\pi_f}$ for the percentage of women participating and in favor. 
+
+The post stratified mean,
+$$
+\mu_{post} = \frac{N_m}{N}  \hat{\pi}_m +  \frac{N_f}{N} \hat{\pi}_f,
+$$
+stands for our estimated support rate for the policy in the general public.
+
+We can compute the mean of each population and the variance of the overall population. We first give general notations: let $y^h_j$ denote the value of the $j$-th unit in the category $h$; let 
+$$
+t_h =\sum _{j=1} ^ {N_h} y^h_j
+$$
+denote the sum of relevant interest (how many people in this group were in favor of this policy) in category $h$ (where in this context $h$ would take on two values to indicate whether the population under consideration is that of men or women). Then we have that the population mean in stratum $h$ is 
+$$
+\overline{y}_h = \frac{\sum_{j\in S_h} y^h_j}{n_h},
+$$
+where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. Similarly, the post-stratified estimate of the overall sample mean would be
+$$
+\overline{y}_{\text{post}} = \sum^H_{h=1} \frac{N_h}{N}\overline{y}_h, 
+$$
+where $H$ denotes the total number of strata in our sample. 
+
+The variance computation is a little more tricky. The following formula applies only when three condirtions are met: 
+\begin{enumerate}
+\item $N$ and $N_h$ are know; i.e., we know the overall population size. 
+
+\item $n_h$ is reasonably large for all $h$. We should expect that $n_h >> 1$. 
+
+\item $n$ is large, which is really a corollary of the previous condition.
+\end{enumerate}
+We have then 
+$$
+\hat{V}_{\text{post}} \approx (1-\frac{n}{N}) \sum^H _ {h=1} \frac{N_h}{N} \frac{s^2_h}{n},
+$$
+where $s^2_h$ is the sample variance in stratum $h$.
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
 
@@ -162,7 +200,7 @@ ps_srs_t <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_tots
 #Means in each category
 pop_means <- data.frame(table(apipop$awards)/length(apipop$awards))
 ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
-#I need to discuss what the interpretation for these outputs is?
+#I need to discuss what the interpretation for these outputs is.
 ```
 
 
@@ -170,6 +208,7 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 `r ps_srs_r$pop_mean`
 
 ### Ratio Estimator (Mickey)
+
 
 ### Generalized Regression Estimator (Shirley)
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
