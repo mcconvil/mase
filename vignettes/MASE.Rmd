@@ -19,18 +19,24 @@ library(mase)
 
 ## Introduction
 
-A common goal in survey sampling is to estimate finite population parameters, such as the total
+A common goal in survey sampling is to estimate finite population parameters. For instance, for a given company we might be interested in the total aggregate income of a given company as well as the mean income. Then these two quantities of interest can be written in the following manner: the total aggregate income is
 $$
-t_y = \sum_{i \in U} y_i
+t_y = \sum_{i \in U} y_i,
 $$
-or the mean $\mu_y = N^{-1}t_y$ for some attribute of interest, $y$.  When $y$ is a binary, categorical measure, then $\mu_y$ represents a proportion. 
+where $y_i$ respresents the income for each employer; or the mean 
+$$
+\mu_y = N^{-1}t_y.
+$$ 
+ 
+ 
+ In the case where $t_y$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
 
 `mase` provides several model-assisted estimators of the finite population total or mean.  All of the estimator in `mase` can be written as
 $$
-\hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i 
+\hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i ,
 $$
 
-where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in s)$, the inclusion probability [@cas76; @sar92]. As the model for $\hat{y}_i$ varies, we get different model-assisted estimators.  The estimators in mase along with the assisting model, necessary auxiliary data, and a reference, are given in the following table.
+where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in S)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ would give us different model-assisted estimators.  The estimators in `mase` along with the assisting model, necessary auxiliary data, and a reference, are given in the following table:
 
 ```{r, echo=FALSE, message=FALSE}
 library(readr)
@@ -130,21 +136,24 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 
 ### Post-stratified Estimator (Mickey)
 
-If there is a categorical, auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator.  
+It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. TO give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
 
-For example, there is a binary,categorical variable, `awards`, which specifies whether or not a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
+In particular, if there is a categorical auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator. Alternatively, it is often the case that a post-stratified estimator is better in a scenario where the size of the populations are uneven or fail to reflect reality. For instance, there might be a survey sampling of the amount of time men and women participate in yoga. Suppose it turns out that disproportionately more men participated than did women. Then a conventional estimator would fail to give the true mean, given that in reality there is a significant difference. 
+
+In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
 
 ```{r, echo=FALSE}
 library(ggplot2)
 ggplot(apistrat, aes(x = awards, y = api00)) + geom_boxplot()+ labs(x="Eligible for Awards Program?", y="API Scores for 2000") + theme_bw() 
 ```
 
-To add the awards information, we need to include the sample values (`xsample`) and the population data (`xpop`) can be given in one of three ways as shown in the following R chunk.
+To add the awards information, we need to include the sample values (`xsample`) and the population data (`xpop`). The following R scripts show three ways f achieving this.
 
 ```{r, message=FALSE}
 
 #Raw data
 ps_srs_r <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = apipop$awards, datatype = "raw", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+
 
 #Totals in each category 
 pop_tots <- data.frame(table(apipop$awards))
@@ -153,7 +162,10 @@ ps_srs_t <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_tots
 #Means in each category
 pop_means <- data.frame(table(apipop$awards)/length(apipop$awards))
 ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+#I need to discuss what the interpretation for these outputs is?
 ```
+
+
 
 `r ps_srs_r$pop_mean`
 
