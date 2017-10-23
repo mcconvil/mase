@@ -216,6 +216,7 @@ $$
 r = \frac{\mu _Y}{\mu_X} = \frac{\sum_{i=1}^{N_Y} y_i}{\sum _{i=1} ^ {N_X} x_i}
 $$
 
+
 ### Generalized Regression Estimator (Shirley)
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
 $$
