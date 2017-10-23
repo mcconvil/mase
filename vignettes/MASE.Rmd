@@ -231,6 +231,7 @@ $$
 \hat{\mu_{y}} = \frac{1}{N} \left(\sum_{i \in s}     
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
+
 Mention linear vs. logistic regression?
 provide code example of each 
 
@@ -244,7 +245,11 @@ greg_srs <- greg(y = apisrs$api00,
 greg_srs
 
 # GREG applied to stratified sample
-greg_strat <- greg(y = apistrat$api00, pi = apisrs$pw^(-1), model = "linear")
+greg_strat <- greg(y = apistrat$api00, 
+                   xsample = apistrat[c("col.grad", "awards")],
+                   xpop = apipop[c("col.grad", "awards")],
+                   pi = apisrs$pw^(-1), model = "linear")
+greg_strat
 ```
 
 
