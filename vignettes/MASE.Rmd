@@ -179,9 +179,9 @@ To calculate api in our example dataset using GREG, we may apply the mase packag
 ```{r}
 # GREG applied to simple random sample
 greg_srs <- greg(y = apisrs$api00, 
-                 xsample = data.frame(apisrs$col.grad, apisrs$awards)
+                 xsample = data.frame(apisrs$col.grad, apisrs$awards),
                  xpop = data.frame(apipop$col.grad, apipop$awards), 
-                 pi = apisrs$pw^(-1), model = "linear")
+                 pi = apisrs$pw^(-1), model = "linear", N = 6194)
 
 # GREG applied to stratified sample
 greg_strat <- greg(y = apistrat$api00, pi = apisrs$pw^(-1), model = "linear")
