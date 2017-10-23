@@ -29,7 +29,7 @@ $$
 $$ 
  where $N$ is the total population size. 
  
- In the case where $t_y$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
+ In the case where $y_i$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
 
 `mase` provides several model-assisted estimators of the finite population total or mean.  All of the estimator in `mase` can be written as
 $$
@@ -138,7 +138,7 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 
 (Reference: Calculating Post-Stgratified Proportions, John Williams, Department of Marketing, University of Otago, 2009)
 
-It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. TO give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
+It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. To give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
 
 In particular, if there is a categorical auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator. Alternatively, it is often the case that a post-stratified estimator is better in a scenario where the size of the populations are uneven or fail to reflect reality. For instance, there might be a survey sampling of the amount of time men and women in favor of a certain policy. Suppose it turns out that disproportionately more men participated in the survey than did women. Then a conventional estimator that disregards the difference in proportions would fail to give the true mean, given that in reality there is a significant difference. 
 
@@ -154,7 +154,7 @@ We can compute the mean of each population and the variance of the overall popul
 $$
 t_h =\sum _{j=1} ^ {N_h} y^h_j
 $$
-denote the sum of relevant interest (how many people in this group were in favor of this policy) in category $h$ (where in this context $h$ would take on two values to indicate whether the population under consideration is that of men or women). Then we have that the population mean in stratum $h$ is 
+denote the sum of relevant interest (how many people in this group were in favor of this policy) in category $h$ (where in this context $h$ would take on two values to indicate whether the population under consideration is that of men or women). Then we have that the sample mean in stratum $h$  is 
 $$
 \overline{y}_h = \frac{\sum_{j\in S_h} y^h_j}{n_h},
 $$
