@@ -146,7 +146,7 @@ Concretely, if we wanted to compute the average support rate of this policy for 
 
 The post stratified mean,
 $$
-\mu_{post} = \frac{N_m}{N}  \hat{\pi}_m +  \frac{N_f}{N} \hat{\pi}_f,
+\hat{\mu}_{\text{post}} = \frac{N_m}{N}  \hat{\pi}_m +  \frac{N_f}{N} \hat{\pi}_f,
 $$
 stands for our estimated support rate for the policy in the general public.
 
@@ -164,19 +164,22 @@ $$
 $$
 where $H$ denotes the total number of strata in our sample. 
 
-The variance computation is a little more tricky. The following formula applies only when three condirtions are met: 
+The variance computation is a little more tricky. The following formula applies only when three conditions are met: 
 \begin{enumerate}
 \item $N$ and $N_h$ are know; i.e., we know the overall population size. 
 
 \item $n_h$ is reasonably large for all $h$. We should expect that $n_h >> 1$. 
 
 \item $n$ is large, which is really a corollary of the previous condition.
+#Find mathematical explanations for this...
 \end{enumerate}
-We have then 
+We have then the necessary assumptions for simple random sampling. 
 $$
 \hat{V}_{\text{post}} \approx (1-\frac{n}{N}) \sum^H _ {h=1} \frac{N_h}{N} \frac{s^2_h}{n},
 $$
 where $s^2_h$ is the sample variance in stratum $h$.
+
+As it turns out, the desired quantities $N_h$ and $N$ are frequently unavailable. Therefore the package provides an alternate means of computing this variance. The methodology is somewhat complex, so the reader could do without following meticulously the mathematical exposition. 
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
 
@@ -208,7 +211,10 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 `r ps_srs_r$pop_mean`
 
 ### Ratio Estimator (Mickey)
-
+Sometimes we are interested in the relationship between the average/expected behavior of two variables $X$ and $Y$. Then the variable of concern would be 
+$$
+r = \frac{\mu _Y}{\mu_X} = \frac{\sum_{i=1}^{N_Y} y_i}{\sum _{i=1} ^ {N_X} x_i}
+$$
 
 ### Generalized Regression Estimator (Shirley)
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
