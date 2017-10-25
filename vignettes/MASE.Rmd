@@ -163,6 +163,7 @@ $$
 \overline{y}_{\text{post}} = \sum^H_{h=1} \frac{N_h}{N}\overline{y}_h, 
 $$
 where $H$ denotes the total number of strata in our sample. 
+#Make it work generally independent of simple random sampling. 
 
 The variance computation is a little more tricky. The following formula applies only when three conditions are met: 
 \begin{enumerate}
