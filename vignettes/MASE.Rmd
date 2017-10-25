@@ -46,11 +46,6 @@ knitr::kable(estimatorsTable)
 
 
 
-* Add variance estimation.
-
-* Try api dataset (population) in survey package to create examples.
-
-
 ## Contents
 
 1. [Data](#getting-started)
@@ -134,9 +129,8 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 ```
 
 
-### Post-stratified Estimator (Mickey)
+### Post-stratified Estimator @wil109
 
-(Reference: Calculating Post-Stgratified Proportions, John Williams, Department of Marketing, University of Otago, 2009)
 
 It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. To give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
 
