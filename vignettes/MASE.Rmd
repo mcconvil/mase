@@ -144,7 +144,7 @@ denote the sum of relevant interest  in category $j$ (where in this context $j$ 
 $$
 \overline{y}_j = \frac{\sum_{i\in S_j} x_{ij}}{n_j},
 $$
-where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. @wil109
+where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. 
 
 Suppose $y_i$ stands for canopy cover in plot $i$. The above could be modeled as @sar92
 $$
@@ -166,6 +166,8 @@ $$
 where $s^2_h$ is the sample variance in stratum $h$.
 
 As it turns out, the desired quantities $N_h$ and $N$ are frequently unavailable, and we would like to consider models where we have will need to break assumptions of simple random sampling. 
+
+(To be continued)
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
 
@@ -189,21 +191,33 @@ ps_srs_t <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_tots
 #Means in each category
 pop_means <- data.frame(table(apipop$awards)/length(apipop$awards))
 ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
-#I need to discuss what the interpretation for these outputs is.
 ```
 
 
 
 `r ps_srs_r$pop_mean`
 
-### Ratio Estimator (Mickey)
-Sometimes we are interested in the relationship between the average/expected behavior of two variables $X$ and $Y$. Then the variable of concern would be 
+### Ratio Estimator
+The presence of auxilary data would sometimes allow us to compute ratios of interest that will be of significant aid to the model. In particular, the ratio for our estimated quantity of interest $y_i$ and an auxilary predictor $x_i$ might have a fairly constant ratio $\frac{y_i}{x_i}$ throughout all samples $i\in S$. Suppose that this ratio has average $\beta $ that stays fairly constant throughout our samples. Then we can give the model 
 $$
-r = \frac{\mu _Y}{\mu_X} = \frac{\sum_{i=1}^{N_Y} y_i}{\sum _{i=1} ^ {N_X} x_i}
+\hat{y}_i = \beta x_i + \epsilon_i, 
 $$
+where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$. 
+
+In light of our HT estimator of $\mu_y$ and of $\mu_x$, we would have our estimated
+$$
+\hat{\beta}= \frac{\hat {\mu}_{y,ht}}{\hat{\mu}_{x,HT}}.
+$$
+It can then be shown from GREG estimator below that 
+$$
+\hat{\mu_y} = 0 + \frac{\mu_x}{\hat{\mu}_{x, HT}} \hat{\mu}_{y,ht,}
+$$
+to which we dub the name ratio estimator. @sar92.
+
+(Code examples to follow)
 
 
-### Generalized Regression Estimator (Shirley)
+### Generalized Regression Estimator 
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
 $$
 \hat{\mu_{y}} = \frac{1}{N} \left(\sum_{i \in s}     
@@ -240,7 +254,7 @@ greg_strat
 
 
 
-### Elastic Net Regression Estimator (Shirley)
+### Elastic Net Regression Estimator
 same set of predictors as above, do model selection
 hopefully we get smaller standard deviation
 
