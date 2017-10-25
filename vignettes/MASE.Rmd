@@ -129,52 +129,43 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 ```
 
 
-### Post-stratified Estimator @wil109
+### Post-stratified Estimator 
 
 
-It can often happen that we would like to put our population into categories but cannot perform this grouping unless the units are already sampled. To give a common example, a telephone interview cannot know before-hand how many male, female, or people of non-conforming gender would participate. The grouping can only be performed after the interview has taken place. Under these scenarios we consider our estimators post-stratified.
+It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modelling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be convered by canopy than those that are labelled "non-forest".
 
-In particular, if there is a categorical auxiliary variable that is predictive of the study variable, then a post-stratified estimator could be more efficient than the Horvitz-Thompson estimator. Alternatively, it is often the case that a post-stratified estimator is better in a scenario where the size of the populations are uneven or fail to reflect reality. For instance, there might be a survey sampling of the amount of time men and women in favor of a certain policy. Suppose it turns out that disproportionately more men participated in the survey than did women. Then a conventional estimator that disregards the difference in proportions would fail to give the true mean, given that in reality there is a significant difference. 
 
-Concretely, if we wanted to compute the average support rate of this policy for both men and women, our computation would often often have the following layout. Suppose that $N$ represents the total sample population size accounting for both men and women, $N_m$ for the number of participating men, $N_f$ for the number of participating women. Then we will also notate $\hat{\pi_m}$ for the percentage of men in favor of this policy in this survey and $\hat{\pi_f}$ for the percentage of women participating and in favor. 
-
-The post stratified mean,
-$$
-\hat{\mu}_{\text{post}} = \frac{N_m}{N}  \hat{\pi}_m +  \frac{N_f}{N} \hat{\pi}_f,
-$$
-stands for our estimated support rate for the policy in the general public.
 
 We can compute the mean of each population and the variance of the overall population. We first give general notations: let $y^h_j$ denote the value of the $j$-th unit in the category $h$; let 
 $$
-t_h =\sum _{j=1} ^ {N_h} y^h_j
+t_j =\sum _{i=1} ^ {N_j} x_{ij}
 $$
-denote the sum of relevant interest (how many people in this group were in favor of this policy) in category $h$ (where in this context $h$ would take on two values to indicate whether the population under consideration is that of men or women). Then we have that the sample mean in stratum $h$  is 
+denote the sum of relevant interest  in category $j$ (where in this context $j$ would take on two values to indicate whether the plot is covered by forest or not). Then we have that the sample mean in stratum $j$  is 
 $$
-\overline{y}_h = \frac{\sum_{j\in S_h} y^h_j}{n_h},
+\overline{y}_j = \frac{\sum_{i\in S_j} x_{ij}}{n_j},
 $$
-where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. Similarly, the post-stratified estimate of the overall sample mean would be
-$$
-\overline{y}_{\text{post}} = \sum^H_{h=1} \frac{N_h}{N}\overline{y}_h, 
-$$
-where $H$ denotes the total number of strata in our sample. 
-#Make it work generally independent of simple random sampling. 
+where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. @wil109
 
-The variance computation is a little more tricky. The following formula applies only when three conditions are met: 
-\begin{enumerate}
-\item $N$ and $N_h$ are know; i.e., we know the overall population size. 
-
-\item $n_h$ is reasonably large for all $h$. We should expect that $n_h >> 1$. 
-
-\item $n$ is large, which is really a corollary of the previous condition.
-#Find mathematical explanations for this...
-\end{enumerate}
-We have then the necessary assumptions for simple random sampling. 
+Suppose $y_i$ stands for canopy cover in plot $i$. The above could be modeled as @sar92
+$$
+y_i = \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i. 
+$$
+Assuming constant variance of the error term $\epsilon_i$ and making use of the HT estimator, we can give the following estimates :
+$$
+\hat{\beta}_1 =\frac{ \sum _{i \in S_1} \frac{y_i}{\pi_i}}{\hat{N_1}},\\
+\hat{\beta}_2 =\frac{ \sum _{i \in S_2} \frac{y_i}{\pi_i}}{\hat{N_2}},
+$$
+from which we could derive the post-stratified mean 
+$$
+\hat{\mu} = \frac{1}{N} \sum _{j=1}^2 \frac{N_j}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i}.
+$$
+If we have a simple random sampling, then estimated variance could be written as
 $$
 \hat{V}_{\text{post}} \approx (1-\frac{n}{N}) \sum^H _ {h=1} \frac{N_h}{N} \frac{s^2_h}{n},
 $$
 where $s^2_h$ is the sample variance in stratum $h$.
 
-As it turns out, the desired quantities $N_h$ and $N$ are frequently unavailable. Therefore the package provides an alternate means of computing this variance. The methodology is somewhat complex, so the reader could do without following meticulously the mathematical exposition. 
+As it turns out, the desired quantities $N_h$ and $N$ are frequently unavailable, and we would like to consider models where we have will need to break assumptions of simple random sampling. 
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
 
