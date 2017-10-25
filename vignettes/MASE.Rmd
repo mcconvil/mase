@@ -217,6 +217,7 @@ $$
 r = \frac{\mu _Y}{\mu_X} = \frac{\sum_{i=1}^{N_Y} y_i}{\sum _{i=1} ^ {N_X} x_i}
 $$
 
+
 ### Generalized Regression Estimator (Shirley)
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
 $$
@@ -231,18 +232,25 @@ $$
 \hat{\mu_{y}} = \frac{1}{N} \left(\sum_{i \in s}     
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
-Mention linear vs. logistic regression? How in depth should I go?
+
+Mention linear vs. logistic regression?
+provide code example of each 
 
 To calculate api in our example dataset using GREG, we may apply the mase package, as follows:
 ```{r}
 # GREG applied to simple random sample
 greg_srs <- greg(y = apisrs$api00, 
-                 xsample = data.frame(apisrs$col.grad, apisrs$awards),
-                 xpop = data.frame(apipop$col.grad, apipop$awards), 
-                 pi = apisrs$pw^(-1), model = "linear", N = 6194)
+                 xsample = apisrs[c("col.grad", "awards")],
+                 xpop = apipop[c("col.grad", "awards")], 
+                 pi = apisrs$pw^(-1), model = "linear")
+greg_srs
 
 # GREG applied to stratified sample
-greg_strat <- greg(y = apistrat$api00, pi = apisrs$pw^(-1), model = "linear")
+greg_strat <- greg(y = apistrat$api00, 
+                   xsample = apistrat[c("col.grad", "awards")],
+                   xpop = apipop[c("col.grad", "awards")],
+                   pi = apisrs$pw^(-1), model = "linear")
+greg_strat
 ```
 
 
