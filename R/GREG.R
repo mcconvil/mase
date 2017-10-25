@@ -157,8 +157,8 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
      
       
     }
-    
-} else{      
+    }  
+     
     
     
     #Create a new xsample with only the columns in coef_select
@@ -303,4 +303,4 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   }
   
 }
-}
+
