@@ -224,7 +224,7 @@ $$
                 \frac{y_{i}-\hat{m}(\boldsymbol{x}_{i})}{\pi_{i}} 
                 + \sum_{i \in U}\hat{m}(\boldsymbol{x}_{i}) \right)
 $$
-where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed , $\pi_{i}$ is the inclusion probability (Cassel, Särndal, and Wretman 1976; Särndal, Swensson, and Wretman 1992), and $N$ is the size of the finite population. 
+where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed , $\pi_{i}$ is the inclusion probability, and $N$ is the size of the finite population. 
 
 The exact form of the GREG is flexible. It varies depending on whether $y$ is quantitative or categorical and the availablity and relevancy of auxiliary data. Note that all aforementioned estimators are variations of the GREG. For example, in the case that no relevant auxiliary data exist, the $\hat{m}(x_{i})$ portions of our GREG equation simply equal zero, resulting in our Horvitz-Thompson estimator: 
 $$
@@ -232,30 +232,43 @@ $$
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
 
-Mention linear vs. logistic regression?
-provide code example of each 
-
-To calculate api in our example dataset using GREG, we may apply the mase package, as follows:
+When $y$ is quantitative, GREG is a linear regression. The following code calculates GREG for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
-greg_srs <- greg(y = apisrs$api00, 
-                 xsample = apisrs[c("col.grad", "awards")],
-                 xpop = apipop[c("col.grad", "awards")], 
-                 pi = apisrs$pw^(-1), model = "linear")
-greg_srs
+greg_linear_srs <- greg(y = apisrs$api00, 
+                   xsample = apisrs[c("col.grad", "awards")],
+                   xpop = apipop[c("col.grad", "awards")], 
+                   pi = apisrs$pw^(-1), model = "linear")
+greg_linear_srs
 
 # GREG applied to stratified sample
-greg_strat <- greg(y = apistrat$api00, 
-                   xsample = apistrat[c("col.grad", "awards")],
-                   xpop = apipop[c("col.grad", "awards")],
-                   pi = apisrs$pw^(-1), model = "linear")
-greg_strat
+greg_linear_strat <- greg(y = apistrat$api00, 
+                          xsample = apistrat[c("col.grad", "awards")],
+                          xpop = apipop[c("col.grad", "awards")],
+                          pi = apistrat$pw^(-1), model = "linear")
+greg_linear_strat
 ```
 
+When $y$ is categorical, GREG is a logistic regression. The following code calculates GREG for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
+```{r}
+# GREG applied to simple random sample
+greg_logistic_srs <- greg(y = apisrs$awards, 
+                          xsample = apisrs[c("col.grad", "sch.wide")],
+                          xpop = apipop[c("col.grad", "sch.wide")], 
+                          pi = apisrs$pw^(-1), model = "logistic")
+greg_logistic_srs
+
+# GREG applied to stratified sample
+greg_logistic_strat <- greg(y = apistrat$api00, 
+                            xsample = apistrat[c("col.grad", "sch.wide")],
+                            xpop = apipop[c("col.grad", "sch.wide")],
+                            pi = apistrat$pw^(-1), model = "logistic")
+greg_logistic_strat
+```
 
 
 ### Elastic Net Regression Estimator
 same set of predictors as above, do model selection
 hopefully we get smaller standard deviation
 
-###References
+### References
