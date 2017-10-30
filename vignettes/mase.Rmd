@@ -265,6 +265,8 @@ $$
 The logistic model results in probabilities between 0 and 1. When $y$ is categorical, GREG is a logistic regression. The following code calculates GREG for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
+# categorical with more than two categories, emit warning message, return 
+# convert yes/no into 1 and 0
 greg_logistic_srs <- greg(y = apisrs$awards, 
                           xsample = apisrs[c("col.grad", "sch.wide")],
                           xpop = apipop[c("col.grad", "sch.wide")], 
@@ -283,30 +285,37 @@ greg_logistic_strat
 ### Elastic Net Regression Estimator
 The Elastic Net Regression estimator is simply the same as the GREG estimator above, with an added condition in the original formula which uses a penalized survey-weighted least squares to incorporate model selection when estimating our coefficients. This added condition is called the "elastic net." 
 $$
-# HOW DO YOU PUT BETA BELOW ARGMIN????
-\\
-\hat{\boldsymbol{\beta}_{s}} = arg min\big\{\sum_{i \in s}
-                              \frac{(yi-\boldsymbol{x}_{i}^T \boldsymbol{\beta})^2}
-                              {\pi_{i}\sigma^2_{i}} +
-                              \lambda[\alpha\sum_{j=1}^p|\beta_{j}| + 
-                              (1-\alpha)\sum_{j=1}^p \beta^2_{j}
-                              \big\}
+\hat{\boldsymbol{\beta}_{s}} = \underset{\boldsymbol{\beta}}{\text{arg min}} 
+                              \left \{\sum_{i \in s}
+                              \frac{(y_{i}-\boldsymbol{x}_{i}^T \boldsymbol{\beta})^2}
+                              {\pi_{i}\sigma^2_{i}} + \lambda
+                              \left[\alpha\sum_{j=1}^p \left|\beta_{j} \right| + 
+                              (1-\alpha)\sum_{j=1}^p \beta^2_{j} \right]
+                              \right \}
 $$
+first term = lasso penalty
+second term = ridge regression penalty
+alpha = how much lasso penalty vs ridge penalty
+lasso is good for shrinking unnecessary variables
+ridge is good for multicollinearity
+better than brute force choosing subsets because too tedious. penalization section chooses the "important" betas for us
+
 With the addition of the elastic net condition, the Elastic Net Regression estimator has a better variability than the GREG. The presence of too many variables from available auxiliary data can add extra variability to GREG, whereas the Elastic Net estimator adds a penalization which shrinks the coefficients towards zero. 
 
 Likewise with GREG, one can calculate linear and logistic regressions using the Elastic Net estimator. The following code calculates the Elastic Net for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Elastic Net applied to simple random sample
-gregElastic_lin_srs <- gregElasticNet(y = apisrs$awards, 
-                                      xsample = apisrs[c("col.grad", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "sch.wide")], 
+# give long x vector to show how elastic net will "discard" certain variables
+gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00, 
+                                      xsample = apisrs[c("col.grad", "awards")],
+                                      xpop = apipop[c("col.grad", "awards")], 
                                       pi = apisrs$pw^(-1), model = "linear")
 gregElastic_lin_srs
 
 # Elastic Net applied to stratified sample
-gregElastic_lin_strat <- gregElasticNet(y = apistrat$awards, 
-                                      xsample = apistrat[c("col.grad", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "sch.wide")],
+gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
+                                      xsample = apistrat[c("col.grad", "awards")],
+                                      xpop = apipop[c("col.grad", "awards")],
                                       pi = apistrat$pw^(-1), model = "linear")
 gregElastic_lin_strat
 ```
