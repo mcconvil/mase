@@ -232,7 +232,12 @@ $$
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
 
-When $y$ is quantitative, GREG is a linear regression. The following code calculates GREG for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
+When $y$ is quantitative, GREG is a linear regression model as follows:
+$$
+y_{i} = \beta_{o} + \beta_{1}x_{i1} + \beta_{2}x_{i2} + ... + \beta_{p}x_{ip} +          \epsilon_{i} \\
+      = \boldsymbol{x}_{i}^T \boldsymbol{\beta} + \epsilon_{i}
+$$
+The following code calculates GREG for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
 greg_linear_srs <- greg(y = apisrs$api00, 
@@ -249,7 +254,12 @@ greg_linear_strat <- greg(y = apistrat$api00,
 greg_linear_strat
 ```
 
-When $y$ is categorical, GREG is a logistic regression. The following code calculates GREG for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
+When $y$ is categorical, GREG is a logistic regression model as follows:
+$$
+P(y_{i} = 1|\boldsymbol{x}_{i}) = \frac{exp(\boldsymbol{x}_{i}^T \boldsymbol{\beta})}
+                                  {1+exp(\boldsymbol{x}_{i}^T \boldsymbol{\beta})}
+$$
+The logistic model results in probabilities between 0 and 1. The following code calculates GREG for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
 greg_logistic_srs <- greg(y = apisrs$awards, 
@@ -259,7 +269,7 @@ greg_logistic_srs <- greg(y = apisrs$awards,
 greg_logistic_srs
 
 # GREG applied to stratified sample
-greg_logistic_strat <- greg(y = apistrat$api00, 
+greg_logistic_strat <- greg(y = apistrat$awards, 
                             xsample = apistrat[c("col.grad", "sch.wide")],
                             xpop = apipop[c("col.grad", "sch.wide")],
                             pi = apistrat$pw^(-1), model = "logistic")
