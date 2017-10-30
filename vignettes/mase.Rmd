@@ -136,14 +136,18 @@ It is not uncommon for us to have categorical auxilary data that might give info
 
 
 
-We can compute the mean of each population and the variance of the overall population. We first give general notations: let $y^h_j$ denote the value of the $j$-th unit in the category $h$; let 
+We can compute the mean of each population and the variance of the overall population. We first give general notations: let $y^h_j$ denote the value of the $j$-th unit in the category $h$; let
+
 $$
-t_j =\sum _{i=1} ^ {N_j} x_{ij}
+t_j = \sum _{i=1} ^ {N_j} x_{ij}
 $$
-denote the sum of relevant interest  in category $j$ (where in this context $j$ would take on two values to indicate whether the plot is covered by forest or not). Then we have that the sample mean in stratum $j$  is 
+
+denote the sum of relevant interest in category $j$ (where in this context $j$ would take on two values to indicate whether the plot is covered by forest or not). Then we have that the sample mean in stratum $j$  is 
+
 $$
 \overline{y}_j = \frac{\sum_{i\in S_j} x_{ij}}{n_j},
 $$
+
 where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. 
 
 Suppose $y_i$ stands for canopy cover in plot $i$. The above could be modeled as @sar92
@@ -200,9 +204,9 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 ### Ratio Estimator
 The presence of auxilary data would sometimes allow us to compute ratios of interest that will be of significant aid to the model. In particular, the ratio for our estimated quantity of interest $y_i$ and an auxilary predictor $x_i$ might have a fairly constant ratio $\frac{y_i}{x_i}$ throughout all samples $i\in S$. Suppose that this ratio has average $\beta $ that stays fairly constant throughout our samples. Then we can give the model 
 $$
-\hat{y}_i = \beta x_i + \epsilon_i, 
+y_i = \beta x_i + \epsilon_i, 
 $$
-where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$. 
+where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$ and mean at 0.
 
 In light of our HT estimator of $\mu_y$ and of $\mu_x$, we would have our estimated
 $$
