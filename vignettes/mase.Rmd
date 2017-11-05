@@ -236,37 +236,41 @@ $$
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
 
-When $y$ is quantitative, GREG is a linear regression model as follows:
+-- INSERT COEFFICIENT CALCULATION HERE -- 
+
+When $y$ is quantitative, GREG is called a linear regression as follows:
 $$
 y_{i} = \beta_{o} + \beta_{1}x_{i1} + \beta_{2}x_{i2} + ... + \beta_{p}x_{ip} + 
         \epsilon_{i} \\
       = \boldsymbol{x}_{i}^T \boldsymbol{\beta} + \epsilon_{i}
 $$
-The following code calculates GREG for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
 
-When $y$ is quantitative, GREG is a linear regression. The following code calculates GREG for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
+The following code calculates GREG for the quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
 greg_linear_srs <- greg(y = apisrs$api00, 
-                   xsample = apisrs[c("col.grad", "awards")],
-                   xpop = apipop[c("col.grad", "awards")], 
-                   pi = apisrs$pw^(-1), model = "linear")
+                        xsample = apisrs[c("col.grad", "awards")], 
+                        xpop = apipop[c("col.grad", "awards")], 
+                        pi = apisrs$pw^(-1), model = "linear",
+                        var_est = TRUE)
 greg_linear_srs
 
 # GREG applied to stratified sample
 greg_linear_strat <- greg(y = apistrat$api00, 
                           xsample = apistrat[c("col.grad", "awards")],
                           xpop = apipop[c("col.grad", "awards")],
-                          pi = apistrat$pw^(-1), model = "linear")
+                          pi = apistrat$pw^(-1), model = "linear",
+                          var_est = TRUE)
 greg_linear_strat
 ```
 
-When $y$ is categorical, GREG is a logistic regression model as follows:
+When $y$ is categorical, GREG is called a logistic regression as follows:
 $$
 P(y_{i} = 1|\boldsymbol{x}_{i}) = \frac{exp(\boldsymbol{x}_{i}^T \boldsymbol{\beta})}
                                   {1+exp(\boldsymbol{x}_{i}^T \boldsymbol{\beta})}
 $$
-The logistic model results in probabilities between 0 and 1. When $y$ is categorical, GREG is a logistic regression. The following code calculates GREG for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
+
+The logistic model results in probabilities between 0 and 1. The following code calculates GREG for the categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package:
 ```{r}
 # GREG applied to simple random sample
 # categorical with more than two categories, emit warning message, return 
@@ -274,7 +278,8 @@ The logistic model results in probabilities between 0 and 1. When $y$ is categor
 greg_logistic_srs <- greg(y = apisrs$awards, 
                           xsample = apisrs[c("col.grad", "sch.wide")],
                           xpop = apipop[c("col.grad", "sch.wide")], 
-                          pi = apisrs$pw^(-1), model = "logistic")
+                          pi = apisrs$pw^(-1), model = "logistic"
+                          )
 greg_logistic_srs
 
 # GREG applied to stratified sample
@@ -284,7 +289,6 @@ greg_logistic_strat <- greg(y = apistrat$awards,
                             pi = apistrat$pw^(-1), model = "logistic")
 greg_logistic_strat
 ```
-
 
 ### Elastic Net Regression Estimator
 The Elastic Net Regression estimator is simply the GREG estimator above, with an added condition in the original formula which uses a penalized survey-weighted least squares to incorporate model selection when estimating our coefficients. This added condition is called the "elastic net." 
@@ -297,11 +301,9 @@ $$
                               (1-\alpha)\sum_{j=1}^p \beta^2_{j} \right]
                               \right \}
 $$
-Observe that the first half of the equation is the original GREG formula. The second half of the equation is the aforementioned "elastic net," which is the penalty calculation.The elastic net itself is split again into two halves. The first half of the elastic net, $\alpha\sum_{j=1}^p \left|\beta_{j} \right|$, is known as the LASSO penalty, which shrinks the amount of unnecessary variables. The second half of the elastic net, $(1-\alpha)\sum_{j=1}^p \beta^2_{j}$, is the Ridge Regression penalty, which is good for multicollinearity. The alpha value decides the relative amount weight to assign to each type of penalty. 
+Observe that the first half of the equation is the original GREG formula. The second half of the equation is the aforementioned "elastic net" condition, which is the penalty calculation.The elastic net itself is split into two halves. The first half of the elastic net, $\alpha\sum_{j=1}^p \left|\beta_{j} \right|$, is known as the LASSO penalty, which shrinks the amount of unnecessary variables. The second half of the elastic net, $(1-\alpha)\sum_{j=1}^p \beta^2_{j}$, is the Ridge Regression penalty, which is good for multicollinearity. The alpha value decides the relative amount weight to assign to each type of penalty. 
 
-better than brute force choosing subsets because too tedious. penalization section chooses the "important" betas for us
-
-With the addition of this elastic net condition, the Elastic Net Regression estimator has a better variability than the GREG. The presence of too many variables from available auxiliary data can add extra variability to GREG, whereas the elastic net condition shrinks the coefficients towards zero. 
+At this point, one might wonder - why add a penalty to the original GREG formula? Why create an elastic net regression estimator? What is "better" about the elastic net regression estimator than the generalized regression estimator? The GREG estimator does not guard against the presence of too many auxiliary variables, which may result in added variability. With the addition of the elastic net condition, the elastic net regression estimator shrinks the coefficients towards zero, therefore resulting in a better variability than the GREG. To combat the presence of superfluous auxiliary data, one could also choose subsets on which to perform GREG, but this process is tedious and time consuming, as well as inefficient. Imagine how many combinations can be made from n choose 2, n choose 3, n choose 4, etc. number of subsets! Therefore, by adding an elastic net condition to our original GREG estimator, we allow the penalization condition to "choose" the important $\beta$'s for us. 
 
 Likewise with GREG, one can calculate linear and logistic regressions using the Elastic Net estimator. The following code calculates the Elastic Net for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package.
 ```{r}
@@ -311,36 +313,38 @@ gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00,
                                       xsample = apisrs[c("col.grad", "awards")],
                                       xpop = apipop[c("col.grad", "awards")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
-                                      model = "linear")
+                                      model = "linear", var_est = TRUE)
+gregElastic_lin_srs
 
 # Linear Elastic Net applied to stratified sample
 gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
                                       xsample = apistrat[c("col.grad", "awards")],
                                       xpop = apipop[c("col.grad", "awards")],
                                       pi = apistrat$pw^(-1), alpha = 0.5, 
-                                      model = "linear")
+                                      model = "linear", var_est = TRUE)
 gregElastic_lin_strat
 ```
 
 talk about discarded variables
 talk about std changes vs. just greg 
 
+The following code calculates the Elastic Net for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Logistic Elastic Net applied to simple random sample
 # give long x vector to show how elastic net will "discard" certain variables
 gregElastic_log_srs <- gregElasticNet(y = apisrs$api00, 
-                                      xsample = apisrs[c("col.grad", "awards")],
-                                      xpop = apipop[c("col.grad", "awards")], 
+                                      xsample = apisrs[c("col.grad", "sch.wide")],
+                                      xpop = apipop[c("col.grad", "sch.wide")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
-                                      model = "linear")
+                                      model = "logistic", var_est = TRUE)
 gregElastic_log_srs
 
 # Logistic Elastic Net applied to stratified sample
 gregElastic_log_strat <- gregElasticNet(y = apistrat$api00, 
-                                      xsample = apistrat[c("col.grad", "awards")],
-                                      xpop = apipop[c("col.grad", "awards")],
+                                      xsample = apistrat[c("col.grad", "sch.wide")],
+                                      xpop = apipop[c("col.grad", "sch.wide")],
                                       pi = apistrat$pw^(-1), alpha = 0.5, 
-                                      model = "linear")
+                                      model = "logistic", var_est = TRUE)
 gregElastic_log_strat
 ```
 
