@@ -312,14 +312,6 @@ gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00,
                                       xpop = apipop[c("col.grad", "awards")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
                                       model = "linear")
-gregElastic_lin_srs
-greg_linear_srs <- greg(y = apisrs$api00, 
-                   xsample = apisrs[c("col.grad", "awards")],
-                   xpop = apipop[c("col.grad", "awards")], 
-                   pi = apisrs$pw^(-1), model = "linear")
-greg_linear_srs
-
-
 
 # Linear Elastic Net applied to stratified sample
 gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
@@ -329,11 +321,35 @@ gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00,
                                       model = "linear")
 gregElastic_lin_strat
 ```
-add more variables to elastic to show discarded variables
-add elastic logistic
-add std to greg and elastic
+
+talk about discarded variables
+talk about std changes vs. just greg 
+
+```{r}
+# Logistic Elastic Net applied to simple random sample
+# give long x vector to show how elastic net will "discard" certain variables
+gregElastic_log_srs <- gregElasticNet(y = apisrs$api00, 
+                                      xsample = apisrs[c("col.grad", "awards")],
+                                      xpop = apipop[c("col.grad", "awards")], 
+                                      pi = apisrs$pw^(-1), alpha = 0.5, 
+                                      model = "linear")
+gregElastic_log_srs
+
+# Logistic Elastic Net applied to stratified sample
+gregElastic_log_strat <- gregElasticNet(y = apistrat$api00, 
+                                      xsample = apistrat[c("col.grad", "awards")],
+                                      xpop = apipop[c("col.grad", "awards")],
+                                      pi = apistrat$pw^(-1), alpha = 0.5, 
+                                      model = "linear")
+gregElastic_log_strat
+```
+
+talk about discarded variables
+talk about std changes vs. just greg 
+
+update greg with beta calculations
 update function
 
-paragraph: observe discarded variables / talk about changes in std
+
 
 ### References
