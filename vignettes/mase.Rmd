@@ -287,7 +287,7 @@ greg_logistic_strat
 
 
 ### Elastic Net Regression Estimator
-The Elastic Net Regression estimator is simply the same as the GREG estimator above, with an added condition in the original formula which uses a penalized survey-weighted least squares to incorporate model selection when estimating our coefficients. This added condition is called the "elastic net." 
+The Elastic Net Regression estimator is simply the GREG estimator above, with an added condition in the original formula which uses a penalized survey-weighted least squares to incorporate model selection when estimating our coefficients. This added condition is called the "elastic net." 
 $$
 \hat{\boldsymbol{\beta}_{s}} = \underset{\boldsymbol{\beta}}{\text{arg min}} 
                               \left \{\sum_{i \in s}
@@ -297,35 +297,43 @@ $$
                               (1-\alpha)\sum_{j=1}^p \beta^2_{j} \right]
                               \right \}
 $$
-first term = lasso penalty
-second term = ridge regression penalty
-alpha = how much lasso penalty vs ridge penalty
-lasso is good for shrinking unnecessary variables
-ridge is good for multicollinearity
+Observe that the first half of the equation is the original GREG formula. The second half of the equation is the aforementioned "elastic net," which is the penalty calculation.The elastic net itself is split again into two halves. The first half of the elastic net, $\alpha\sum_{j=1}^p \left|\beta_{j} \right|$, is known as the LASSO penalty, which shrinks the amount of unnecessary variables. The second half of the elastic net, $(1-\alpha)\sum_{j=1}^p \beta^2_{j}$, is the Ridge Regression penalty, which is good for multicollinearity. The alpha value decides the relative amount weight to assign to each type of penalty. 
+
 better than brute force choosing subsets because too tedious. penalization section chooses the "important" betas for us
 
-With the addition of the elastic net condition, the Elastic Net Regression estimator has a better variability than the GREG. The presence of too many variables from available auxiliary data can add extra variability to GREG, whereas the Elastic Net estimator adds a penalization which shrinks the coefficients towards zero. 
+With the addition of this elastic net condition, the Elastic Net Regression estimator has a better variability than the GREG. The presence of too many variables from available auxiliary data can add extra variability to GREG, whereas the elastic net condition shrinks the coefficients towards zero. 
 
 Likewise with GREG, one can calculate linear and logistic regressions using the Elastic Net estimator. The following code calculates the Elastic Net for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package.
 ```{r}
-# Elastic Net applied to simple random sample
+# Linear Elastic Net applied to simple random sample
 # give long x vector to show how elastic net will "discard" certain variables
 gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00, 
                                       xsample = apisrs[c("col.grad", "awards")],
                                       xpop = apipop[c("col.grad", "awards")], 
-                                      pi = apisrs$pw^(-1), model = "linear")
+                                      pi = apisrs$pw^(-1), alpha = 0.5, 
+                                      model = "linear")
 gregElastic_lin_srs
+greg_linear_srs <- greg(y = apisrs$api00, 
+                   xsample = apisrs[c("col.grad", "awards")],
+                   xpop = apipop[c("col.grad", "awards")], 
+                   pi = apisrs$pw^(-1), model = "linear")
+greg_linear_srs
 
-# Elastic Net applied to stratified sample
+
+
+# Linear Elastic Net applied to stratified sample
 gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
                                       xsample = apistrat[c("col.grad", "awards")],
                                       xpop = apipop[c("col.grad", "awards")],
-                                      pi = apistrat$pw^(-1), model = "linear")
+                                      pi = apistrat$pw^(-1), alpha = 0.5, 
+                                      model = "linear")
 gregElastic_lin_strat
 ```
-make comment on how std hopefully shrinks
+add more variables to elastic to show discarded variables
+add elastic logistic
+add std to greg and elastic
+update function
 
-
-
+paragraph: observe discarded variables / talk about changes in std
 
 ### References
