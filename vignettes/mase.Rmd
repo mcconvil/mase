@@ -305,13 +305,21 @@ Observe that the first half of the equation is the original GREG formula. The se
 
 At this point, one might wonder - why add a penalty to the original GREG formula? Why create an elastic net regression estimator? What is "better" about the elastic net regression estimator than the generalized regression estimator? The GREG estimator does not guard against the presence of too many auxiliary variables, which may result in added variability. With the addition of the elastic net condition, the elastic net regression estimator shrinks the coefficients towards zero, therefore resulting in a better variability than the GREG. To combat the presence of superfluous auxiliary data, one could also choose subsets on which to perform GREG, but this process is tedious and time consuming, as well as inefficient. Imagine how many combinations can be made from n choose 2, n choose 3, n choose 4, etc. number of subsets! Therefore, by adding an elastic net condition to our original GREG estimator, we allow the penalization condition to "choose" the important $\beta$'s for us. 
 
-Likewise with GREG, one can calculate linear and logistic regressions using the Elastic Net estimator. The following code calculates the Elastic Net for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package.
+Likewise with GREG, one can calculate linear and logistic regressions using the Elastic Net estimator. The following code calculates the elastic net regression for our quantitative $y$ variable, api, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Linear Elastic Net applied to simple random sample
 # give long x vector to show how elastic net will "discard" certain variables
 gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00, 
-                                      xsample = apisrs[c("col.grad", "awards")],
-                                      xpop = apipop[c("col.grad", "awards")], 
+                                      xsample = apisrs[c("col.grad", "awards", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest", 
+                                                         "comp.imp", "meals", 
+                                                         "sch.wide")],
+                                      xpop = apipop[c("col.grad", "awards", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest", 
+                                                         "comp.imp", "meals", 
+                                                         "sch.wide")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
                                       model = "linear", var_est = TRUE)
 gregElastic_lin_srs
@@ -328,7 +336,7 @@ gregElastic_lin_strat
 talk about discarded variables
 talk about std changes vs. just greg 
 
-The following code calculates the Elastic Net for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
+The following code calculates the elastic net regression for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Logistic Elastic Net applied to simple random sample
 # give long x vector to show how elastic net will "discard" certain variables
