@@ -248,19 +248,27 @@ The following code calculates GREG for the quantitative $y$ variable, api, in ou
 ```{r}
 # GREG applied to simple random sample
 greg_linear_srs <- greg(y = apisrs$api00, 
-                        xsample = apisrs[c("col.grad", "awards")], 
-                        xpop = apipop[c("col.grad", "awards")], 
-                        pi = apisrs$pw^(-1), model = "linear",
+                        xsample = apisrs[c("col.grad", "awards", "snum", 
+                                           "dnum", "cnum", "pcttest", 
+                                           "meals", "sch.wide")],
+                        xpop = apipop[c("col.grad", "awards", 
+                                        "snum", "dnum", "cnum", "pcttest", 
+                                        "meals", "sch.wide")], 
+                        pi = apisrs$pw^(-1), model = "linear", 
                         var_est = TRUE)
 greg_linear_srs
 
 # GREG applied to stratified sample
-greg_linear_strat <- greg(y = apistrat$api00, 
-                          xsample = apistrat[c("col.grad", "awards")],
-                          xpop = apipop[c("col.grad", "awards")],
-                          pi = apistrat$pw^(-1), model = "linear",
-                          var_est = TRUE)
-greg_linear_strat
+greg_lin_strat <- greg(y = apistrat$api00, 
+                      xsample = apistrat[c("col.grad", "awards", "snum", 
+                                           "dnum", "cnum", "pcttest", 
+                                           "meals", "sch.wide")],
+                      xpop = apipop[c("col.grad", "awards", 
+                                      "snum", "dnum", "cnum", "pcttest", 
+                                      "meals", "sch.wide")], 
+                      pi = apistrat$pw^(-1), model = "linear", 
+                      var_est = TRUE)
+greg_lin_strat
 ```
 
 When $y$ is categorical, GREG is called a logistic regression as follows:
@@ -348,16 +356,24 @@ for (i in 1:6194) {
 ######### GREG Calculations #########
 # GREG applied to simple random sample
 greg_logistic_srs <- greg(y = apisrs$new_awards, 
-                          xsample = apisrs[c("col.grad", "new_sch.wide")],
-                          xpop = apipop[c("col.grad", "new_sch.wide")], 
-                          pi = apisrs$pw^(-1), model = "logistic")
+                          xsample = apisrs[c("col.grad", "snum", "dnum",
+                                             "cnum", "pcttest", "meals",
+                                             "new_sch.wide")],
+                          xpop = apipop[c("col.grad", "snum", "dnum", "cnum", 
+                                          "pcttest", "meals", "new_sch.wide")], 
+                          pi = apisrs$pw^(-1), model = "logistic", var_est = TRUE)
+
 greg_logistic_srs
 
 # GREG applied to stratified sample
 greg_logistic_strat <- greg(y = apistrat$new_awards, 
-                            xsample = apistrat[c("col.grad", "sch.wide")],
-                            xpop = apipop[c("col.grad", "sch.wide")],
-                            pi = apistrat$pw^(-1), model = "logistic")
+                          xsample = apistrat[c("col.grad", "snum", "dnum",
+                                             "cnum", "pcttest", "meals",
+                                             "new_sch.wide")],
+                          xpop = apipop[c("col.grad", "snum", "dnum", "cnum", 
+                                          "pcttest", "meals", "new_sch.wide")], 
+                          pi = apisrs$pw^(-1), model = "logistic", var_est = TRUE)
+
 greg_logistic_strat
 ```
 
@@ -414,31 +430,27 @@ talk about std changes vs. just greg
 The following code calculates the elastic net regression for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Logistic Elastic Net applied to simple random sample
-gregElastic_log_srs <- gregElasticNet(y = apisrs$new_awards, 
-                                      xsample = apisrs[c("col.grad", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest",
-                                                         "meals", "new_sch.wide")],
-                                      xpop = apipop[c("col.grad", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest", 
-                                                         "meals", "new_sch.wide")], 
-                                      pi = apisrs$pw^(-1), alpha = 0.5, 
-                                      model = "logistic", var_est = TRUE)
+gregE_log_srs <- gregElasticNet(y = apisrs$new_awards, 
+                                xsample = apisrs[c("col.grad", "snum", "dnum",
+                                                   "cnum", "pcttest", "meals", 
+                                                   "new_sch.wide")],
+                                xpop = apipop[c("col.grad", "snum", "dnum",
+                                                "cnum", "pcttest", "meals", 
+                                                "new_sch.wide")], 
+                                pi = apisrs$pw^(-1), alpha = 0.5, 
+                                model = "logistic", var_est = TRUE)
 gregElastic_log_srs
 
 # Logistic Elastic Net applied to stratified sample
-gregElastic_log_srs <- gregElasticNet(y = apistrat$new_awards, 
-                                      xsample = apistrat[c("col.grad",  
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest",
-                                                         "meals", "new_sch.wide")],
-                                      xpop = apipop[c("col.grad", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest", 
-                                                         "meals", "new_sch.wide")], 
-                                      pi = apistrat$pw^(-1), alpha = 0.5, 
-                                      model = "logistic", var_est = TRUE)
+gregE_log_srs <- gregElasticNet(y = apistrat$new_awards, 
+                                xsample = apistrat[c("col.grad", "snum", "dnum",
+                                                     "cnum", "pcttest", "meals", 
+                                                     "new_sch.wide")],
+                                xpop = apipop[c("col.grad", "snum", "dnum",
+                                                "cnum", "pcttest", "meals", 
+                                                "new_sch.wide")], 
+                                pi = apistrat$pw^(-1), alpha = 0.5, 
+                                model = "logistic", var_est = TRUE)
 gregElastic_log_strat
 ```
 
