@@ -396,36 +396,30 @@ Likewise with GREG, one can calculate linear and logistic regressions using the 
 ```{r}
 # Linear Elastic Net applied to simple random sample
 # give long x vector to show how elastic net will "discard" certain variables
-gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00, 
-                                      xsample = apisrs[c("col.grad", "awards", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest",
-                                                         "meals", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "awards", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest", 
-                                                         "meals", "sch.wide")], 
-                                      pi = apisrs$pw^(-1), alpha = 0.5, 
-                                      model = "linear", var_est = TRUE)
-gregElastic_lin_srs
+gregE_lin_srs <- gregElasticNet(y = apisrs$api00, 
+                                xsample = apisrs[c("col.grad", "awards", 
+                                                   "snum", "dnum", "cnum", 
+                                                   "pcttest", "meals", "sch.wide")],
+                                xpop = apipop[c("col.grad", "awards", "snum", 
+                                                "dnum", "cnum", "pcttest", 
+                                                "meals", "sch.wide")], 
+                                pi = apisrs$pw^(-1), alpha = 0.5, 
+                                model = "linear", var_est = TRUE)
+gregE_lin_srs
 
 # Linear Elastic Net applied to stratified sample
-gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
-                                      xsample = apistrat[c("col.grad", "awards", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest",
-                                                         "meals", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "awards", 
-                                                         "snum", "dnum",
-                                                         "cnum", "pcttest", 
-                                                         "meals", "sch.wide")], 
-                                      pi = apistrat$pw^(-1), alpha = 0.5, 
-                                      model = "linear", var_est = TRUE)
-gregElastic_lin_strat
+gregE_lin_strat <- gregElasticNet(y = apistrat$api00, 
+                                  xsample = apistrat[c("col.grad", "awards", 
+                                                       "snum", "dnum", "cnum", 
+                                                       "pcttest", "meals", 
+                                                       "sch.wide")],
+                                  xpop = apipop[c("col.grad", "awards", "snum", 
+                                                  "dnum", "cnum", "pcttest", 
+                                                  "meals", "sch.wide")], 
+                                  pi = apistrat$pw^(-1), alpha = 0.5, 
+                                  model = "linear", var_est = TRUE)
+gregE_lin_strat
 ```
-
-talk about discarded variables
-talk about std changes vs. just greg 
 
 The following code calculates the elastic net regression for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
@@ -439,10 +433,10 @@ gregE_log_srs <- gregElasticNet(y = apisrs$new_awards,
                                                 "new_sch.wide")], 
                                 pi = apisrs$pw^(-1), alpha = 0.5, 
                                 model = "logistic", var_est = TRUE)
-gregElastic_log_srs
+gregE_log_srs
 
 # Logistic Elastic Net applied to stratified sample
-gregE_log_srs <- gregElasticNet(y = apistrat$new_awards, 
+gregE_log_strat <- gregElasticNet(y = apistrat$new_awards, 
                                 xsample = apistrat[c("col.grad", "snum", "dnum",
                                                      "cnum", "pcttest", "meals", 
                                                      "new_sch.wide")],
@@ -451,10 +445,9 @@ gregE_log_srs <- gregElasticNet(y = apistrat$new_awards,
                                                 "new_sch.wide")], 
                                 pi = apistrat$pw^(-1), alpha = 0.5, 
                                 model = "logistic", var_est = TRUE)
-gregElastic_log_strat
+gregE_log_strat
 ```
 
-talk about discarded variables
-talk about std changes vs. just greg 
+
 
 ### References
