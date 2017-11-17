@@ -185,7 +185,8 @@ To add the awards information, we need to include the sample values (`xsample`) 
 ps_srs_r <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = apipop$awards, datatype = "raw", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
 ```
 The second form in which data often given is in terms of counts of observations in one cateogry and the total of those not in this category. The code will first produce data in such a format, stored in "pop_totals", and then perform computation based on this given information.
-#Now suppose that we don't have the raw data; we can achieve this through other information that is often provided
+
+Now suppose that we don't have the raw data; we can achieve this through other information that is often provided
 ```{r, message=FALSE}
 #Totals in each category 
 #First computes the total number of awards, thus mimicking the form of given totals
@@ -230,7 +231,7 @@ We now give examples of using the ratio estimator to compute population mean.
 
 We first perform some data exploration.
 ```{r}
-explor_quant <- apisrs[,c(12, 20:25)]
+explor_quant <- apisrs[,c(12, 20:23)]
 pairs(explor_quant)
 ```
 From this plot above, it seems that a good predictor for api00 is meals, since the negative linear correlation seems strong. 
@@ -238,11 +239,16 @@ From this plot above, it seems that a good predictor for api00 is meals, since t
 
 #Raw data
 #Just need to feed in one variable!!
-re_srs_r <- ratioEstimator(y = apisrs$api00, var_est = FALSE, )
-re_srs_r <- ratioEstimator(y = apisrs$api100, xsample = apisrs$meals, xpop = apisrs$meals, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "HB", B = 1000)
-#Returns error of: argument is not a matrix
+re_srs_raw <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = apipop$meals, datatype = "raw", pi = NULL, N = NULL, pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
+re_srs_raw
+pop_means <- mean(apipop$meals)
+re_srs_means <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_means, datatype = "means", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
+re_srs_means
+pop_totals <- sum(apipop$meals)
+re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
+re_srs_totals
 ```
-
+Note that the three estimates agree completely with each other, as we should expect.
 ### Generalized Regression Estimator 
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
 $$
