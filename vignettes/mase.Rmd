@@ -250,7 +250,7 @@ $$
                 \frac{y_{i}-\hat{m}(\boldsymbol{x}_{i})}{\pi_{i}} 
                 + \sum_{i \in U}\hat{m}(\boldsymbol{x}_{i}) \right)
 $$
-where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed , $\pi_{i}$ is the inclusion probability, and $N$ is the size of the finite population. 
+where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed, $\pi_{i}$ is the inclusion probability, and $N$ is the size of the finite population. 
 
 The exact form of the GREG is flexible. It varies depending on whether $y$ is quantitative or categorical and the availablity and relevancy of auxiliary data. Note that all aforementioned estimators are variations of the GREG. For example, in the case that no relevant auxiliary data exist, the $\hat{m}(x_{i})$ portions of our GREG equation simply equal zero, resulting in our Horvitz-Thompson estimator: 
 $$
@@ -258,7 +258,6 @@ $$
                 \frac{y_{i}}{\pi_{i}} \right)
 $$
 
--- INSERT COEFFICIENT CALCULATION HERE -- 
 
 When $y$ is quantitative, GREG is called a linear regression as follows:
 $$
@@ -296,16 +295,88 @@ The logistic model results in probabilities between 0 and 1. The following code 
 ```{r}
 # GREG applied to simple random sample
 # categorical with more than two categories, emit warning message, return 
-# convert yes/no into 1 and 0
-greg_logistic_srs <- greg(y = apisrs$awards, 
-                          xsample = apisrs[c("col.grad", "sch.wide")],
-                          xpop = apipop[c("col.grad", "sch.wide")], 
-                          pi = apisrs$pw^(-1), model = "logistic"
-                          )
+
+# For categorical variables, we need to convert yes/no to 1/0. In our logistic regression, our categorical variables are "awards" and "sch.wide." We need to convert these columns into 1/0s in both the srs, strat, and the population 
+
+######### SRS #########
+# Creating a new column to contain 1/0s
+apisrs[c("new_sch.wide")] <- NA
+apisrs[c("new_awards")] <- NA
+
+# Converting "sch.wide" from yes/no to 1/0
+for (i in 1:200) {
+  if(apisrs$sch.wide[i] == "Yes" ) {
+    apisrs$new_sch.wide[i] <- 1
+  } else if (apisrs$sch.wide[i] == "No") {
+    apisrs$new_sch.wide[i] <- 0
+  } 
+}
+
+# Converting "awards" from yes/no to 1/0
+for (i in 1:200) {
+  if (apisrs$awards[i] == "Yes") {
+    apisrs$new_awards[i] <- 1
+  } else if (apisrs$awards[i] == "No") {
+    apisrs$new_awards[i] <- 0
+  }
+}
+
+######### STRAT #########
+# Creating a new column to contain 1/0s
+apistrat[c("new_sch.wide")] <- NA
+apistrat[c("new_awards")] <- NA
+
+# Converting "sch.wide" from yes/no to 1/0
+for (i in 1:200) {
+  if(apistrat$sch.wide[i] == "Yes") {
+    apistrat$new_sch.wide[i] <- 1
+  } else if (apistrat$sch.wide[i] == "No") {
+    apistrat$new_sch.wide[i] <- 0
+  }
+}
+
+# Converting "awards" from yes/no to 1/0
+for (i in 1:200) {
+  if(apistrat$awards[i] == "Yes") {
+    apistrat$new_awards[i] <- 1
+  } else if (apistrat$awards[i] == "No") {
+    apistrat$new_awards[i] <- 0
+  }
+}
+
+######### POPULATION #########
+# Creating a new column to contain 1/0s
+apipop[c("new_sch.wide")] <- NA
+apipop[c("new_awards")] <- NA
+
+# Converting "sch.wide" from yes/no to 1/0
+for (i in 1:6194) {
+  if(apipop$sch.wide[i] == "Yes") {
+    apipop$new_sch.wide[i] <- 1
+  } else if (apipop$sch.wide[i] == "No") {
+    apipop$new_sch.wide[i] <- 0
+  }
+}
+
+# Converting "awards" from yes/no to 1/0
+for (i in 1:6194) {
+  if(apipop$awards[i] == "Yes") {
+    apipop$new_awards[i] <- 1
+  } else if (apipop$awards[i] == "No") {
+    apipop$new_awards[i] <- 0
+  }
+}
+
+######### GREG Calculations #########
+# GREG applied to simple random sample
+greg_logistic_srs <- greg(y = apisrs$new_awards, 
+                          xsample = apisrs[c("col.grad", "new_sch.wide")],
+                          xpop = apipop[c("col.grad", "new_sch.wide")], 
+                          pi = apisrs$pw^(-1), model = "logistic")
 greg_logistic_srs
 
 # GREG applied to stratified sample
-greg_logistic_strat <- greg(y = apistrat$awards, 
+greg_logistic_strat <- greg(y = apistrat$new_awards, 
                             xsample = apistrat[c("col.grad", "sch.wide")],
                             xpop = apipop[c("col.grad", "sch.wide")],
                             pi = apistrat$pw^(-1), model = "logistic")
@@ -334,22 +405,26 @@ Likewise with GREG, one can calculate linear and logistic regressions using the 
 gregElastic_lin_srs <- gregElasticNet(y = apisrs$api00, 
                                       xsample = apisrs[c("col.grad", "awards", 
                                                          "snum", "dnum",
-                                                         "cnum", "pcttest", 
-                                                         "comp.imp", "meals", 
-                                                         "sch.wide")],
+                                                         "cnum", "pcttest",
+                                                         "meals", "sch.wide")],
                                       xpop = apipop[c("col.grad", "awards", 
                                                          "snum", "dnum",
                                                          "cnum", "pcttest", 
-                                                         "comp.imp", "meals", 
-                                                         "sch.wide")], 
+                                                         "meals", "sch.wide")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
                                       model = "linear", var_est = TRUE)
 gregElastic_lin_srs
 
 # Linear Elastic Net applied to stratified sample
 gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00, 
-                                      xsample = apistrat[c("col.grad", "awards")],
-                                      xpop = apipop[c("col.grad", "awards")],
+                                      xsample = apistrat[c("col.grad", "awards", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest",
+                                                         "meals", "sch.wide")],
+                                      xpop = apipop[c("col.grad", "awards", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest", 
+                                                         "meals", "sch.wide")], 
                                       pi = apistrat$pw^(-1), alpha = 0.5, 
                                       model = "linear", var_est = TRUE)
 gregElastic_lin_strat
@@ -361,18 +436,29 @@ talk about std changes vs. just greg
 The following code calculates the elastic net regression for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
 # Logistic Elastic Net applied to simple random sample
-# give long x vector to show how elastic net will "discard" certain variables
-gregElastic_log_srs <- gregElasticNet(y = apisrs$api00, 
-                                      xsample = apisrs[c("col.grad", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "sch.wide")], 
+gregElastic_log_srs <- gregElasticNet(y = apisrs$new_awards, 
+                                      xsample = apisrs[c("col.grad", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest",
+                                                         "meals", "new_sch.wide")],
+                                      xpop = apipop[c("col.grad", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest", 
+                                                         "meals", "new_sch.wide")], 
                                       pi = apisrs$pw^(-1), alpha = 0.5, 
                                       model = "logistic", var_est = TRUE)
 gregElastic_log_srs
 
 # Logistic Elastic Net applied to stratified sample
-gregElastic_log_strat <- gregElasticNet(y = apistrat$api00, 
-                                      xsample = apistrat[c("col.grad", "sch.wide")],
-                                      xpop = apipop[c("col.grad", "sch.wide")],
+gregElastic_log_srs <- gregElasticNet(y = apistrat$new_awards, 
+                                      xsample = apistrat[c("col.grad",  
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest",
+                                                         "meals", "new_sch.wide")],
+                                      xpop = apipop[c("col.grad", 
+                                                         "snum", "dnum",
+                                                         "cnum", "pcttest", 
+                                                         "meals", "new_sch.wide")], 
                                       pi = apistrat$pw^(-1), alpha = 0.5, 
                                       model = "logistic", var_est = TRUE)
 gregElastic_log_strat
@@ -380,10 +466,5 @@ gregElastic_log_strat
 
 talk about discarded variables
 talk about std changes vs. just greg 
-
-update greg with beta calculations
-update function
-
-
 
 ### References
