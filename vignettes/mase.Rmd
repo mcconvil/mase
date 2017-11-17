@@ -228,7 +228,7 @@ $$
                 \frac{y_{i}-\hat{m}(\boldsymbol{x}_{i})}{\pi_{i}} 
                 + \sum_{i \in U}\hat{m}(\boldsymbol{x}_{i}) \right)
 $$
-where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed , $\pi_{i}$ is the inclusion probability, and $N$ is the size of the finite population. 
+where $\boldsymbol{x}_{i}$ is the auxiliary data, $\hat{m}(\boldsymbol{x}_{i})$ is the predicted value of $y$ given the auxiliary data, $y_{i}$ is the observed, $\pi_{i}$ is the inclusion probability, and $N$ is the size of the finite population. 
 
 The exact form of the GREG is flexible. It varies depending on whether $y$ is quantitative or categorical and the availablity and relevancy of auxiliary data. Note that all aforementioned estimators are variations of the GREG. For example, in the case that no relevant auxiliary data exist, the $\hat{m}(x_{i})$ portions of our GREG equation simply equal zero, resulting in our Horvitz-Thompson estimator: 
 $$
@@ -274,6 +274,14 @@ The logistic model results in probabilities between 0 and 1. The following code 
 ```{r}
 # GREG applied to simple random sample
 # categorical with more than two categories, emit warning message, return 
+
+# Initialize new columns
+apisrs[,"grad"] <- NA
+for (i in length(apisrs$col.grad)) {
+  if()
+}
+
+
 # convert yes/no into 1 and 0
 greg_logistic_srs <- greg(y = apisrs$awards, 
                           xsample = apisrs[c("col.grad", "sch.wide")],
