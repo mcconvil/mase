@@ -23,11 +23,11 @@ A common goal in survey sampling is to estimate finite population parameters. Fo
 $$
 t_y = \sum_{i \in U} y_i,
 $$
-where $y_i$ respresents the income for each employer; or the mean 
+where $y_i$ respresents the income for each employee; or the mean 
 $$
 \mu_y = \frac{t_y}{N},
 $$ 
- where $N$ is the total population size. 
+ where $N$ is the total population size. In this example $N$ refers to the total number of employees. 
  
  In the case where $y_i$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
 
@@ -36,7 +36,7 @@ $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i ,
 $$
 
-where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in S)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ would give us different model-assisted estimators.  The estimators in `mase`, along with the assisting model, necessary auxiliary data, and addional reference, are given in the following table:
+where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in s)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ result in different model-assisted estimators.  The estimators in `mase`, along with the assisting model, necessary auxiliary data, and additional reference, are given in the following table:
 
 ```{r, echo=FALSE, message=FALSE}
 library(readr)
@@ -70,7 +70,11 @@ knitr::kable(estimatorsTable)
     + Column: pop data type (raw, totals/means + N)
     + Row: Estimator type
     
-May not need table since logistic greg and logistic gregElasticNet are the only ones that need raw data.    
+May not need table since logistic greg and logistic gregElasticNet are the only ones that need raw data.  
+
+Paragraph on auxilary data: There are a couple of common forms in which we have auxilary data. The first form is where we are given concrete observation regarding the information pertaining to each object (in the RAW) form. The second form is in a summarized/analyzed data, where we might have either the total counts of a variable of interest or the relevant mean value. In both cases we would be additionally supplied with the number of observations/objects within the sample/population.
+
+We will note that, of the estimators we will introduce in this documentation, Horvitz Thompson estimators does not make use of auxilary data, and with the exception of the logistic greg estimators (including the one with elastic net) our estimators are compatiable with all three forms--raw, with total counts and population size, and with mean counts and population size.
 
 ### Example Dataset
 
@@ -472,5 +476,11 @@ gregElastic_log_strat
 
 talk about discarded variables
 talk about std changes vs. just greg 
+
+##Variance Estimation
+-Talk about all variance estimators in the varMase.R; talk heuristically (What information is needed; )
+Show example by computing via different methods
+-Bootsrap
+
 
 ### References
