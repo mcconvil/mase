@@ -57,3 +57,14 @@ horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_metho
 ```
 
 Please check out the vignette for more examples.
+
+Current Known Issues
+--------------------
+
+-   greg breaking down when have a single auxiliary variable. (Kevin)
+
+-   Expanding the variance estimation options. (Mickey)
+
+-   Regression tree estimator in development.
+
+-   Handling of categorical variables. Need to allow for categorical y and categorical x's.
