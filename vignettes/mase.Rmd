@@ -206,7 +206,7 @@ The third form of data is one where we have the proportion, or the percetange of
 #Means in each category
 #First computes the proportion of the two categories
 pop_means <- data.frame(table(apipop$awards)/length(apipop$awards))
-ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_means, datatype = "means", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HT")
 ```
 
 
@@ -246,16 +246,16 @@ From this plot above, it seems that a good predictor for api00 is meals, since t
 
 #Raw data
 #Just need to feed in one variable!!
-re_srs_raw <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = apipop$meals, datatype = "raw", pi = NULL, N = NULL, pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
+re_srs_raw <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = apipop$meals, datatype = "raw", pi = NULL, N = NULL, pi2= NULL, var_est = TRUE, var_method = "HTSRS", B = 1000)
 re_srs_raw
 pop_means <- mean(apipop$meals)
 re_srs_means <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_means, datatype = "means", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
 re_srs_means
 pop_totals <- sum(apipop$meals)
-re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
+re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "BootstrapSRS", B = 1000)
 re_srs_totals
 ```
-Note that the three estimates agree completely with each other, as we should expect.
+Note that the three estimates agree completely with each other, as we should expect. We can modify our method according to the layout of our dataset; we can change which variance estimator to use in the "var" option.
 ### Generalized Regression Estimator 
 The generalized regression estimator (GREG) can be used when the auxiliary data includes a mixture of both quantitative and categorical variables. It is expressed in the following form:
 $$
