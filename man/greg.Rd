@@ -9,23 +9,23 @@ greg(y, xsample, xpop, pi = NULL, model = "linear", pi2 = NULL,
   modelselect = FALSE, lambda = "lambda.min", B = 1000)
 }
 \arguments{
-\item{y}{vector or a matrix with one column of the sampled response variable}
+\item{y}{survey variable of interest. Should be a numeric vector or factor with two levels.}
 
-\item{xsample}{matrix of auxiliary data in the sample.  Number of rows should match length of y.}
+\item{xsample}{dataframe of auxiliary data in the sample.  Number of rows should match length of y.}
 
-\item{xpop}{Dataframe of population level auxiliary information.  Must come in the form of raw data, population totals or population means.}
+\item{xpop}{dataframe of population level auxiliary information.  Must contain same names as xsample.  Can supply either unit level data (denoted as datatype = "raw") or aggregate data (denoted as either datatype = "totals" or datatype = "means")}
 
-\item{pi}{Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y}
+\item{pi}{first order inclusion probabilities of same length as y. If not supplied, simple random sampling is assumed.}
 
-\item{model}{regression model to utilize. User must choose 'linear' or 'logistic'}
+\item{model}{regression model to utilize. Options are "linear" or "logistic".}
 
-\item{pi2}{a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator}
+\item{pi2}{a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator.}
 
-\item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
+\item{var_est}{a logical indicating whether or not to compute a variance estimate}
 
-\item{var_method}{Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement}
+\item{var_method}{method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
 
-\item{datatype}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population x values, the population x totals, or the population x means}
+\item{datatype}{form of population auxiliary data. Takes values "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.}
 
 \item{N}{population size, if not provided estimated to be the sum of the inverse inclusion probabilities}
 

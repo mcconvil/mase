@@ -2,19 +2,19 @@
 #' 
 #' Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
-#' @param y  vector or a matrix with one column of the sampled response variable
-#' @param pi Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y
-#' @param xsample matrix of auxiliary data in the sample.  Number of rows should match length of y.
-#' @param xpop Dataframe of population level auxiliary information.  Must come in the form of raw data, population totals or population means.
-#' @param model regression model to utilize. User must choose 'linear' or 'logistic'
-#' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
-#' @param var_method Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement
-#' @param pi2 a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator
-#' @param datatype Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population x values, the population x totals, or the population x means
+#' @param y  survey variable of interest. Should be a numeric vector or factor with two levels.
+#' @param pi first order inclusion probabilities of same length as y. If not supplied, simple random sampling is assumed.
+#' @param xsample dataframe of auxiliary data in the sample.  Number of rows should match length of y. 
+#' @param xpop dataframe of population level auxiliary information.  Must contain same names as xsample.  Can supply either unit level data (denoted as datatype = "raw") or aggregate data (denoted as either datatype = "totals" or datatype = "means")
 #' @param N population size, if not provided estimated to be the sum of the inverse inclusion probabilities
-#' @param modelselect default to FALSE.  If TRUE, the Lasso is run and only the predictors with a non-zero Lasso coefficient are included in the model.  
-#' @param lambda Default to "lambda.min".  Only use if modelselect = TRUE. Takes values "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lamabda value which is one standard error away from the minimizing lambda and produces a sparser fit
+#' @param datatype form of population auxiliary data. Takes values "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.
+#' @param model regression model to utilize. Options are "linear" or "logistic".
+#' @param var_est a logical indicating whether or not to compute a variance estimate
+#' @param var_method method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.
 #' @param B number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
+#' @param pi2 a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator.
+#' @param modelselect default to FALSE.  If TRUE, the Lasso is run and only the predictors with a non-zero Lasso coefficient are included in the model.
+#' @param lambda Default to "lambda.min".  Only use if modelselect = TRUE. Takes values "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lamabda value which is one standard error away from the minimizing lambda and produces a sparser fit
 #' 
 #'@references 
 #'\insertRef{cas76}{mase}

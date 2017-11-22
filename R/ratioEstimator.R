@@ -71,7 +71,7 @@ ratioEstimator <- function(
   #calculate Horvitz-Thompson estimator for y and x
   tyHT <- horvitzThompson(y=y,pi=pi)$pop_total
   txHT <- horvitzThompson(y=xsample,pi=pi)$pop_total
-  r <- tyHT/txHT
+  r <- as.vector(tyHT/txHT)
   
 
   #Find population total of x
@@ -97,7 +97,7 @@ ratioEstimator <- function(
   if(var_est==TRUE){
     
     if(var_method!="bootstrapSRS"){
-    y.hat <- r*xsample
+    y.hat <- r*as.vector(xsample)
     varEst <- varMase(y = (y-y.hat),pi = pi,pi2 = pi2,method = var_method, N = N)
     varEstMu <- varEst*N^(-2)
     }
