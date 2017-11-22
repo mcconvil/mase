@@ -17,6 +17,6 @@ ratioEstimatort <- function(data, tau_x, indices){
   tyHT <- horvitzThompson(y=y,pi=pis)$pop_total
   txHT <- horvitzThompson(y=xsample,pi=pis)$pop_total
   
-  return(tau_x/txHT*tyHT)
+  return(as.vector(tau_x/txHT*tyHT))
 }
 

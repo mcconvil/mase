@@ -23,11 +23,11 @@ A common goal in survey sampling is to estimate finite population parameters. Fo
 $$
 t_y = \sum_{i \in U} y_i,
 $$
-where $y_i$ respresents the income for each employer; or the mean 
+where $y_i$ respresents the income for each employee; or the mean 
 $$
 \mu_y = \frac{t_y}{N},
 $$ 
- where $N$ is the total population size. 
+ where $N$ is the total population size. In this example $N$ refers to the total number of employees. 
  
  In the case where $y_i$ is a discrete or categorical measure (such as the marital status of the employees), we notice that $\mu_y$ would represent a proportion of those with such an attribute. 
 
@@ -36,7 +36,7 @@ $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i - \hat{y}_i}{\pi_i} + \sum_{i \in U} \hat{y}_i ,
 $$
 
-where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in S)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ would give us different model-assisted estimators.  The estimators in `mase`, along with the assisting model, necessary auxiliary data, and addional reference, are given in the following table:
+where for observation $i$, $\hat{y}_i$ is the predicted value of $y$ and $\pi_i = P(i \in s)$, the inclusion probability [@cas76; @sar92]. Different models for $\hat{y}_i$ result in different model-assisted estimators.  The estimators in `mase`, along with the assisting model, necessary auxiliary data, and additional reference, are given in the following table:
 
 ```{r, echo=FALSE, message=FALSE}
 library(readr)
@@ -70,7 +70,11 @@ knitr::kable(estimatorsTable)
     + Column: pop data type (raw, totals/means + N)
     + Row: Estimator type
     
-May not need table since logistic greg and logistic gregElasticNet are the only ones that need raw data.    
+May not need table since logistic greg and logistic gregElasticNet are the only ones that need raw data.  
+
+Paragraph on auxilary data: There are a couple of common forms in which we have auxilary data. The first form is where we are given concrete observation regarding the information pertaining to each object (in the RAW) form. The second form is in a summarized/analyzed data, where we might have either the total counts of a variable of interest or the relevant mean value. In both cases we would be additionally supplied with the number of observations/objects within the sample/population.
+
+We will note that, of the estimators we will introduce in this documentation, Horvitz Thompson estimators does not make use of auxilary data, and with the exception of the logistic greg estimators (including the one with elastic net) our estimators are compatiable with all three forms--raw, with total counts and population size, and with mean counts and population size.
 
 ### Example Dataset
 
@@ -103,7 +107,7 @@ If no auxiliary data are available, then $\hat{y}_i = 0$ in the model-assisted e
 $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i}{\pi_i},
 $$
-the survey-weighted sum of the sampled values [@hor52].  This estimator can be fit in mase using the following code:
+the survey-weighted sum of the sampled values [@hor52].  To give an estimate of the average score, we use the HT estimator in the following manner:
 
 ```{r}
 ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
@@ -113,7 +117,8 @@ ht_strat <- horvitzThompson(y = apistrat$api00, pi = apistrat$pw^(-1))
 
 ```
 
-Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample.  Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
+Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample. Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
+Note that we specify the inclusion probabilities with argument "pi".  If "pi"" is unavailable or not supplied, the function would require the total population size $N$, and assume simple random sampling. 
 
 The variance estimator can be found by adding the argument `var_est = TRUE` and specifying a method with `var_method`.
 
@@ -121,7 +126,9 @@ The variance estimator can be found by adding the argument `var_est = TRUE` and 
 ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
 ```
 
-For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators.
+For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators. 
+
+An overview of the various variance estimators is given at the last section of this documentaiton. 
 
 ```{r}
 ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HB")
@@ -130,7 +137,7 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 ### Post-stratified Estimator 
 
 
-It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modelling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be convered by canopy than those that are labelled "non-forest".
+It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modeling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be covered by canopy than those that are labelled "non-forest".
 
 
 
@@ -472,5 +479,11 @@ gregElastic_log_strat
 
 talk about discarded variables
 talk about std changes vs. just greg 
+
+##Variance Estimation
+-Talk about all variance estimators in the varMase.R; talk heuristically (What information is needed; )
+Show example by computing via different methods
+-Bootsrap
+
 
 ### References
