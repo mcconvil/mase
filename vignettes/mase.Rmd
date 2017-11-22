@@ -107,7 +107,7 @@ If no auxiliary data are available, then $\hat{y}_i = 0$ in the model-assisted e
 $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i}{\pi_i},
 $$
-the survey-weighted sum of the sampled values [@hor52].  This estimator can be fit in mase using the following code:
+the survey-weighted sum of the sampled values [@hor52].  To give an estimate of the average score, we use the HT estimator in the following manner:
 
 ```{r}
 ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
@@ -117,7 +117,8 @@ ht_strat <- horvitzThompson(y = apistrat$api00, pi = apistrat$pw^(-1))
 
 ```
 
-Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample.  Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
+Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample. Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
+Note that we specify the inclusion probabilities with argument "pi".  If "pi"" is unavailable or not supplied, the function would require the total population size $N$, and assume simple random sampling. 
 
 The variance estimator can be found by adding the argument `var_est = TRUE` and specifying a method with `var_method`.
 
@@ -125,7 +126,9 @@ The variance estimator can be found by adding the argument `var_est = TRUE` and 
 ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
 ```
 
-For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators.
+For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators. 
+
+An overview of the various variance estimators is given at the last section of this documentaiton. 
 
 ```{r}
 ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HB")
@@ -134,7 +137,7 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 ### Post-stratified Estimator 
 
 
-It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modelling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be convered by canopy than those that are labelled "non-forest".
+It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modeling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be covered by canopy than those that are labelled "non-forest".
 
 
 
@@ -460,7 +463,7 @@ gregElastic_log_srs <- gregElasticNet(y = apisrs$new_awards,
 gregElastic_log_srs
 
 # Logistic Elastic Net applied to stratified sample
-gregElastic_log_srs <- gregElasticNet(y = apistrat$new_awards, 
+gregElastic_log_strat <- gregElasticNet(y = apistrat$new_awards, 
                                       xsample = apistrat[c("col.grad",  
                                                          "snum", "dnum",
                                                          "cnum", "pcttest",

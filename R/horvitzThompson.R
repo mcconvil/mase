@@ -36,6 +36,8 @@ horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, 
     return(NULL)
   }
   
+#  if class of y != numeric
+#    convert y to be 1/0s
   
   
   if(is.null(pi) && is.null(N)){
