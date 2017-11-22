@@ -37,6 +37,9 @@ varMase <- function(y, pi, pi2 = NULL, method="HB", N = NULL){
     a <- (pi2 - pi%*%t(pi))*pi2^(-1)*(pi%*%t(pi))^(-1)*y%*%t(y)
     varEst <- sum(a)
   }
+  #HT needs joint inclusion probabilities; in the event of lack, use HB and HH as substitutes; 
+  #However, if have simple random, then could just use HTSRS or the bootstrap simple random sampling
+  #HB Hajek-berger estimator, HH Hansen Hurwitz
   
   
   return(varEst)
