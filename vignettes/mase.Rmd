@@ -456,7 +456,7 @@ gregElastic_log_srs <- gregElasticNet(y = apisrs$new_awards,
 gregElastic_log_srs
 
 # Logistic Elastic Net applied to stratified sample
-gregElastic_log_srs <- gregElasticNet(y = apistrat$new_awards, 
+gregElastic_log_strat <- gregElasticNet(y = apistrat$new_awards, 
                                       xsample = apistrat[c("col.grad",  
                                                          "snum", "dnum",
                                                          "cnum", "pcttest",

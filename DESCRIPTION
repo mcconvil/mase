@@ -17,7 +17,8 @@ Imports:
     magrittr,
     rpms,
     boot,
-    stats
+    stats,
+    Rdpack
 Suggests:
     NHANES,
     roxygen2,
