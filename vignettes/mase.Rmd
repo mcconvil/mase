@@ -153,16 +153,8 @@ $$
 $$
 #Where $S_j $ refers to the sample (what j? Stratum j? What is it?) 
 
-In particular, we note that the quantity $\frac{1}{\hat{N}_j} \sum _{}$
-If we have a simple random sampling, then estimated variance could be written as
-$$
-\hat{V}_{\text{post}} \approx (1-\frac{n}{N}) \sum^H _ {h=1} \frac{N_h}{N} \frac{s^2_h}{n},
-$$
-where $s^2_h$ is the sample variance in stratum $h$.
-
-As it turns out, the desired quantities $N_h$ and $N$ are frequently unavailable, and we would like to consider models where we have will need to break assumptions of simple random sampling. 
-
-Mick: Investigate the variance structure of post-stratified without simple random sampling. Consult big-fat-blue stat book.
+In particular, we note that the quantity $\frac{1}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i}$ 
+#is what?
 
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
@@ -200,13 +192,17 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 ```
 
 
-`r ps_srs_r$pop_mean`
+The above gives the estimated mean,`r ps_srs_r$pop_mean`, assuming simple random sampling. 
+#Do I need to discuss this result a bit more? 
 
 ### Ratio Estimator
-The presence of auxilary data would sometimes allow us to compute ratios of interest that will be of significant aid to the model. In particular, the ratio for our estimated quantity of interest $y_i$ and an auxilary predictor $x_i$ might have a fairly constant ratio $\frac{y_i}{x_i}$ throughout all samples $i\in S$. Suppose that this ratio has average $\beta $ that stays fairly constant throughout our samples. Then we can give the model 
+#Need to talk about this a bit more!
+The ratio estimator is an estimator building on the Horvitz Thompson estimator. Suppose that this ratio has average $\beta $ that stays fairly constant throughout our samples. Then we can give the model 
 $$
-y_i = \beta x_i + \epsilon_i, 
+y_i = \beta x_i + \epsilon_i,
+%discuss why this estimator has a quantitative auxilary variable, why this model makes sense, and talk about the assumption that we know \mu_x?
 $$
+
 where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$ and mean at 0.
 
 In light of our HT estimator of $\mu_y$ and of $\mu_x$, we would have our estimated
@@ -215,9 +211,10 @@ $$
 $$
 It can then be shown from GREG estimator below that 
 $$
-\hat{\mu_y} = 0 + \frac{\mu_x}{\hat{\mu}_{x, HT}} \hat{\mu}_{y,ht,}
+\hat{\mu_y} = \frac{\mu_x}{\hat{\mu}_{x, HT}} \hat{\mu}_{y,ht,}
+%Does the ratio estimator assume a positive relationship to work?
 $$
-to which we give the name ratio estimator. @sar92.
+to which we give the name ratio estimator. @sar92. We can see that this estimator builds on the Horvitz Thompson estimator because it addresses the Horvitz Thompson estimator of $\mu_y$ by 
 
 We should nevertheless note a couple of caveats for the ratio estimator. Ratio Estimators are often biased. (It assumes regression through the origin which might contribute to the bias.)
 
@@ -471,9 +468,36 @@ talk about discarded variables
 talk about std changes vs. just greg 
 
 ##Variance Estimation
--Talk about all variance estimators in the varMase.R; talk heuristically (What information is needed; )
+Talk about all variance estimators in the varMase.R; talk heuristically (What information is needed; )
 Show example by computing via different methods
 -Bootsrap
+#How should I talk about bootstrap? 
 
 
+#Hansen-Hurwitz
+The Hansen-Hurwitz estimator is an estimator of $\frac{y_i}{\pi_i}$. The difference between the Horvitz-Thompson estimator and the hansen-hurwitz estimator is that the HT(SRS?) is used for sampling without replacement and HH for sampling with replacement. (But doesn't HT estimator work for any design, with or wihout replacement?) The expression is the same as the one for the Horvitz Thompson Estimator.  
+$$
+\hat{\mu}_{HH} = \frac{1}{n} \sum_{i=1}^n \frac{y_i}{pi}
+$$
+The convenience of HH estimator is that it is easier to compute, but with the drawback that it has a higher variance. Recalling that $t$ stands for the population sum, we have that the variance for this estimation is 
+$$
+Var(\hat{\mu}_{HH}) = \frac{1}{n}\sum_{i=1}^n \pi_i (\frac{y_i}{\pi_i} - t) ,
+$$
+and an (unbiased) estimator that on average gives the expected value of this variance is 
+$$
+\hat{Var}(\hat{\mu}_{HH}) = \frac 1 n \frac{\sum _{i=1} ^ n (\frac{y_i}{\pi} - \hat{t})^2}{n-1}.
+#I guess it would be good to know how this estimator should ideally be introduced
+#Also note that this estimator is different from the one introduced on pg 121. 
+$$
+
+#Horvitz-Thompson Estimator and its variance (general and SRS)
+ It can be shown that the variance of the Horvitz Thompson estimator is
+ $$
+ Var(\hat{t}_{ij?}) = \sum _{i = 1} ^ N (\frac{1-\pi_i}{\pi_i}) y_i^2 + \sum _{i = 1} ^N \sum _{j\neq i} (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j,
+ $$
+ so the logical estimate is
+  $$
+ Var(\hat{t}_{ij?}) = \sum _{i = 1} ^ n (\frac{1-\pi_i}{\pi_i}) y_i^2 + \sum _{i = 1} ^n \sum _{j\neq i} (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j.
+ $$
+#Should I raise an example also related to api? 
 ### References
