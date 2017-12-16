@@ -64,7 +64,8 @@ knitr::kable(estimatorsTable)
 
 
 
-### Data Requirements for mase
+### Data Requirements for mase (How much of the original discussion should be kept? )
+
 
 * Discuss the required data for each estimator.  Make a table. 
     + Column: pop data type (raw, totals/means + N)
@@ -74,7 +75,7 @@ May not need table since logistic greg and logistic gregElasticNet are the only 
 
 Paragraph on auxilary data: There are a couple of common forms in which we have auxilary data. The first form is where we are given concrete observation regarding the information pertaining to each object (in the RAW) form. The second form is in a summarized/analyzed data, where we might have either the total counts of a variable of interest or the relevant mean value. In both cases we would be additionally supplied with the number of observations/objects within the sample/population.
 
-We will note that, of the estimators we will introduce in this documentation, Horvitz Thompson estimators does not make use of auxilary data, and with the exception of the logistic greg estimators (including the one with elastic net) our estimators are compatiable with all three forms--raw, with total counts and population size, and with mean counts and population size.
+We will note that, of the estimators we will introduce in this documentation, the Horvitz Thompson estimators does not make use of auxilary data, and with the exception of the logistic greg estimators and its counterpart using elastic net, our estimators can take in all data forms--raw, total counts and with population size, and mean counts with population size.
 
 ### Example Dataset
 
@@ -89,6 +90,7 @@ The survey package contains a census dataset of all California schools with at l
 For illustration purposes we will treat *apipop* as our finite population of interest and in various examples will use the samples *apisrs* and *apistrat*.
  We will assume that the attributes of interest are only known for the sample but that the auxiliary data are known for each school.  
 
+#What do we make use of this sentence?
 Assume we want to estimate ??? in insert two quantities based on api and sch.wide or comp.imp.
 
 
@@ -99,10 +101,6 @@ This section presents guidance on when each estimator is most appropriate and sh
 
 ### Horvitz-Thompson Estimator
 
-
-* **Inputs**: 
-* **Outputs**: 
-
 If no auxiliary data are available, then $\hat{y}_i = 0$ in the model-assisted estimator of $t_y$ and the estimator simplifies to
 $$
 \hat{t}_y = \sum_{i \in s} \frac{y_i}{\pi_i},
@@ -111,14 +109,19 @@ the survey-weighted sum of the sampled values [@hor52].  To give an estimate of 
 
 ```{r}
 ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
-
+ht_srs
 
 ht_strat <- horvitzThompson(y = apistrat$api00, pi = apistrat$pw^(-1))
-
+ht_strat
 ```
 
 Then the Horvitz-Thompsons estimator for the average score is `r ht_srs$pop_mean` for the simple random sample and `r ht_strat$pop_mean` for the stratified sample. Since $N$, the population size, was not specified, it was assumed to be $\sum_{i \in s} \pi_i^{-1}$.
-Note that we specify the inclusion probabilities with argument "pi".  If "pi"" is unavailable or not supplied, the function would require the total population size $N$, and assume simple random sampling. 
+Note that we specify the inclusion probabilities with argument "pi".  If "pi" is unavailable or not supplied, the function would require the total population size $N$, and assume simple random sampling. 
+```{r}
+ht_srs <- horvitzThompson(y = apisrs$api00, N = length(apisrs$api00))
+ht_srs
+#Is this output actually correct? 
+```
 
 The variance estimator can be found by adding the argument `var_est = TRUE` and specifying a method with `var_method`.
 
@@ -128,7 +131,7 @@ ht_srs <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE,
 
 For the simple random sample, the variance of the HT estimator of the mean score is `r ht_srs$pop_mean_var`.  If the joint inclusions probabilites are known and positive (argument `pi2`), then the exact Horvitz-Thompson estimator of other single stage sampling designs can be found.  The variance can be estimated by selected one of the with-replacement variance estimators. 
 
-An overview of the various variance estimators is given at the last section of this documentaiton. 
+An introduction to the various variance estimators is given at the last section of this documentaiton. 
 
 ```{r}
 ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HB")
@@ -137,33 +140,20 @@ ht_strat <- horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRU
 ### Post-stratified Estimator 
 
 
-It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modeling. It has been shown that such information can often increase the estimator's efficiency in that it could increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be covered by canopy than those that are labelled "non-forest".
+It is not uncommon for us to have categorical auxilary data that might give information we would like to use in modeling. It has been shown that such information can often increase the precision of our estimates by reducing variance. For instance, that a particular location is covered by forest would give good predictor of canopy cover since the plots of land labelled "forest"" is much more likely to be covered by canopy than those that are labelled "non-forest".
 
+For instance, suppose we want to estimate $\mu_y$, where $y_i$ denotes the percentage of canopy cover for unit $i$ and we have a single categorical $x$ variable with known number of Categories.Then, assuming the group mean model  
+$$
+y_i = \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i, 
+$$
+the generalized regression estimator simplifies to the post-stratified estimator
+$$
+#Fix the upper bound of the first summand (it's not 2; what is it?)
+\hat{\mu_j} = \frac{1}{N} \sum _{j=1}^2 \frac{N_j}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i},
+$$
+#Where $S_j $ refers to the sample (what j? Stratum j? What is it?) 
 
-
-We can compute the mean of each population and the variance of the overall population. We first give general notations: let $y^h_j$ denote the value of the $j$-th unit in the category $h$; let 
-$$
-t_j =\sum _{i=1} ^ {N_j} x_{ij}
-$$
-denote the sum of relevant interest  in category $j$ (where in this context $j$ would take on two values to indicate whether the plot is covered by forest or not). Then we have that the sample mean in stratum $j$  is 
-$$
-\overline{y}_j = \frac{\sum_{i\in S_j} x_{ij}}{n_j},
-$$
-where the summation extends to all the samples in the stratum $h$ of our sample, and $n_h$ is the population of the stratum $h$. Note that the non-capitalized $n$ stands for population size of the sample. 
-
-Suppose $y_i$ stands for canopy cover in plot $i$. The above could be modeled as @sar92
-$$
-y_i = \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i. 
-$$
-Assuming constant variance of the error term $\epsilon_i$ and making use of the HT estimator, we can give the following estimates :
-$$
-\hat{\beta}_1 =\frac{ \sum _{i \in S_1} \frac{y_i}{\pi_i}}{\hat{N_1}},\\
-\hat{\beta}_2 =\frac{ \sum _{i \in S_2} \frac{y_i}{\pi_i}}{\hat{N_2}},
-$$
-from which we could derive the post-stratified mean 
-$$
-\hat{\mu} = \frac{1}{N} \sum _{j=1}^2 \frac{N_j}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i}.
-$$
+In particular, we note that the quantity $\frac{1}{\hat{N}_j} \sum _{}$
 If we have a simple random sampling, then estimated variance could be written as
 $$
 \hat{V}_{\text{post}} \approx (1-\frac{n}{N}) \sum^H _ {h=1} \frac{N_h}{N} \frac{s^2_h}{n},
@@ -189,7 +179,7 @@ To add the awards information, we need to include the sample values (`xsample`) 
 #Raw data
 #This method does not need to first extract population totals or population mean 
 #(I need to explain why this method is sometimes unavailable. When do people not use this method?)
-ps_srs_r <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = apipop$awards, datatype = "raw", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+ps_srs_r <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = apipop$awards, datatype = "raw", pi = apisrs$pw^(-1), var_est = TRUE, var_method = "bootstrapSRS")
 ```
 The second form in which data often given is in terms of counts of observations in one cateogry and the total of those not in this category. The code will first produce data in such a format, stored in "pop_totals", and then perform computation based on this given information.
 
@@ -252,7 +242,7 @@ pop_means <- mean(apipop$meals)
 re_srs_means <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_means, datatype = "means", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB", B = 1000)
 re_srs_means
 pop_totals <- sum(apipop$meals)
-re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "BootstrapSRS", B = 1000)
+re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "bootstrapSRS", B = 1000)
 re_srs_totals
 ```
 Note that the three estimates agree completely with each other, as we should expect. We can modify our method according to the layout of our dataset; we can change which variance estimator to use in the "var" option.
