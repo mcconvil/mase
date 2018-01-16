@@ -49,12 +49,10 @@ Please check out the vignette for more examples.
 
 * greg breaking down when have a single auxiliary variable. (Kevin/Shirley)
 
-* Expanding the variance estimation options. (Mickey)
-
 * Regression tree estimator in development. 
 
 * Handling of categorical variable for y for all functions.  (Shirley)
 
-* Ratio estimator variance broken? 
+* Ratio estimator bootstrapSRS variance broken. 
 
 * Restructuring arguments of functions
