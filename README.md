@@ -70,3 +70,5 @@ Current Known Issues
 -   Ratio estimator bootstrapSRS variance broken.
 
 -   Restructuring arguments of functions
+
+-   Fixing naming of variance estimators

@@ -56,3 +56,5 @@ Please check out the vignette for more examples.
 * Ratio estimator bootstrapSRS variance broken. 
 
 * Restructuring arguments of functions
+
+* Fixing naming of variance estimators
