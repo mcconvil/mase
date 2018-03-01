@@ -148,13 +148,13 @@ y_i = \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i,
 $$
 the generalized regression estimator simplifies to the post-stratified estimator
 $$
-#Fix the upper bound of the first summand (it's not 2; what is it?)
-\hat{\mu_j} = \frac{1}{N} \sum _{j=1}^2 \frac{N_j}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i},
+%Fix the upper bound of the first summand (it's not 2; what is it?)
+\hat{\mu_j} = \frac{1}{N} \sum _{j=1}^J \frac{N_j}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i},
 $$
-#Where $S_j $ refers to the sample (what j? Stratum j? What is it?) 
+where J, denoting the number of categories, in this example equals 2, and  $S_j $ refers to the set of observations. 
 
-In particular, we note that the quantity $\frac{1}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i}$ 
-#is what?
+In particular, we note that the quantity $\frac{1}{\hat{N}_j} \sum _{i \in S_j} \frac{y_i}{\pi_i}$ is $\hat{\mu}_{hj}$, the estimated mean of stratum $j$ of the quantity of interest, $y$. 
+
 
 
 In our example dataset, the binary categorical variable `awards` specifies whether a school is eligible for an awards program.   From the graph below, it appears that eligible schools have, on average, a higher api score.
@@ -164,7 +164,7 @@ library(ggplot2)
 ggplot(apistrat, aes(x = awards, y = api00)) + geom_boxplot()+ labs(x="Eligible for Awards Program?", y="API Scores for 2000") + theme_bw() 
 ```
 
-To add the awards information, we need to include the sample values (`xsample`) and the population data (`xpop`). The following R scripts show three ways of achieving this, corresponding to three common forms in which we might be given the data. The first form of data we might be given is a detailed list of the state of all observations of the categorical variables describing whether they belong to this category. This data form is called "raw" data, and the following code shows how we can perform relevant computation.
+To add the awards information, the estimator requires the sample values (`xsample`) and the population data (`xpop`). The following R scripts show three ways of achieving this, corresponding to three common forms in which we might be given the data. The first form of data we might be given is a detailed list of the state of all observations of the categorical variables describing whether they belong to this category. This data form is called "raw" data, and the following code shows how we can perform relevant computation.
 
 ```{r, message=FALSE}
 
@@ -192,8 +192,7 @@ ps_srs_m <- postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = pop_mean
 ```
 
 
-The above gives the estimated mean,`r ps_srs_r$pop_mean`, assuming simple random sampling. 
-#Do I need to discuss this result a bit more? 
+The above gives the estimated mean of api score for 2000,`r ps_srs_r$pop_mean`, assuming simple random sampling. The function unique to the post-stratification estimator is that it can give means according to different groups, a feature sometimes helpful but not available through other estimators. (Post-strat can give out means by groups, unique to post-Strat)
 
 ### Ratio Estimator
 #Need to talk about this a bit more!
@@ -203,7 +202,9 @@ y_i = \beta x_i + \epsilon_i,
 %discuss why this estimator has a quantitative auxilary variable, why this model makes sense, and talk about the assumption that we know \mu_x?
 $$
 
-where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$ and mean at 0.
+
+where the errors $\epsilon_i$ would structurally have variance $\sigma ^2 x_i$ and mean at 0.We would assume a linear relationship between $x$ and $y$ through the origin, regardless of whether that relationship is positive or negative. 
+
 
 In light of our HT estimator of $\mu_y$ and of $\mu_x$, we would have our estimated
 $$
@@ -214,7 +215,9 @@ $$
 \hat{\mu_y} = \frac{\mu_x}{\hat{\mu}_{x, HT}} \hat{\mu}_{y,ht,}
 %Does the ratio estimator assume a positive relationship to work?
 $$
-to which we give the name ratio estimator. @sar92. We can see that this estimator builds on the Horvitz Thompson estimator because it addresses the Horvitz Thompson estimator of $\mu_y$ by 
+
+to which we give the name ratio estimator. @sar92. We can see that this estimator builds on the Horvitz Thompson estimator because it scales the Horvitz Thompson estimate of mean of the desired quantity by a ratio of the true population mean of the predictor and its corresponding HT estimate.
+
 
 We should nevertheless note a couple of caveats for the ratio estimator. Ratio Estimators are often biased. (It assumes regression through the origin which might contribute to the bias.)
 
@@ -493,6 +496,16 @@ $$
 #Horvitz-Thompson Estimator and its variance (general and SRS)
  It can be shown that the variance of the Horvitz Thompson estimator is
  $$
+ Var(\hat{t}_{y}) = \sum _{i = 1} ^N \sum _{j= 1}^N (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j,
+ $$
+ so the logical estimate is
+ $$
+ \hat{Var}(\hat{t}_{y}) = \sum _{i = 1} ^n \sum _{j= 1}^n (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j \pi _{ij}}) \hat{y}_i \hat{y}_j
+ $$
+ 
+ Note that the joint inclusion probabilities are usually difficult to come by, 
+ 
+=======
  Var(\hat{t}_{ij?}) = \sum _{i = 1} ^ N (\frac{1-\pi_i}{\pi_i}) y_i^2 + \sum _{i = 1} ^N \sum _{j\neq i} (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j,
  $$
  so the logical estimate is
