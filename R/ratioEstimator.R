@@ -16,7 +16,6 @@
 #'
 #'@references 
 #'\insertRef{coc77}{mase} 
-#' 
 #'\insertRef{sar92}{mase}
 #'
 #' @return List of output containing:
@@ -34,7 +33,7 @@
 
 
 ratioEstimator <- function(
-  y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, var_method="HB", B = 1000) {
+  y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "HB", B = 1000) {
 
 
     ### INPUT VALIDATION ###
@@ -62,7 +61,7 @@ ratioEstimator <- function(
   }
   
   
-  # convert pi into diagonal matrix format
+  # create equal SRS weights if not provided
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
   }
@@ -110,16 +109,17 @@ ratioEstimator <- function(
       t_boot <- boot(data = dat, statistic = ratioEstimatort, R = B, tau_x = tau_x)
       
       #Adjust for bias and without replacement sampling
+      n <- length(y)
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
       varEstMu <- varEst*N^(-2)
     }
     
+    return(list(pop_total = tau_r, pop_mean = mu_r, pop_total_var=varEst, pop_mean_var = varEstMu))
     
   }else{
-    varEst <- NULL
-    varEstMu <- NULL
+    
+    return(list(pop_total = tau_r, pop_mean = mu_r))
   }
   
-  return(list(pop_total = tau_r, pop_mean = mu_r, pop_total_var=varEst, pop_mean_var = varEstMu))
 }
   
