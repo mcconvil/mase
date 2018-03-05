@@ -2,7 +2,7 @@
 #' 
 #' Calculate the Horvitz-Thompson Estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design.  
 #'  
-#' @param y  vector or a matrix with one column of the sampled response variable
+#' @param y  A numeric vector or a matrix with one column of the sampled response variable. 
 #' @param pi Default assumes equal probability/simple random sampling. If unequal probability, requires vector of first-order inclusion probabilities of same length as y
 #' @param N population size, if not provided estimate with the sum of the inverse inclusion probabilities
 #' @param var_est Default is FALSE, logical indicating whether or not to compute a variance estimator
@@ -35,9 +35,12 @@ horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, 
     message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
+
+  #Check that y is numeric
+  if(!(typeof(y) %in% c("numeric", "integer"))){
+    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+  }
   
-#  if class of y != numeric
-#    convert y to be 1/0s
   
   
   if(is.null(pi) && is.null(N)){

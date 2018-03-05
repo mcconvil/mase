@@ -45,6 +45,12 @@ postStrat <- function(
   
   ### INPUT VALIDATION ###
   
+  #Check that y is numeric
+  if(!(typeof(y) %in% c("numeric", "integer"))){
+    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+  }
+  
+  
   #Make sure the var_method is valid
   if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS", "SRSunconditional"))){
     message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")

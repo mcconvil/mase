@@ -44,6 +44,11 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
 ### INPUT VALIDATION ###
   
+  #Check that y is numeric
+  if(!(typeof(y) %in% c("numeric", "integer"))){
+    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+  }
+  
   
   #Make sure the var_method is valid
   if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
