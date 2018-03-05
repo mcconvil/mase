@@ -433,8 +433,7 @@ gregElastic_lin_strat <- gregElasticNet(y = apistrat$api00,
 gregElastic_lin_strat
 ```
 
-talk about discarded variables
-talk about std changes vs. just greg 
+
 
 The following code calculates the elastic net regression for our categorical $y$ variable, awards, in our srs and strat sample datasets using the mase package.
 ```{r}
@@ -467,50 +466,45 @@ gregElastic_log_strat <- gregElasticNet(y = apistrat$new_awards,
 gregElastic_log_strat
 ```
 
-talk about discarded variables
-talk about std changes vs. just greg 
 
 ##Variance Estimation
-Talk about all variance estimators in the varMase.R; talk heuristically (What information is needed; )
-Show example by computing via different methods
--Bootsrap
-#How should I talk about bootstrap? 
+
+To compute confidence intervals, we need information on the variance of our various estimators. Yet often the exact variance formulas require quantities that are often not given by available data or could only be achieved by a computationally expensive route. Therefore we make use of estimators for these variance computations. 
+
+Below we discuss relevant estimators for variances, suitable scenarios to use them, and examples of applying them to a real-world data set. The relevant functions are included in the package $mase$.
+
+#Variance  Estimator for Horvitz-Thompson (HT) Estimator 
+
+Horvitz-Thompson Estimator has a wide range of applicable scenarios and is often a "go-to" estimator. Yet its variance estimator, despite its ability converge to the true variance in the large sample limit, has the unfortunate requirement of joint inclusion probabilities--the probability that two elements together are included in our sample ($\pi_{ij}$, for different values of $i \neq j$). If this quantity is available, then the estimator could be directly applied to give an estimated variance that will converge to the true variance given a large enough sample.
+
+In reality this joint probability is often difficult to acquire. There are two possible scenarios given the lack of joint probabilities. In the case where the data comes from simple random sampling(SRS), we could use variance estimators for \textbf{HTSRS} or \textbf{Bootstrap} to achieve an estimated variance. These methods will be discussed below. In the case where simple random sampling is not assumed, and given we don't have joint probabilities, we recommend using Hansen-Hurwitz (HH) or Hajet-Berger estimators.
+
+Notice that regardless of whether we have joint probabilities or assume simple random sampling, the estimator will still give an estimated total number. The limitation is that it won't give a variance estimate.
+
+#Variance Estimators for HTSRS and Bootstrap Assuming SRS
+
+In the case where we have simple random sample, both methods will give an estimate for variance. In the case where an HT estimator is used, we recommend using the variance estimate for HTSRS. If not, we recommend using Bootstrap variance estimator. Notice that the bootstrap estimator as we give in this package assumes simple random sampling. re_srs_raw <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = apipop$meals, datatype = "raw", pi = NULL, N = NULL, pi2= NULL, var_est = TRUE, var_method = "HTSRS", B = 1000)
+```{r, eval = FALSE}
+
+pop_totals <- sum(apipop$meals)
+re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "bootstrapSRS", B = 1000)
+re_srs_totals
 
 
-#Hansen-Hurwitz
-The Hansen-Hurwitz estimator is an estimator of $\frac{y_i}{\pi_i}$. The difference between the Horvitz-Thompson estimator and the hansen-hurwitz estimator is that the HT(SRS?) is used for sampling without replacement and HH for sampling with replacement. (But doesn't HT estimator work for any design, with or wihout replacement?) The expression is the same as the one for the Horvitz Thompson Estimator.  
-$$
-\hat{\mu}_{HH} = \frac{1}{n} \sum_{i=1}^n \frac{y_i}{pi}
-$$
-The convenience of HH estimator is that it is easier to compute, but with the drawback that it has a higher variance. Recalling that $t$ stands for the population sum, we have that the variance for this estimation is 
-$$
-Var(\hat{\mu}_{HH}) = \frac{1}{n}\sum_{i=1}^n \pi_i (\frac{y_i}{\pi_i} - t) ,
-$$
-and an (unbiased) estimator that on average gives the expected value of this variance is 
-$$
-\hat{Var}(\hat{\mu}_{HH}) = \frac 1 n \frac{\sum _{i=1} ^ n (\frac{y_i}{\pi} - \hat{t})^2}{n-1}.
-#I guess it would be good to know how this estimator should ideally be introduced
-#Also note that this estimator is different from the one introduced on pg 121. 
-$$
+re_srs_totals <- ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = pop_totals, datatype = "totals", pi = NULL, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HTSRS", B = 1000)
+re_srs_totals
+```
+#Variance Estimators for Hajek-Berger and Hansen-Hurwitz
 
-#Horvitz-Thompson Estimator and its variance (general and SRS)
- It can be shown that the variance of the Horvitz Thompson estimator is
- $$
- Var(\hat{t}_{y}) = \sum _{i = 1} ^N \sum _{j= 1}^N (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j,
- $$
- so the logical estimate is
- $$
- \hat{Var}(\hat{t}_{y}) = \sum _{i = 1} ^n \sum _{j= 1}^n (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j \pi _{ij}}) \hat{y}_i \hat{y}_j
- $$
- 
- Note that the joint inclusion probabilities are usually difficult to come by, 
- 
-=======
- Var(\hat{t}_{ij?}) = \sum _{i = 1} ^ N (\frac{1-\pi_i}{\pi_i}) y_i^2 + \sum _{i = 1} ^N \sum _{j\neq i} (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j,
- $$
- so the logical estimate is
-  $$
- Var(\hat{t}_{ij?}) = \sum _{i = 1} ^ n (\frac{1-\pi_i}{\pi_i}) y_i^2 + \sum _{i = 1} ^n \sum _{j\neq i} (\frac{\pi_{ij} - \pi_i\pi_j}{\pi_i \pi_j}) y_i y_j.
- $$
-#Should I raise an example also related to api? 
-### References
+In the case where joint inclusion probabilities are unavailable and the sampling structure is not simple random sampling, we recommend using these estimators and their variance estiamtes. These variance estimators bypass the problem of lack of joint inclusion probabilities by approximating with replacement. The downside is that the variance estimates will be larger than those with joint inclusion probability is known, but in the large sample limit the estimates will approach true variance.  
+
+In the example, if $pi$ is given the command "NULL", the estimators will assume simple random sampling. If the dataset is not using simple random sampling, a weight will be given, and $pi = 1/ \text{weight}$.
+
+```{r}
+re_srs_means_HB <- ratioEstimator(y = apistrat$api00, xsample = apistrat$meals, xpop = pop_means, datatype = "means", pi = 1/apistrat$pw , N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HB")
+
+re_srs_means_HH <- ratioEstimator(y = apistrat$api00, xsample = apistrat$meals, xpop = pop_means, datatype = "means", pi = 1/apistrat$pw, N = dim(apipop)[1], pi2= NULL, var_est = TRUE, var_method = "HH")
+
+```
+
+
