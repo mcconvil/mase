@@ -47,13 +47,8 @@ Please check out the vignette for more examples.
 
 ## Current Known Issues
 
-* greg breaking down when have a single auxiliary variable. (Kevin/Shirley)
 
 * Regression tree estimator in development. 
-
-* Handling of categorical variable for y for all functions.  (Shirley)
-
-* Ratio estimator bootstrapSRS variance broken. 
 
 * Restructuring arguments of functions
 

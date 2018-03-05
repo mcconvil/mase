@@ -45,7 +45,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
 ### INPUT VALIDATION ###
   
   #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer"))){
+  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
   
@@ -247,7 +247,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     #population design matrix, check whether its population totals, means or raw data
     
     if (datatype=="raw"){
-      xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
+      xpop <- data.frame(model.matrix(~.-1, data = data.frame(xpop)))
       #Make sure to only take the columns which are also in xsample
       xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)

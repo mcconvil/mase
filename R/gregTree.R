@@ -48,10 +48,9 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   }
   
   #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer"))){
+  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
-  
   
   #Convert y to a vector
   y <- as.vector(y)
