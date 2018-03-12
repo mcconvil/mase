@@ -43,6 +43,5 @@ Calculates a ratio estimator for a finite population mean/proportion or total ba
 }
 \references{
 \insertRef{coc77}{mase} 
-
 \insertRef{sar92}{mase}
 }

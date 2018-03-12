@@ -68,15 +68,15 @@ horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, 
 ##########################
   
   # total population
-  total <- t(y) %*% weight
+  total <- as.vector(t(y) %*% weight)
   
   # defining estimate for population size if N is unknown, otherwise use
   # known N.
   if (is.null(N)) {
     N <- sum(weight)
-    mu <- total * (1/N)
+    mu <- as.vector(total * (1/N))
   } else {
-    mu <- (total/N)
+    mu <- as.vector((total/N))
   }
   
   if(var_est==TRUE){

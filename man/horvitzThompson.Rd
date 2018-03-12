@@ -8,7 +8,7 @@ horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
   var_method = "HB", B = 1000)
 }
 \arguments{
-\item{y}{vector or a matrix with one column of the sampled response variable}
+\item{y}{A numeric vector or a matrix with one column of the sampled response variable.}
 
 \item{pi}{Default assumes equal probability/simple random sampling. If unequal probability, requires vector of first-order inclusion probabilities of same length as y}
 
