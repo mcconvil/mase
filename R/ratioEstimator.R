@@ -2,18 +2,11 @@
 #'
 #' Calculates a ratio estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
-#' @param y vector of response variable of length n, or a matrix with 
-#' dimension n * 1
-#' @param xsample predictor vector of sampled data of length n
-#' @param xpop Dataframe of population level auxiliary information.  Must come in the form of raw data, population totals or population means.
-#' @param datatype Default to "raw", takes values "raw", "totals", and "means" for whether the user is providing the raw population values for x, the population totals for x, or the population means for x
-#' @param pi Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y
-#' @param N population size, if not provided estimate with the sum of the inverse inclusion probabilities
-#' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
-#' @param var_method Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement
-#' @param pi2 = a n * n matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator
-#' @param B number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
-#'
+#' @inheritParams horvitzThompson
+#' @param xsample A numeric vector of the sampled auxiliary variable.
+#' @param xpop A data frame of population level auxiliary information.  Must come in the form of raw data, population totals or population means.
+#' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means. Default is "raw".
+#' 
 #'@references 
 #'\insertRef{coc77}{mase} 
 #'\insertRef{sar92}{mase}
@@ -33,7 +26,7 @@
 
 
 ratioEstimator <- function(
-  y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "HB", B = 1000) {
+  y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "LinHB", B = 1000) {
 
 
     ### INPUT VALIDATION ###
@@ -44,8 +37,8 @@ ratioEstimator <- function(
   }
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
   

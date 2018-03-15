@@ -2,15 +2,8 @@
 #' 
 #' Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
-#' @param y  vector or a matrix with one column of the sampled response variable
-#' @param pi Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y
-#' @param xsample matrix of auxiliary data in the sample.  Number of rows should match length of y.
-#' @param xpop Dataframe of population level auxiliary information.
-#' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
-#' @param var_method Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement
-#' @param pi2 a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator
-#' @param N population size, if not provided estimated to be the sum of the inverse inclusion probabilities
-#' @param B number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
+#' @inheritParams horvitzThompson
+#' @inheritParams greg
 #' @param pval Designated pval level to reject null hypothesis in permutation test used to fit the regression tree, Default to 0.05
 #' @param perm_reps integer specifying the number of permutations for each permutation test run to fit the regression tree, Default to 500
 #' @param bin_size numeric minimum number of observations in each node

@@ -3,21 +3,11 @@
 #' Calculates a lasso, ridge or elastic net generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
 #' 
-#' @param y vector of response variable of length n, or a matrix with 
-#' dimension n * 1
-#' @param xsample vectors of observed data of length n
-#' @param xpop Dataframe of population level auxiliary information.  Must come in the form of raw data, population totals or population means.  
-#' @param pi Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y
-#' @param alpha mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, uses only a lasso penalty.  When alpha=0, uses only a ridge penalty.
-#' @param model regression model to utilize. User must choose 'linear' or 'logistic'
-#' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
-#' @param var_method Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement
-#' @param pi2 = a n * n matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator
-#' @param datatype Default to "raw", takes values "raw", "totals", and "means" for whether the user is providing the raw population values for x, the population totals for x, or the population means for x
-#' @param N population size, if not provided estimated to be the sum of the inverse inclusion probabilities
-#' @param lambda Default to "lambda.min", takes values "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lamabda value which is one standard error away from the minimizing lambda and produces a sparser fit
-#' @param B number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
-#' @param cvfolds number of folds for cross-validation to pick lambda.
+#' @inheritParams horvitzThompson
+#' @inheritParams greg
+#' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used.  
+#' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
+#' @param cvfolds The number of folds for the cross-validation to tune lambda.
 #' 
 #' @references 
 #'\insertRef{mcc17}{mase}
@@ -39,7 +29,7 @@
 #' @include gregElasticNett.R
 
 gregElasticNet  <- function(
-  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="HB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
+  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="LinHB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
   
   
   ### INPUT VALIDATION ###
@@ -49,8 +39,8 @@ gregElasticNet  <- function(
   }
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
   

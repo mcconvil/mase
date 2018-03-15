@@ -5,35 +5,35 @@
 \title{Compute a generalized regression estimator}
 \usage{
 greg(y, xsample, xpop, pi = NULL, model = "linear", pi2 = NULL,
-  var_est = FALSE, var_method = "HB", datatype = "raw", N = NULL,
+  var_est = FALSE, var_method = "linHB", datatype = "raw", N = NULL,
   modelselect = FALSE, lambda = "lambda.min", B = 1000)
 }
 \arguments{
-\item{y}{survey variable of interest. Should be a numeric vector or factor with two levels.}
+\item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{dataframe of auxiliary data in the sample.  Number of rows should match length of y.}
+\item{xsample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{dataframe of population level auxiliary information.  Must contain same names as xsample.  Can supply either unit level data (denoted as datatype = "raw") or aggregate data (denoted as either datatype = "totals" or datatype = "means")}
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.}
 
-\item{pi}{first order inclusion probabilities of same length as y. If not supplied, simple random sampling is assumed.}
+\item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{model}{regression model to utilize. Options are "linear" or "logistic".}
+\item{model}{A string that specifies the regression model to utilize. Options are "linear" or "logistic".}
 
-\item{pi2}{a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
 
-\item{var_est}{a logical indicating whether or not to compute a variance estimate}
+\item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
 
-\item{datatype}{form of population auxiliary data. Takes values "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.}
+\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".}
 
-\item{N}{population size, if not provided estimated to be the sum of the inverse inclusion probabilities}
+\item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
-\item{modelselect}{default to FALSE.  If TRUE, the Lasso is run and only the predictors with a non-zero Lasso coefficient are included in the model.}
+\item{modelselect}{A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.}
 
-\item{lambda}{Default to "lambda.min".  Only use if modelselect = TRUE. Takes values "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lamabda value which is one standard error away from the minimizing lambda and produces a sparser fit}
+\item{lambda}{A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
 
-\item{B}{number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+\item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
 \value{
 A list of output containing:

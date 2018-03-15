@@ -2,19 +2,13 @@
 #' 
 #' Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
-#' @param y  survey variable of interest. Should be a numeric vector or factor with two levels.
-#' @param pi first order inclusion probabilities of same length as y. If not supplied, simple random sampling is assumed.
-#' @param xsample dataframe of auxiliary data in the sample.  Number of rows should match length of y. 
-#' @param xpop dataframe of population level auxiliary information.  Must contain same names as xsample.  Can supply either unit level data (denoted as datatype = "raw") or aggregate data (denoted as either datatype = "totals" or datatype = "means")
-#' @param N population size, if not provided estimated to be the sum of the inverse inclusion probabilities
-#' @param datatype form of population auxiliary data. Takes values "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.
-#' @param model regression model to utilize. Options are "linear" or "logistic".
-#' @param var_est a logical indicating whether or not to compute a variance estimate
-#' @param var_method method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.
-#' @param B number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
-#' @param pi2 a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator.
-#' @param modelselect default to FALSE.  If TRUE, the Lasso is run and only the predictors with a non-zero Lasso coefficient are included in the model.
-#' @param lambda Default to "lambda.min".  Only use if modelselect = TRUE. Takes values "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lamabda value which is one standard error away from the minimizing lambda and produces a sparser fit
+#' @inheritParams horvitzThompson
+#' @param xsample A data frame of the auxiliary data in the sample.
+#' @param xpop A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.
+#' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".
+#' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
+#' @param modelselect A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
+#' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' 
 #'@references 
 #'\insertRef{cas76}{mase}
@@ -38,7 +32,7 @@
 #' @include varMase.R
 #' @include gregt.R
 
-greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method="HB", datatype = "raw", N = NULL, modelselect = FALSE, lambda="lambda.min", B = 1000){
+greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method="linHB", datatype = "raw", N = NULL, modelselect = FALSE, lambda="lambda.min", B = 1000){
 
   
   
@@ -51,8 +45,8 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("linHB", "linHH", "linHTSRS", "linHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"linHB\", \"linHH\", \"linHT\", \"linHTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
   

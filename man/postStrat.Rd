@@ -8,25 +8,25 @@ postStrat(y, xsample, xpop, pi = NULL, N = NULL, var_est = FALSE,
   var_method = "HB", pi2 = NULL, datatype = "raw", B = 1000)
 }
 \arguments{
-\item{y}{vector or a matrix with one column of the sampled response variable}
+\item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{vector or a matrix with one column of an auxiliary categorical variable giving the stratum of each sampled unit.}
+\item{xsample}{A vector containing the post-stratum for each sampled unit.}
 
-\item{xpop}{vector or a matrix with one column of an auxiliary categorical variable giving the stratum of each population unit.}
+\item{xpop}{A vector or data frame, depending on datatype.  If datatype = "raw", then a vector containing the post-stratum for each population unit.  If datatype = "totals" or "means", then a data frame, where the first column lists the possible post-strata and the second column contains the population total or proportion in each post-stratum.}
 
-\item{pi}{Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y}
+\item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{N}{population size, if not provided estimated to be the sum of the inverse inclusion probabilities}
+\item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
 \item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
 
-\item{var_method}{Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata.}
 
-\item{pi2}{a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
 
-\item{datatype}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum (MAKE SURE TO DISCUSS FORM var_cat1, var_car2)}
+\item{datatype}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.}
 
-\item{B}{number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+\item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
 \value{
 A list of output containing:

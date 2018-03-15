@@ -2,44 +2,44 @@
 #helper function to compute an approximate variance estimator
 #Make flexible enough to work with and without the joint inclusion probabilities
 
-varMase <- function(y, pi, pi2 = NULL, method="HB", N = NULL){
+varMase <- function(y, pi, pi2 = NULL, method="LinHB", N = NULL){
   
   #Need sample size
   n <- length(y)
   
   
 
-  #Make sure include pi2 if method is HT
-  if(method=="HT" & is.null(pi2)){
-    message("For HT variance estimator, need to provide second order inclusion probabilities matrix.")
+  #Make sure include pi2 if method is LinHT
+  if(method=="LinHT" & is.null(pi2)){
+    message("For LinHT variance estimator, need to provide second order inclusion probabilities matrix.")
     return(NULL)
   }
   
-  #Need to add warning messages for if pi2 is not given for HT or is wrong dim!
+  #Need to add warning messages for if pi2 is not given for LinHT or is wrong dim!
   
-  if(method == "HB"){
+  if(method == "LinHB"){
     a <- n/(n-1)*(1-pi)
     e <- as.vector(pi^(-1)*y) - c(sum(a)^(-1)*(pi^(-1)*a)%*%y)
     varEst <- sum(a*e^2)
     
   }
-  if(method == "HH"){
+  if(method == "LinHH"){
     t <- pi^(-1)%*%y
     varEst <- 1/(n*(n-1))*t(as.vector(n*y*pi^(-1)) - as.numeric(t))%*%(as.vector(n*y*pi^(-1)) - as.numeric(t))
   }
-  if(method == "HTSRS"){
+  if(method == "LinHTSRS"){
     if(is.null(N)){
       N <- sum(pi^(-1))
     }
     varEst <- (N-n)*(N/n)*var(y)
   }
-  if(method== "HT"){
+  if(method== "LinHT"){
     a <- (pi2 - pi%*%t(pi))*pi2^(-1)*(pi%*%t(pi))^(-1)*y%*%t(y)
     varEst <- sum(a)
   }
-  #HT needs joint inclusion probabilities; in the event of lack, use HB and HH as substitutes; 
-  #However, if have simple random, then could just use HTSRS or the bootstrap simple random sampling
-  #HB Hajek-berger estimator, HH Hansen Hurwitz
+  #LinHT needs joint inclusion probabilities; in the event of lack, use LinHB and LinHH as substitutes; 
+  #However, if have simple random, then could just use LinHTSRS or the bootstrap simple random sampling
+  #LinHB Hajek-berger estimator, LinHH Hansen Hurwitz
   
   
   return(varEst)

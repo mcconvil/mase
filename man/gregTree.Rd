@@ -9,29 +9,27 @@ gregTree(y, xsample, xpop, pi = NULL, pi2 = NULL, var_est = FALSE,
   bin_size = NULL)
 }
 \arguments{
-\item{y}{vector or a matrix with one column of the sampled response variable}
+\item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{matrix of auxiliary data in the sample.  Number of rows should match length of y.}
+\item{xsample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{Dataframe of population level auxiliary information.}
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.}
 
-\item{pi}{Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y}
+\item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{pi2}{a square matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
 
-\item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
+\item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
 
-\item{B}{number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+\item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
 \item{pval}{Designated pval level to reject null hypothesis in permutation test used to fit the regression tree, Default to 0.05}
 
 \item{perm_reps}{integer specifying the number of permutations for each permutation test run to fit the regression tree, Default to 500}
 
 \item{bin_size}{numeric minimum number of observations in each node}
-
-\item{N}{population size, if not provided estimated to be the sum of the inverse inclusion probabilities}
 }
 \value{
 A list of output containing:

@@ -5,29 +5,28 @@
 \title{Compute a ratio estimator}
 \usage{
 ratioEstimator(y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL,
-  pi2 = NULL, var_est = FALSE, var_method = "HB", B = 1000)
+  pi2 = NULL, var_est = FALSE, var_method = "LinHB", B = 1000)
 }
 \arguments{
-\item{y}{vector of response variable of length n, or a matrix with 
-dimension n * 1}
+\item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{predictor vector of sampled data of length n}
+\item{xsample}{A numeric vector of the sampled auxiliary variable.}
 
-\item{xpop}{Dataframe of population level auxiliary information.  Must come in the form of raw data, population totals or population means.}
+\item{xpop}{A data frame of population level auxiliary information.  Must come in the form of raw data, population totals or population means.}
 
-\item{datatype}{Default to "raw", takes values "raw", "totals", and "means" for whether the user is providing the raw population values for x, the population totals for x, or the population means for x}
+\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means. Default is "raw".}
 
-\item{pi}{Default to assume equal probability/simple random sampling, if unequal probability, requires vector of first-order inclusion probabilities of same length as y}
+\item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{N}{population size, if not provided estimate with the sum of the inverse inclusion probabilities}
+\item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
-\item{pi2}{= a n * n matrix of the joint inclusion probabilities.  Needed for the "HT" variance estimator}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
 
-\item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
+\item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{Method to use when computing the variance estimate.  Options are "HB"= Hajek-Berger estimator, "HH" = Hansen-Hurwitz estimator, "HTSRS" = Horvitz-Thompson estimator under simple random sampling, "HT" = Horvitz-Thompson estimator, "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
 
-\item{B}{number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+\item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
 \value{
 List of output containing:
