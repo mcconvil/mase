@@ -42,12 +42,10 @@ library(survey)
 data(api)
 horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
 #> $pop_total
-#>         [,1]
-#> [1,] 4066887
+#> [1] 4066887
 #> 
 #> $pop_mean
-#>         [,1]
-#> [1,] 656.585
+#> [1] 656.585
 #> 
 #> $pop_total_var
 #> [1] 3282462447
@@ -61,13 +59,7 @@ Please check out the vignette for more examples.
 Current Known Issues
 --------------------
 
--   greg breaking down when have a single auxiliary variable. (Kevin/Shirley)
-
 -   Regression tree estimator in development.
-
--   Handling of categorical variable for y for all functions. (Shirley)
-
--   Ratio estimator bootstrapSRS variance broken.
 
 -   Restructuring arguments of functions
 
