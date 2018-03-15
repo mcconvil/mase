@@ -1,7 +1,7 @@
 #Helper function to compute gregtreet total for bootstrapping
 library(rpms)
 
-gregTreet <- function(data, xpop, indices){
+gregTreet <- function(data, xpop, pval= pval, perm_reps = perm_reps, bin_size = bin_size, indices){
   #data: 1st column:y, 2nd column:pis, rest: xsample
   d <- data[indices,]
   
@@ -17,7 +17,8 @@ gregTreet <- function(data, xpop, indices){
   xsample <- d[, 3:(p + 2)]
   
   #create tree
-  treet <- rpms(rp_equ = f, data=d, weights=pis, pval= pval, perm_reps = perm_reps, bin_size = bin_size)
+  f <- as.formula(paste("y ~ ", paste(names(xsample), collapse= "+")))
+  treet <- rpms(rp_equ = f, data = d, weights = as.vector(pis^(-1)), pval= pval, perm_reps = perm_reps, bin_size = bin_size)
   
   
   #Calculate weights

@@ -12,9 +12,9 @@ ratioEstimator(y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL,
 
 \item{xsample}{A numeric vector of the sampled auxiliary variable.}
 
-\item{xpop}{A data frame of population level auxiliary information.  Must come in the form of raw data, population totals or population means.}
+\item{xpop}{A numeric vector of population level auxiliary information.  Must come in the form of raw data, population total or population mean.}
 
-\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means. Default is "raw".}
+\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If datatype = "raw", then xpop must contain a numeric vector of the auxiliary variable for each unit in the population. If datatype = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
@@ -39,6 +39,14 @@ List of output containing:
 }
 \description{
 Calculates a ratio estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
+}
+\examples{
+library(survey)
+data(api)
+ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, 
+xpop = sum(apipop$meals), datatype = "total", pi = apisrs$pw^(-1), 
+N = dim(apipop)[1])
+
 }
 \references{
 \insertRef{coc77}{mase} 

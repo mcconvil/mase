@@ -5,7 +5,7 @@
 \title{Compute a generalized regression estimator}
 \usage{
 greg(y, xsample, xpop, pi = NULL, model = "linear", pi2 = NULL,
-  var_est = FALSE, var_method = "linHB", datatype = "raw", N = NULL,
+  var_est = FALSE, var_method = "LinHB", datatype = "raw", N = NULL,
   modelselect = FALSE, lambda = "lambda.min", B = 1000)
 }
 \arguments{
@@ -13,7 +13,7 @@ greg(y, xsample, xpop, pi = NULL, model = "linear", pi2 = NULL,
 
 \item{xsample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.}
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
@@ -51,7 +51,9 @@ Calculates a generalized regression estimator for a finite population mean/propo
 \examples{
 library(survey)
 data(api)
-greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), var_est = TRUE)
+greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], 
+xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), 
+var_est = TRUE)
 
 }
 \references{

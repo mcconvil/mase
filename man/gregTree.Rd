@@ -5,7 +5,7 @@
 \title{Compute a regression tree estimator}
 \usage{
 gregTree(y, xsample, xpop, pi = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "HB", B = 1000, pval = 0.05, perm_reps = 500,
+  var_method = "LinHB", B = 1000, pval = 0.05, perm_reps = 500,
   bin_size = NULL)
 }
 \arguments{
@@ -13,7 +13,7 @@ gregTree(y, xsample, xpop, pi = NULL, pi2 = NULL, var_est = FALSE,
 
 \item{xsample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.}
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
@@ -25,11 +25,11 @@ gregTree(y, xsample, xpop, pi = NULL, pi2 = NULL, var_est = FALSE,
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
-\item{pval}{Designated pval level to reject null hypothesis in permutation test used to fit the regression tree, Default to 0.05}
+\item{pval}{Designated p-value level to reject null hypothesis in permutation test used to fit the regression tree. Default value is 0.05.}
 
-\item{perm_reps}{integer specifying the number of permutations for each permutation test run to fit the regression tree, Default to 500}
+\item{perm_reps}{An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.}
 
-\item{bin_size}{numeric minimum number of observations in each node}
+\item{bin_size}{A integer specifying the minimum number of observations in each node.}
 }
 \value{
 A list of output containing:
@@ -43,6 +43,14 @@ A list of output containing:
 }
 \description{
 Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
+}
+\examples{
+library(survey)
+data(api)
+gregTree(y = apisrs$api00, 
+xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")])
+
 }
 \references{
 \insertRef{mcc17b}{mase}

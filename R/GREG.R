@@ -13,7 +13,9 @@
 #' @examples 
 #' library(survey)
 #' data(api)
-#' greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), var_est = TRUE)
+#' greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], 
+#' xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), 
+#' var_est = TRUE)
 #' 
 #'@references 
 #'\insertRef{cas76}{mase}
@@ -37,7 +39,7 @@
 #' @include varMase.R
 #' @include gregt.R
 
-greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method="linHB", datatype = "raw", N = NULL, modelselect = FALSE, lambda="lambda.min", B = 1000){
+greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method = "LinHB", datatype = "raw", N = NULL, modelselect = FALSE, lambda="lambda.min", B = 1000){
 
   
   
@@ -50,8 +52,8 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("linHB", "linHH", "linHTSRS", "linHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"linHB\", \"linHH\", \"linHT\", \"linHTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
   
@@ -279,7 +281,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     if(var_method!="bootstrapSRS"){
     y.hat <- xsample.d%*%solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y
     e <- y-y.hat
-    varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
+    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N)
     
     }else if(var_method=="bootstrapSRS"){
       #Find bootstrap variance

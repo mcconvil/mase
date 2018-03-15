@@ -42,6 +42,14 @@ A list of output containing:
 \description{
 Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
+\examples{
+library(survey)
+data(api) 
+postStrat(y = apisrs$api00, xsample = apisrs$awards, 
+xpop = data.frame(table(apipop$awards)), datatype = "totals", 
+pi = apisrs$pw^(-1))
+
+}
 \references{
 \insertRef{coc77}{mase} 
 

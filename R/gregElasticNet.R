@@ -12,7 +12,10 @@
 #' @examples 
 #' library(survey)
 #' data(api)
-#' gregElasticNet(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
+#' gregElasticNet(y = apisrs$api00, 
+#' xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+#' xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+#' pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
 #' 
 #' @references 
 #'\insertRef{mcc17}{mase}

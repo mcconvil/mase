@@ -7,8 +7,12 @@
 #' @param xpop A numeric vector of population level auxiliary information.  Must come in the form of raw data, population total or population mean.
 #' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If datatype = "raw", then xpop must contain a numeric vector of the auxiliary variable for each unit in the population. If datatype = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.
 #' 
-#' @example 
-#'ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = sum(apipop$meals), datatype = "totals", pi = apisrs$pw^(-1), N = dim(apipop)[1])
+#' @examples 
+#' library(survey)
+#' data(api)
+#'ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, 
+#'xpop = sum(apipop$meals), datatype = "total", pi = apisrs$pw^(-1), 
+#'N = dim(apipop)[1])
 #' 
 #'@references 
 #'\insertRef{coc77}{mase} 
@@ -78,10 +82,10 @@ ratioEstimator <- function(
   if (datatype == "raw"){
     tau_x <- sum(xpop)
   }
-  if (datatype == "total"){
+  if (datatype %in% c("total", "totals")){
     tau_x <- xpop
   }
-  if (datatype == "mean"){
+  if (datatype %in% c("mean", "means")){
     tau_x <- xpop*N
   }
   

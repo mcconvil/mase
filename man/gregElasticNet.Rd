@@ -13,11 +13,11 @@ gregElasticNet(y, xsample, xpop, pi = NULL, alpha = 1, model = "linear",
 
 \item{xsample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.}
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{alpha}{A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used.}
+\item{alpha}{A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used. Default is alpha = 1.}
 
 \item{model}{A string that specifies the regression model to utilize. Options are "linear" or "logistic".}
 
@@ -49,6 +49,15 @@ A list of output containing:
 }
 \description{
 Calculates a lasso, ridge or elastic net generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
+}
+\examples{
+library(survey)
+data(api)
+gregElasticNet(y = apisrs$api00, 
+xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
+
 }
 \references{
 \insertRef{mcc17}{mase}

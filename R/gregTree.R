@@ -4,10 +4,16 @@
 #' 
 #' @inheritParams horvitzThompson
 #' @inheritParams greg
-#' @param pval Designated pval level to reject null hypothesis in permutation test used to fit the regression tree, Default to 0.05
-#' @param perm_reps integer specifying the number of permutations for each permutation test run to fit the regression tree, Default to 500
-#' @param bin_size numeric minimum number of observations in each node
+#' @param pval Designated p-value level to reject null hypothesis in permutation test used to fit the regression tree. Default value is 0.05.
+#' @param perm_reps An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.
+#' @param bin_size A integer specifying the minimum number of observations in each node.
 #' 
+#' @examples
+#' library(survey)
+#' data(api)
+#' gregTree(y = apisrs$api00, 
+#' xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+#' xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")])
 #' 
 #'@references 
 #'\insertRef{mcc17b}{mase}
@@ -25,18 +31,19 @@
 #' @export gregTree
 #' @import rpms
 #' @import boot
+#' @importFrom stats as.formula
 #' @include varMase.R
 #' @include gregt.R
 
-gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="HB", B = 1000, pval = 0.05, perm_reps = 500, bin_size = NULL){
+gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="LinHB", B = 1000, pval = 0.05, perm_reps = 500, bin_size = NULL){
 
   
 
 ### INPUT VALIDATION ###
 
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
     return(NULL)
   }
   
@@ -65,13 +72,13 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   }
 
   #weight: inverse first order inclusion probabilities
-  weight <- as.vector(pi^(-1))
+  weights <- as.vector(pi^(-1))
 
   #Fit model
-  dat <- data.frame(y, xsample, weights = weight)
+  dat <- data.frame(y, xsample, weights = weights)
   #Create formula for rpms equation
   f <- as.formula(paste("y ~ ", paste(names(xsample), collapse= "+")))
-  tree <- rpms(rp_equ = f, data=dat, weights=weights, pval= pval, perm_reps = perm_reps, bin_size = bin_size)
+  tree <- rpms(rp_equ = f, data = dat, weights = weights, pval = pval, perm_reps = perm_reps, bin_size = bin_size)
   
   
   #Calculate weights
@@ -100,9 +107,9 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
 
     }else if(var_method=="bootstrapSRS"){
       #Find bootstrap variance
-      dat <- cbind(y,pi, xsample)
+      dat <- cbind(y, pi, xsample)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregTreet, R = B, xpop = xpop, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat, statistic = gregTreet, R = B, xpop = xpop, pval= pval, perm_reps = perm_reps, bin_size = bin_size, parallel = "multicore", ncpus = 2)
 
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
