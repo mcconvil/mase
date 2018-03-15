@@ -10,6 +10,10 @@
 #' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata.
 #' 
+#' @examples 
+#' 
+#' postStrat(y = apisrs$api00, xsample = apisrs$awards, xpop = data.frame(table(apipop$awards)), datatype = "totals", pi = apisrs$pw^(-1))
+#' 
 #'@references 
 #'\insertRef{coc77}{mase} 
 #' 

@@ -4,8 +4,11 @@
 #' 
 #' @inheritParams horvitzThompson
 #' @param xsample A numeric vector of the sampled auxiliary variable.
-#' @param xpop A data frame of population level auxiliary information.  Must come in the form of raw data, population totals or population means.
-#' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means. Default is "raw".
+#' @param xpop A numeric vector of population level auxiliary information.  Must come in the form of raw data, population total or population mean.
+#' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If datatype = "raw", then xpop must contain a numeric vector of the auxiliary variable for each unit in the population. If datatype = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.
+#' 
+#' @example 
+#'ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, xpop = sum(apipop$meals), datatype = "totals", pi = apisrs$pw^(-1), N = dim(apipop)[1])
 #' 
 #'@references 
 #'\insertRef{coc77}{mase} 
@@ -75,10 +78,10 @@ ratioEstimator <- function(
   if (datatype == "raw"){
     tau_x <- sum(xpop)
   }
-  if (datatype == "totals"){
+  if (datatype == "total"){
     tau_x <- xpop
   }
-  if (datatype == "means"){
+  if (datatype == "mean"){
     tau_x <- xpop*N
   }
   

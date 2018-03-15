@@ -23,7 +23,7 @@ greg(y, xsample, xpop, pi = NULL, model = "linear", pi2 = NULL,
 
 \item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
 
 \item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".}
 
@@ -47,6 +47,12 @@ A list of output containing:
 }
 \description{
 Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
+}
+\examples{
+library(survey)
+data(api)
+greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), var_est = TRUE)
+
 }
 \references{
 \insertRef{cas76}{mase}

@@ -6,7 +6,7 @@
 #' @param pi A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.
 #' @param N A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.
 #' @param var_est A logical indicating whether or not to compute a variance estimator.  Default is FALSE.
-#' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.
+#' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".
 #' @param pi2 A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.
 #' @param B The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
 #' 

@@ -4,11 +4,16 @@
 #' 
 #' @inheritParams horvitzThompson
 #' @param xsample A data frame of the auxiliary data in the sample.
-#' @param xpop A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data.
+#' @param xpop A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".
 #' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
 #' @param modelselect A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
 #' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
+#' 
+#' @examples 
+#' library(survey)
+#' data(api)
+#' greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), var_est = TRUE)
 #' 
 #'@references 
 #'\insertRef{cas76}{mase}

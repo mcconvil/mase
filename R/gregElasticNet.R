@@ -5,9 +5,14 @@
 #' 
 #' @inheritParams horvitzThompson
 #' @inheritParams greg
-#' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used.  
+#' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used. Default is alpha = 1. 
 #' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param cvfolds The number of folds for the cross-validation to tune lambda.
+#' 
+#' @examples 
+#' library(survey)
+#' data(api)
+#' gregElasticNet(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
 #' 
 #' @references 
 #'\insertRef{mcc17}{mase}

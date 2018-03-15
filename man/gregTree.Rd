@@ -21,7 +21,7 @@ gregTree(y, xsample, xpop, pi = NULL, pi2 = NULL, var_est = FALSE,
 
 \item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement.}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
