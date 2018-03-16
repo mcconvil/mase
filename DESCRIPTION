@@ -5,8 +5,9 @@ Version: 0.1.1
 Date: 2017-03-9
 Author: Kelly McConville, Becky Tang, George Zhu, Sida Li, Shirley Cheung
 Maintainer: Kelly McConville <kmcconv1@swarthmore.edu>
-Description: A set of several common model-assisted survey estimators and
-    variance estimators.
+Description: A set of model-assisted survey estimators and
+    variance estimators.  All of the estimators can be written 
+    as a generalized regression estimator.
 License: GPL-2
 LazyData: TRUE
 Imports:
