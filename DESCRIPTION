@@ -10,9 +10,10 @@ Description: A set of model-assisted survey estimators and
     as a generalized regression estimator.
 License: GPL-2
 LazyData: TRUE
-Imports:
-    MASS,
+Imports: MASS,
     glmnet,
+    Matrix,
+    foreach,
     survey,
     dplyr,
     magrittr,
@@ -28,6 +29,8 @@ Suggests:
     rmarkdown,
     readr,
     ggplot2
+Depends:
+    R (>= 3.1)    
 VignetteBuilder: knitr
 Collate: 
     'gregt.R'

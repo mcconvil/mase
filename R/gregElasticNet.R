@@ -31,6 +31,8 @@
 #' } 
 #' @import boot
 #' @import glmnet
+#' @import foreach
+#' @import Matrix
 #' @importFrom stats model.matrix predict quasibinomial var
 #' @export gregElasticNet
 #' @include varMase.R
