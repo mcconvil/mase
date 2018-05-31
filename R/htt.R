@@ -1,7 +1,7 @@
 #Helper function to compute HT total for bootstrapping
 
 htt <- function(data,  indices){
-  #data: 1st column:y, 2nd column:pis, rest: xsample_d
+  #data: 1st column:y, 2nd column:pis, rest: x_sample_d
   d <- data[indices,]
   
   #y

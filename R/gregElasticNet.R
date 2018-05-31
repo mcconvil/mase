@@ -6,15 +6,15 @@
 #' @inheritParams horvitzThompson
 #' @inheritParams greg
 #' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used. Default is alpha = 1. 
-#' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
+#' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda_value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param cvfolds The number of folds for the cross-validation to tune lambda.
 #' 
 #' @examples 
 #' library(survey)
 #' data(api)
 #' gregElasticNet(y = apisrs$api00, 
-#' xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-#' xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+#' x_sample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+#' x_pop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
 #' pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
 #' 
 #' @references 
@@ -23,12 +23,12 @@
 #'
 #' @return A list of output containing:
 #' \itemize{
-#' \item{pop_total:}{Estimate of population total}
-#' \item{coefficients:} {Elastic net coefficient estimates}
-#' \item{pop_mean:}{Estimate of the population mean (or proportion)}
-#' \item{pop_total_var:}{Estimated variance of population total estimate}
-#' \item{pop_mean_var:}{Estimated variance of population mean estimate}
-#' } 
+#' \item{pop_total: Estimate of population total}
+#' \item{pop_mean: Estimate of the population mean}
+#' \item{pop_total_var: Estimated variance of population total estimate}
+#' \item{pop_mean_var: Estimated variance of population mean estimate}
+#' \item{coefficients: Survey-weighted model coefficients}
+#' }
 #' @import boot
 #' @import glmnet
 #' @import foreach
@@ -37,9 +37,12 @@
 #' @export gregElasticNet
 #' @include varMase.R
 #' @include gregElasticNett.R
+#' 
+#' @seealso \code{\link{greg}} for a linear or logistic regression model.
+
 
 gregElasticNet  <- function(
-  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="LinHB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
+  y, x_sample, x_pop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="lin_HB", data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
   
   
   ### INPUT VALIDATION ###
@@ -49,8 +52,8 @@ gregElasticNet  <- function(
   }
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
+  if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
+    message("Variance method input incorrect. It has to be \"lin_HB\", \"lin_HH\", \"lin_HT\", \"lin_HTSRS\", or \"bootstrap_SRS\".")
     return(NULL)
   }
   
@@ -59,11 +62,21 @@ gregElasticNet  <- function(
     return(NULL)
   }
   
+  if(class(x_sample) != "data.frame"){
+    message("x_sample must be a data.frame.")
+    return(NULL)
+  }
+  
+  #Need to provide either data_type="raw", N, or pi.  Give warning if not
+  if(data_type %in% c("means", "totals") & is.null(N) & is.null(pi)){
+    message("Must supply N, pi, or raw population data so that we can estimate N.")
+    return(NULL)
+  }
 
   #Need to get N if not provided
   if(is.null(N)){
-    if(datatype=="raw"){
-      N <- dim(as.matrix(xpop))[1]
+    if(data_type=="raw"){
+      N <- dim(as.matrix(x_pop))[1]
     }else{
       N <- sum(pi^(-1))
       message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
@@ -72,9 +85,9 @@ gregElasticNet  <- function(
   
   
   #create design matrix, x matrix and transpose design matrix
-  xsample.d <- model.matrix(~., data = data.frame(xsample))
-  xsample <- data.frame(xsample.d[,-1])
-  xsample.dt <- t(xsample.d) 
+  x_sample_d <- model.matrix(~., data = data.frame(x_sample))
+  x_sample <- data.frame(x_sample_d[,-1])
+  x_sample_dt <- t(x_sample_d) 
   
   #Format y
   y <- as.vector(y)
@@ -94,59 +107,59 @@ gregElasticNet  <- function(
   #weight: inverse first order inclusion probabilities
   weight <- as.vector(pi^(-1))
   
-  #Cross-validation to find lambdas
+  #Cross-validation to find lambda_
   if(model=="linear"){
     fam <- "gaussian"
   } else{
     fam <- "binomial"
   } 
   
-  cv <- cv.glmnet(x = as.matrix(xsample), y = y, alpha = alpha, weights = weight, nfolds = cvfolds,family=fam, standardize=FALSE)
+  cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, weights = weight, nfolds = cvfolds,family=fam, standardize=FALSE)
   
-  if(lambda=="lambda.min"){
+  if(lambda == "lambda.min"){
     lambda_opt <- cv$lambda.min
   }
-  if(lambda=="lambda.1se"){
+  if(lambda == "lambda.1se"){
     lambda_opt <- cv$lambda.1se
   }
   
   
   ## MODEL SELECTION COEFFICIENTS ##
-  pred.mod <- glmnet(x = as.matrix(xsample), y = y, alpha = alpha, family=fam, standardize = FALSE, weights=weight)
-  elasticNet_coef <- predict(pred.mod,type = "coefficients",s = lambda_opt)[1:dim(xsample.d)[2],]
+  pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam, standardize = FALSE, weights=weight)
+  elasticNet_coef <- predict(pred_mod,type = "coefficients",s = lambda_opt)[1:dim(x_sample_d)[2],]
   
   #Estimated y values in sample
-  y.hats.s <- predict(cv,newx = as.matrix(xsample), s = lambda_opt, type="response")
+  y_hats_s <- predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response")
 
 if (model == "logistic") {
-  if (datatype != "raw"){
+  if (data_type != "raw"){
     message("For the Logistic Elastic Net Estimator, user must supply all x values for population.  Populations totals or means for x are not enough.")
     return(NULL)
   }
   
   #Population matrix
-  xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
-  #Make sure to only take the columns which are also in xsample
-  xpop <- dplyr::select_(xpop, .dots=names(xsample))
-  xpop_d <- model.matrix(~., data = xpop)
+  x_pop <- data.frame(model.matrix(~., data = x_pop))[,-1]
+  #Make sure to only take the columns which are also in x_sample
+  x_pop <- dplyr::select_(x_pop, .dots=names(x_sample))
+  x_pop_d <- model.matrix(~., data = x_pop)
   
   #Total estimate
-  y.hats.U <- predict(cv,newx = xpop_d[,-1], s = lambda_opt, type = "response")
-  t <- sum(y.hats.U) + t(y-y.hats.s)%*%pi^(-1)
+  y_hats_U <- predict(cv,newx = x_pop_d[,-1], s = lambda_opt, type = "response")
+  t <- sum(y_hats_U) + t(y-y_hats_s)%*%pi^(-1)
   
   if ( var_est == TRUE){
-    if (var_method != "bootstrapSRS") {
-      varEst <- varMase(y = (y - y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N)
+    if (var_method != "bootstrap_SRS") {
+      varEst <- varMase(y = (y - y_hats_s),pi = pi,pi2 = pi2,method = var_method, N = N)
       
     }
     
-    if(var_method == "bootstrapSRS"){
+    if(var_method == "bootstrap_SRS"){
       #FILL IN: logistic, raw data!
       
       #Sample data
-      dat <- cbind(y,pi, xsample.d)
+      dat <- cbind(y,pi, x_sample_d)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
       
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
@@ -159,40 +172,40 @@ if (model == "logistic") {
 
 if (model == "linear") {
   
-  #Format xpop to be a vector of pop totals
-  if (datatype=="raw"){
-    xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
-    #Make sure to only take the columns which are also in xsample
-    xpop <- dplyr::select_(xpop, .dots=names(xsample))
-    xpop_d <- model.matrix(~., data = xpop)
-    xpop_d <- apply(xpop_d,2,sum)
+  #Format x_pop to be a vector of pop totals
+  if (data_type=="raw"){
+    x_pop <- data.frame(model.matrix(~., data = x_pop))[,-1]
+    #Make sure to only take the columns which are also in x_sample
+    x_pop <- dplyr::select_(x_pop, .dots=names(x_sample))
+    x_pop_d <- model.matrix(~., data = x_pop)
+    x_pop_d <- apply(x_pop_d,2,sum)
   }
-  if (datatype=="totals"){
-    #Make sure to only take the values which are also in xsample
-    xpop_d <- unlist(c(N,xpop[names(xsample)]))
+  if (data_type=="totals"){
+    #Make sure to only take the values which are also in x_sample
+    x_pop_d <- unlist(c(N,x_pop[names(x_sample)]))
   }
-  if (datatype=="means"){
-    #Make sure to only take the values which are also in xsample
-    xpop_d <- unlist(c(N,xpop[names(xsample)]*N))
+  if (data_type=="means"){
+    #Make sure to only take the values which are also in x_sample
+    x_pop_d <- unlist(c(N,x_pop[names(x_sample)]*N))
   }
   
   #Total estimate
-  t <- elasticNet_coef %*% (xpop_d) + t(y-y.hats.s)%*%pi^(-1)
+  t <- elasticNet_coef %*% (x_pop_d) + t(y-y_hats_s)%*%pi^(-1)
   
   
   if ( var_est == TRUE ) {
-    if ( var_method != "bootstrapSRS") {
-      varEst <- varMase(y = (y-y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N)
+    if ( var_method != "bootstrap_SRS") {
+      varEst <- varMase(y = (y-y_hats_s),pi = pi,pi2 = pi2,method = var_method, N = N)
       
     }
     
-    if ( var_method == "bootstrapSRS"){
+    if ( var_method == "bootstrap_SRS"){
         #Find bootstrap variance
         
         #Sample data
-        dat <- cbind(y,pi, xsample.d)
+        dat <- cbind(y,pi, x_sample_d)
         #Bootstrap total estimates
-        t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt, parallel = "multicore", ncpus = 2)
+        t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
         
         #Adjust for bias and without replacement sampling
         varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)

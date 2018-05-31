@@ -23,12 +23,12 @@ horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
 \value{
-List of output containing:
+A list of output containing:
 \itemize{
-\item{pop_total:}{Estimate of population total}
-\item{pop_mean:}{Estimate of population mean}
-\item{pop_total_var:}{ Estimated variance of population total estimate}
-\item{pop_mean_var:}{ Estimated variance of population mean estimate}
+\item{pop_total: Estimate of population total}
+\item{pop_mean: Estimate of the population mean}
+\item{pop_total_var: Estimated variance of population total estimate}
+\item{pop_mean_var: Estimated variance of population mean estimate}
 }
 }
 \description{

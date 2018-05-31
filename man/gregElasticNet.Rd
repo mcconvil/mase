@@ -4,16 +4,16 @@
 \alias{gregElasticNet}
 \title{Compute an elastic net regression estimator}
 \usage{
-gregElasticNet(y, xsample, xpop, pi = NULL, alpha = 1, model = "linear",
-  pi2 = NULL, var_est = FALSE, var_method = "LinHB", datatype = "raw",
+gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear",
+  pi2 = NULL, var_est = FALSE, var_method = "LinHB", data_type = "raw",
   N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{A data frame of the auxiliary data in the sample.}
+\item{x_sample}{A data frame of the auxiliary data in the sample.}
 
-\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
+\item{x_pop}{A data frame of population level auxiliary information.  It must contain the same names as x_sample.  If data_type = "raw", must contain unit level data.  If data_type = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
@@ -27,11 +27,11 @@ gregElasticNet(y, xsample, xpop, pi = NULL, alpha = 1, model = "linear",
 
 \item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
 
-\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".}
+\item{data_type}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".}
 
 \item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
-\item{lambda}{A string specifying how to tune the lambda hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
+\item{lambda}{A string specifying how to tune the lambda hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda_value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
@@ -40,11 +40,11 @@ gregElasticNet(y, xsample, xpop, pi = NULL, alpha = 1, model = "linear",
 \value{
 A list of output containing:
 \itemize{
-\item{pop_total:}{Estimate of population total}
-\item{coefficients:} {Elastic net coefficient estimates}
-\item{pop_mean:}{Estimate of the population mean (or proportion)}
-\item{pop_total_var:}{Estimated variance of population total estimate}
-\item{pop_mean_var:}{Estimated variance of population mean estimate}
+\item{pop_total: Estimate of population total}
+\item{pop_mean: Estimate of the population mean}
+\item{pop_total_var: Estimated variance of population total estimate}
+\item{pop_mean_var: Estimated variance of population mean estimate}
+\item{coefficients: Survey-weighted model coefficients}
 }
 }
 \description{
@@ -54,11 +54,14 @@ Calculates a lasso, ridge or elastic net generalized regression estimator for a 
 library(survey)
 data(api)
 gregElasticNet(y = apisrs$api00, 
-xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+x_sample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
+x_pop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
 pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
 
 }
 \references{
 \insertRef{mcc17}{mase}
+}
+\seealso{
+\code{\link{greg}} for a linear or logistic regression model.
 }

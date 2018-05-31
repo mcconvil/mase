@@ -4,17 +4,17 @@
 \alias{ratioEstimator}
 \title{Compute a ratio estimator}
 \usage{
-ratioEstimator(y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL,
+ratioEstimator(y, x_sample, x_pop, data_type = "raw", pi = NULL, N = NULL,
   pi2 = NULL, var_est = FALSE, var_method = "LinHB", B = 1000)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
 
-\item{xsample}{A numeric vector of the sampled auxiliary variable.}
+\item{x_sample}{A numeric vector of the sampled auxiliary variable.}
 
-\item{xpop}{A numeric vector of population level auxiliary information.  Must come in the form of raw data, population total or population mean.}
+\item{x_pop}{A numeric vector of population level auxiliary information.  Must come in the form of raw data, population total or population mean.}
 
-\item{datatype}{A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If datatype = "raw", then xpop must contain a numeric vector of the auxiliary variable for each unit in the population. If datatype = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.}
+\item{data_type}{A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If data_type = "raw", then x_pop must contain a numeric vector of the auxiliary variable for each unit in the population. If data_type = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.}
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
@@ -29,12 +29,12 @@ ratioEstimator(y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL,
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
 \value{
-List of output containing:
+A list of output containing:
 \itemize{
-\item{pop_total:}{Estimate of population total}
-\item{pop_mean:}{Estimate of population mean}
-\item{pop_total_var:}{ Estimated variance of population total estimate}
-\item{pop_mean_var:}{ Estimated variance of population mean estimate}
+\item{pop_total: Estimate of population total}
+\item{pop_mean: Estimate of the population mean}
+\item{pop_total_var: Estimated variance of population total estimate}
+\item{pop_mean_var: Estimated variance of population mean estimate}
 }
 }
 \description{
@@ -43,12 +43,15 @@ Calculates a ratio estimator for a finite population mean/proportion or total ba
 \examples{
 library(survey)
 data(api)
-ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, 
-xpop = sum(apipop$meals), datatype = "total", pi = apisrs$pw^(-1), 
+ratioEstimator(y = apisrs$api00, x_sample = apisrs$meals, 
+x_pop = sum(apipop$meals), data_type = "total", pi = apisrs$pw^(-1), 
 N = dim(apipop)[1])
 
 }
 \references{
 \insertRef{coc77}{mase} 
 \insertRef{sar92}{mase}
+}
+\seealso{
+\code{\link{greg}} for a linear or logistic regression model.
 }
