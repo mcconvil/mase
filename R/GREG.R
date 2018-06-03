@@ -17,6 +17,12 @@
 #' x_pop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), 
 #' var_est = TRUE)
 #' 
+#' #To estimate a proportion
+#' y <- 0 + (apisrs$both == "Yes")
+#' greg(y = y, x_sample = apisrs[c("col.grad")], 
+#' x_pop = apipop[c("col.grad")], pi = apisrs$pw^(-1), 
+#' var_est = TRUE, model = "logistic")
+#' 
 #'@references 
 #'\insertRef{cas76}{mase}
 #'
@@ -198,16 +204,16 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
 ### LOGISTIC REGRESSION ###
   if (model == "logistic"){
     
-    #Error if y has more than two categories (can only handle two right now)
+    #Error if y has more than two categories 
     if(length(levels(as.factor(y)))!=2){
       message("Function can only handle categorical response with two categories.")
       return(NULL)
     }
     
     if (data_type=="raw"){
-      x_pop <- data.frame(model.matrix(~., data = x_pop))[,-1]
+      x_pop <- data.frame(model.matrix(~., data = x_pop))[,-1, drop = FALSE]
       #Make sure to only take the columns which are also in x_sample
-      x_pop <- dplyr::select(x_pop, one_of(colnames(x_sample)))
+      x_pop <- dplyr::select(x_pop, dplyr::one_of(colnames(x_sample)))
       x_pop_d <- model.matrix(~., data = x_pop)
     }
     
@@ -218,7 +224,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
     s_design <-survey::svydesign(ids=~1,weights=~weight,data=dat)
     mod <- survey::svyglm(f, design=s_design,family=quasibinomial())
 
-    y_hats_U <- as.matrix(predict(mod, newdata = data.frame(x_pop_d[,-1]), type = "response", family = quasibinomial()))
+    y_hats_U <- as.matrix(predict(mod, newdata = data.frame(x_pop_d[,-1, drop = FALSE]), type = "response", family = quasibinomial()))
     y_hats_s <- as.matrix(predict(mod, type = "response", family = quasibinomial()))
     #Estimator of total
     t <- t(y-y_hats_s)%*%pi^(-1) + sum(y_hats_U)
@@ -241,8 +247,6 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
         #Bootstrap total estimates
         dat <- data.frame(y, weight, x_sample)
         colnames(dat) <- c("y", "weight", colnames(x_sample))
-        
-       # system.time(t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, x_pop_d = x_pop_d, weights = pi^{-1}, parallel = "snow", cl=cluster))
         
         t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, x_pop_d = x_pop_d, parallel = "multicore", ncpus = 2)
     

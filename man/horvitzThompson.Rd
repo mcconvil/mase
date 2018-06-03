@@ -5,7 +5,7 @@
 \title{Compute the Horvitz-Thompson Estimator}
 \usage{
 horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "LinHB", B = 1000)
+  var_method = "lin_HB", B = 1000)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -14,11 +14,11 @@ horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
 
 \item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
-\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "lin_HT" variance estimator.}
 
 \item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 }
@@ -38,7 +38,7 @@ Calculate the Horvitz-Thompson Estimator for a finite population mean/proportion
 library(survey)
 data(api)
 horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
-horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "LinHTSRS")
+horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "lin_HTSRS")
 
 }
 \references{

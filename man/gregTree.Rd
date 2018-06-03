@@ -5,7 +5,7 @@
 \title{Compute a regression tree estimator}
 \usage{
 gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "LinHB", B = 1000, p_value = 0.05, perm_reps = 500,
+  var_method = "lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
   bin_size = NULL)
 }
 \arguments{
@@ -17,11 +17,11 @@ gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "lin_HT" variance estimator.}
 
 \item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 

@@ -5,7 +5,7 @@
 \title{Compute a post-stratified estimator}
 \usage{
 postStrat(y, x_sample, x_pop, pi = NULL, N = NULL, var_est = FALSE,
-  var_method = "HB", pi2 = NULL, data_type = "raw", B = 1000)
+  var_method = "lin_HB", pi2 = NULL, data_type = "raw", B = 1000)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -20,9 +20,9 @@ postStrat(y, x_sample, x_pop, pi = NULL, N = NULL, var_est = FALSE,
 
 \item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata.}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement, "unconditional_SRS" = simple random sampling variance estimator which accounts for random strata.}
 
-\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "lin_HT" variance estimator.}
 
 \item{data_type}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.}
 

@@ -5,7 +5,7 @@
 \title{Compute an elastic net regression estimator}
 \usage{
 gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear",
-  pi2 = NULL, var_est = FALSE, var_method = "LinHB", data_type = "raw",
+  pi2 = NULL, var_est = FALSE, var_method = "lin_HB", data_type = "raw",
   N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10)
 }
 \arguments{
@@ -21,11 +21,11 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear",
 
 \item{model}{A string that specifies the regression model to utilize. Options are "linear" or "logistic".}
 
-\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "lin_HT" variance estimator.}
 
 \item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".}
 
 \item{data_type}{A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".}
 
