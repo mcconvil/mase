@@ -29,7 +29,7 @@
 #' \item{pop_total_var: Estimated variance of population total estimate}
 #' \item{pop_mean_var: Estimated variance of population mean estimate}
 #' \item{strat_ests: Table of total and mean estimates for each strata}
-#' \item{weights: Survey weights produced by postStrat}
+#' \item{weights: Survey weights produced by post stratification}
 #' }
 #' @import dplyr
 #' @import magrittr
@@ -41,7 +41,7 @@
 
 
 postStrat <- function(
-  y, x_sample, x_pop, pi = NULL, N=NULL, var_est = FALSE, var_method="lin_HB", pi2 = NULL, data_type= "raw", B=1000){
+  y, x_sample, x_pop, pi = NULL, N=NULL, var_est = FALSE, var_method="lin_HB", pi2 = NULL, data_type= "raw", B=1000, strata = NULL){
 
   
   #Define variables
@@ -145,7 +145,7 @@ postStrat <- function(
   dat_s <- left_join(x_sample_pi_y, tab, by="x") 
   
   #Survey weights  
-  wts <- dat_s$pi*dat_s$ps_h
+  wts <- 1/dat_s$pi*dat_s$ps_h
   
   #Compute variance estimator
   if(var_est==TRUE){
@@ -169,7 +169,7 @@ postStrat <- function(
     if(is.element(var_method, c("lin_HB", "lin_HH", "lin_HT", "lin_HTSRS"))){
       
       y_hat <- dat_s$strat_pop_mean
-      varEst <- varMase(y = (y-y_hat),pi = pi,pi2 = pi2, method = var_method, N = N)
+      varEst <- varMase(y = (y-y_hat),pi = pi,pi2 = pi2, method = var_method, N = N, strata = strata)
       
     }
     return(list( pop_total = pop_total, 

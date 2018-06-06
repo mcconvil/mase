@@ -25,7 +25,7 @@
 #' \item{pop_mean: Estimate of the population mean}
 #' \item{pop_total_var: Estimated variance of population total estimate}
 #' \item{pop_mean_var: Estimated variance of population mean estimate}
-#' \item{weights: Survey weights produced by greg (linear model only)}
+#' \item{weights: Survey weights produced by regression tree}
 #' \item{tree: rpms object}
 #' }
 #' 
@@ -39,7 +39,8 @@
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
 
-gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500, bin_size = NULL){
+gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="lin_HB", B = 1000, 
+                      p_value = 0.05, perm_reps = 500, bin_size = NULL, strata = NULL){
 
   
 
@@ -112,7 +113,7 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
     if(var_method!="bootstrap_SRS"){
     y_hat <- predict(object = tree, newdata = x_sample)
     e <- y-y_hat
-    varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
+    varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
 
     }else if(var_method=="bootstrap_SRS"){
       #Find bootstrap variance

@@ -5,7 +5,7 @@
 \title{Compute the Horvitz-Thompson Estimator}
 \usage{
 horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "lin_HB", B = 1000)
+  var_method = "lin_HB", B = 1000, strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -21,6 +21,8 @@ horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
 \item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+
+\item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
 A list of output containing:

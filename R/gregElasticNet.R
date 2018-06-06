@@ -42,7 +42,8 @@
 
 
 gregElasticNet  <- function(
-  y, x_sample, x_pop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="lin_HB", data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10){
+  y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear", pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
+  data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL){
   
   
   ### INPUT VALIDATION ###
@@ -107,7 +108,7 @@ gregElasticNet  <- function(
   #weight: inverse first order inclusion probabilities
   weight <- as.vector(pi^(-1))
   
-  #Cross-validation to find lambda_
+  #Cross-validation to find lambda
   if(model=="linear"){
     fam <- "gaussian"
   } else{
@@ -129,7 +130,7 @@ gregElasticNet  <- function(
   elasticNet_coef <- predict(pred_mod,type = "coefficients",s = lambda_opt)[1:dim(x_sample_d)[2],]
   
   #Estimated y values in sample
-  y_hats_s <- predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response")
+  y_hats_s <- as.vector(predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response"))
 
 if (model == "logistic") {
   if (data_type != "raw"){
@@ -149,7 +150,7 @@ if (model == "logistic") {
   
   if ( var_est == TRUE){
     if (var_method != "bootstrap_SRS") {
-      varEst <- varMase(y = (y - y_hats_s),pi = pi,pi2 = pi2,method = var_method, N = N)
+      varEst <- varMase(y = (y - y_hats_s), pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
       
     }
     
@@ -195,7 +196,7 @@ if (model == "linear") {
   
   if ( var_est == TRUE ) {
     if ( var_method != "bootstrap_SRS") {
-      varEst <- varMase(y = (y-y_hats_s),pi = pi,pi2 = pi2,method = var_method, N = N)
+      varEst <- varMase(y = (y-y_hats_s), pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
       
     }
     

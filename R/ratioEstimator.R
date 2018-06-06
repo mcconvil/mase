@@ -24,6 +24,7 @@
 #' \item{pop_mean: Estimate of the population mean}
 #' \item{pop_total_var: Estimated variance of population total estimate}
 #' \item{pop_mean_var: Estimated variance of population mean estimate}
+#' \item{weights: Survey weights produced by ratio estimator}
 #' }
 #' 
 #' @export ratioEstimator
@@ -35,7 +36,7 @@
 
 
 ratioEstimator <- function(
-  y, x_sample, x_pop, data_type = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "lin_HB", B = 1000) {
+  y, x_sample, x_pop, data_type = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "lin_HB", B = 1000, strata = NULL) {
 
 
     ### INPUT VALIDATION ###
@@ -73,6 +74,16 @@ ratioEstimator <- function(
     }
   }
   
+  #Check length of x_pop
+  if(data_type == "raw" & length(x_pop) != N){
+    message("Population size, N, and length of x_pop must match.")
+    return(NULL)
+  }
+  if(data_type %in% c("mean", "total") & length(x_pop) != 1){
+    message("If data_type is \"mean\" or \"total\", then x_pop must have length 1 since it is the corresponding population mean or total for x.")
+    return(NULL)
+  }
+  
   
   # create equal SRS pis if not given
   if (is.null(pi)) {
@@ -105,12 +116,15 @@ ratioEstimator <- function(
   mu_r <- r * mu_x
   tau_r <- r * tau_x
   
+  #weights
+  weights <- tau_x/txHT/pi
+  
   #Estimate the variance
   if(var_est==TRUE){
     
     if(var_method!="bootstrap_SRS"){
     y_hat <- r*as.vector(x_sample)
-    varEst <- varMase(y = (y-y_hat),pi = pi,pi2 = pi2,method = var_method, N = N)
+    varEst <- varMase(y = (y-y_hat),pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
     varEstMu <- varEst*N^(-2)
     }
     
@@ -127,11 +141,17 @@ ratioEstimator <- function(
       varEstMu <- varEst*N^(-2)
     }
     
-    return(list(pop_total = tau_r, pop_mean = mu_r, pop_total_var=varEst, pop_mean_var = varEstMu))
+    return(list(pop_total = tau_r, 
+                pop_mean = mu_r, 
+                pop_total_var=varEst, 
+                pop_mean_var = varEstMu, 
+                weights = weights))
     
   }else{
     
-    return(list(pop_total = tau_r, pop_mean = mu_r))
+    return(list(pop_total = tau_r, 
+                pop_mean = mu_r, 
+                weights = weights))
   }
   
 }

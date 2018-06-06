@@ -48,7 +48,8 @@
 #' 
 #' @seealso \code{\link{gregElasticNet}} for a penalized regression model.
 
-greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method = "lin_HB", data_type = "raw", N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000){
+greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
+                  data_type = "raw", N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000, strata = NULL){
 
   
   
@@ -238,7 +239,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
     if(var_est==TRUE){
       if(var_method!="bootstrap_SRS"){
         e <- y-y_hats_s
-        varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
+        varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
       
       }else if(var_method=="bootstrap_SRS"){
   
@@ -305,7 +306,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
     if(var_method!="bootstrap_SRS"){
     y_hat <- x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt) %*% diag(weight)%*%y
     e <- y-y_hat
-    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N)
+    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
     
     }else if(var_method=="bootstrap_SRS"){
       #Find bootstrap variance

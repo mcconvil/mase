@@ -5,7 +5,8 @@
 \title{Compute a post-stratified estimator}
 \usage{
 postStrat(y, x_sample, x_pop, pi = NULL, N = NULL, var_est = FALSE,
-  var_method = "lin_HB", pi2 = NULL, data_type = "raw", B = 1000)
+  var_method = "lin_HB", pi2 = NULL, data_type = "raw", B = 1000,
+  strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -27,6 +28,8 @@ postStrat(y, x_sample, x_pop, pi = NULL, N = NULL, var_est = FALSE,
 \item{data_type}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+
+\item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
 A list of output containing:
@@ -36,7 +39,7 @@ A list of output containing:
 \item{pop_total_var: Estimated variance of population total estimate}
 \item{pop_mean_var: Estimated variance of population mean estimate}
 \item{strat_ests: Table of total and mean estimates for each strata}
-\item{weights: Survey weights produced by postStrat}
+\item{weights: Survey weights produced by post stratification}
 }
 }
 \description{

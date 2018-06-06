@@ -9,6 +9,7 @@
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".
 #' @param pi2 A square matrix of the joint inclusion probabilities.  Needed for the "lin_HT" variance estimator.
 #' @param B The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
+#' @param strata A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.
 #' 
 #' @examples 
 #' library(survey)
@@ -33,7 +34,7 @@
 #' @include varMase.R
 #' @include htt.R
 #'
-horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, var_method="lin_HB", B = 1000) {
+horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, var_method="lin_HB", B = 1000, strata = NULL) {
 
   ### INPUT VALIDATION ###
   
@@ -88,7 +89,7 @@ horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, 
   
   if(var_est==TRUE){
     if(var_method!="bootstrap_SRS"){
-    varEst <- varMase(y = y,pi = pi,pi2 = pi2,method = var_method, N = N)
+    varEst <- varMase(y = y,pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
 
     }else{
       #Find bootstrap variance

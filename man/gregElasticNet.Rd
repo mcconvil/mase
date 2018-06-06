@@ -6,7 +6,8 @@
 \usage{
 gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear",
   pi2 = NULL, var_est = FALSE, var_method = "lin_HB", data_type = "raw",
-  N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10)
+  N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10,
+  strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -36,6 +37,8 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear",
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
 \item{cvfolds}{The number of folds for the cross-validation to tune lambda.}
+
+\item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
 A list of output containing:

@@ -38,7 +38,7 @@ A list of output containing:
 \item{pop_mean: Estimate of the population mean}
 \item{pop_total_var: Estimated variance of population total estimate}
 \item{pop_mean_var: Estimated variance of population mean estimate}
-\item{weights: Survey weights produced by greg (linear model only)}
+\item{weights: Survey weights produced by regression tree}
 \item{tree: rpms object}
 }
 }
