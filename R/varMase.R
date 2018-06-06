@@ -30,6 +30,12 @@ varMase <- function(y, pi, pi2 = NULL, method = "lin_HB", N = NULL, strata = NUL
   
   dat <- data.frame(y = y, pi = pi, strata = strata)
 
+  #Define global variables
+  n_h <- NULL
+  varEst_h <- NULL
+  t_h <- NULL
+  a <- NULL
+  
   if(method == "lin_HB"){
     
     varEst <- dplyr::group_by(dat, strata) %>%

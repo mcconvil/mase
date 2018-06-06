@@ -6,7 +6,7 @@
 \usage{
 gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
   var_method = "lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
-  bin_size = NULL)
+  bin_size = NULL, strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -30,6 +30,8 @@ gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 \item{perm_reps}{An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.}
 
 \item{bin_size}{A integer specifying the minimum number of observations in each node.}
+
+\item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
 A list of output containing:

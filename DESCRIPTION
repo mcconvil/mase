@@ -2,7 +2,7 @@ Package: mase
 Type: Package
 Title: Model-Assisted Survey Estimators
 Version: 0.1.1
-Date: 2017-03-9
+Date: 2018-06-06
 Author: Kelly McConville, Becky Tang, George Zhu, Sida Li, Shirley Cheung
 Maintainer: Kelly McConville <kmcconv1@swarthmore.edu>
 Description: A set of model-assisted survey estimators and

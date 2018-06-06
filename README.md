@@ -8,7 +8,7 @@ mase is still under development. Please use at your own risk!
 mase
 ====
 
-mase contains a collection of model-assisted generalized regression estimators (the post-stratification estimator, the ratio estimator, the linear and logistic regression estimator, the elastic net regression estimator, and the regression tree estimator) for finite population estimation of a total or mean from a single stage complex sample design. It also contains the Horvitz-Thompson estimator and several variance estimators.
+mase contains a collection of model-assisted generalized regression estimators (the post-stratification estimator, the ratio estimator, the linear and logistic regression estimator, the elastic net regression estimator, and the regression tree estimator) for finite population estimation of a total or mean from a single stage, unequal probability without replacement design. It also contains the Horvitz-Thompson estimator and several variance estimators.
 
 Installation
 ------------
@@ -23,7 +23,7 @@ devtools::install_github("Swarthmore-Statistics/mase")
 Example
 -------
 
-Here's an example fitting the Horvitz-Thompson estimator:
+Here's an example of fitting the Horvitz-Thompson estimator:
 
 ``` r
 
@@ -40,7 +40,7 @@ library(survey)
 #> 
 #>     dotchart
 data(api)
-horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "HTSRS")
+horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "lin_HTSRS")
 #> $pop_total
 #> [1] 4066887
 #> 
@@ -53,14 +53,3 @@ horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_metho
 #> $pop_mean_var
 #> [1] 85.55736
 ```
-
-Please check out the vignette for more examples.
-
-Current Known Issues
---------------------
-
--   Regression tree estimator in development.
-
--   Restructuring arguments of functions
-
--   Fixing naming of variance estimators
