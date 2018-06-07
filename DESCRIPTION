@@ -4,11 +4,12 @@ Title: Model-Assisted Survey Estimators
 Version: 0.1.1
 Date: 2018-06-06
 Author: Kelly McConville, Becky Tang, George Zhu, Sida Li, Shirley Cheung
-Maintainer: Kelly McConville <kmcconv1@swarthmore.edu>
-Description: A set of model-assisted survey estimators and
-    variance estimators.  All of the estimators can be written 
-    as a generalized regression estimator.
-License: GPL-2
+Maintainer: Kelly McConville <mcconville@reed.edu>
+Description: A set of model-assisted survey estimators and corresponding
+    variance estimators for single stage, unequal probability sampling designs
+    without replacement.  All of the estimators can be written as a generalized 
+    regression estimator.
+License: GPL-3
 LazyData: TRUE
 Imports: MASS,
     glmnet,

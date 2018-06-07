@@ -7,3 +7,4 @@
 ^README-.*\.png$
 .Rhistory
 .RData
+cran-comments.md
