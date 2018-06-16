@@ -5,10 +5,10 @@ citEntry(entry = "Manual",
   author       = personList(as.person("Kelly McConville"),
                    as.person("Becky Tang"), as.person("George Zhu"), as.person("Shirley Cheung"), as.person("Sida Li")),
   year         = "2017",
-  url          = "https://github.com/Swarthmore-Statistics/mase", 
+  url          = "https://cran.r-project.org/package=mase", 
   textVersion = 
   paste("Kelly McConville, Becky Tang, George Zhu, Shirley Cheung, and Sida Li (2017).",
         "mase: Model-Assisted Survey Estimation.",
         "R package version 0.1.1",
-        "https://github.com/Swarthmore-Statistics/mase")
+        "https://cran.r-project.org/package=mase")
 )
