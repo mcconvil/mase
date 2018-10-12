@@ -1,3 +1,34 @@
+# Update
+
+This is an update to mase 0.1.1.  
+
+Received the following message:
+
+"This concerns packages
+
+GGUM Rdpack erhcv ggtern idefix mase partitionComparison pdSpecEst
+
+'check' in R-devel now checks Rd files after evaluating \Sexpr{}
+expressions.  As the results pages on CRAN now show (for Fedora so far),
+there are problems either with the Rd code inserted or with evaluating
+the expression.  Note in particular that inserting non-ASCII text
+requires an encoding to be declared (for the Rd file or the package).
+
+Unfortunately, the line number currently reported refers to the \Sexpr
+evaluation and not the text of the unexpanded .Rd file.
+
+Please correct ASAP and before Oct 16 to safely retain the package on CRAN."
+
+I have added "Encoding: UTF-8" to the DESCRIPTION file and that fixed the issue.  
+
+Again I tested the package on two systems:
+
+* 
+* 
+
+
+
+
 # Resubmission
 
 This is a resubmission. Thank you for the helpful feedback to my initial submission. In this version I have:
