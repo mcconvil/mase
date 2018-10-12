@@ -4,8 +4,8 @@
 \alias{horvitzThompson}
 \title{Compute the Horvitz-Thompson Estimator}
 \usage{
-horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "lin_HB", B = 1000, strata = NULL)
+horvitzThompson(y, pi = NULL, N = NULL, pi2 = NULL,
+  var_est = FALSE, var_method = "lin_HB", B = 1000, strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}

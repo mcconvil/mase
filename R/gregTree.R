@@ -1,9 +1,10 @@
 #' Compute a regression tree estimator
 #' 
-#' Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
+#' Calculates a regression tree estimator for a finite population mean or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
 #' @inheritParams horvitzThompson
 #' @inheritParams greg
+#' @param x_pop A data frame of population level auxiliary information. It must contain the same names as x_sample.
 #' @param p_value Designated p-value level to reject null hypothesis in permutation test used to fit the regression tree. Default value is 0.05.
 #' @param perm_reps An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.
 #' @param bin_size A integer specifying the minimum number of observations in each node.

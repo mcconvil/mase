@@ -45,7 +45,7 @@ A list of output containing:
 }
 }
 \description{
-Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
+Calculates a regression tree estimator for a finite population mean or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
 \examples{
 library(survey)

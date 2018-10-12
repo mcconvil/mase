@@ -5,8 +5,9 @@
 \title{Compute a generalized regression estimator}
 \usage{
 greg(y, x_sample, x_pop, pi = NULL, model = "linear", pi2 = NULL,
-  var_est = FALSE, var_method = "lin_HB", data_type = "raw", N = NULL,
-  model_select = FALSE, lambda = "lambda.min", B = 1000, strata = NULL)
+  var_est = FALSE, var_method = "lin_HB", data_type = "raw",
+  N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000,
+  strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}

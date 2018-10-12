@@ -4,9 +4,9 @@
 \alias{ratioEstimator}
 \title{Compute a ratio estimator}
 \usage{
-ratioEstimator(y, x_sample, x_pop, data_type = "raw", pi = NULL, N = NULL,
-  pi2 = NULL, var_est = FALSE, var_method = "lin_HB", B = 1000,
-  strata = NULL)
+ratioEstimator(y, x_sample, x_pop, data_type = "raw", pi = NULL,
+  N = NULL, pi2 = NULL, var_est = FALSE, var_method = "lin_HB",
+  B = 1000, strata = NULL)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}

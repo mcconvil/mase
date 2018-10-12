@@ -1,8 +1,9 @@
 Package: mase
 Type: Package
 Title: Model-Assisted Survey Estimators
-Version: 0.1.1
-Date: 2018-06-06
+Version: 0.1.2
+Date: 2018-10-12
+Encoding: UTF-8
 Authors@R: c(person("Kelly", "McConville", role = c("aut", "cre", "cph"), 
                     email = "mcconville@reed.edu"),
             person("Becky", "Tang", role = "aut"),
@@ -61,5 +62,5 @@ Collate:
     'ratioEstimatort.R'
     'ratioEstimator.R'
     'treeDesignMatrix.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 RdMacros: Rdpack
