@@ -29,8 +29,7 @@ Description: A set of model-assisted survey estimators and corresponding
     <doi:10.1214/16-SS113>.
 License: GPL-2
 LazyData: TRUE
-Imports: MASS,
-    glmnet,
+Imports: glmnet,
     Matrix,
     foreach,
     survey,

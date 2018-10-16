@@ -1,8 +1,8 @@
-# Update
+# Resubmission
 
-This is an update to mase 0.1.1.  
+This is an update to mase 0.1.1.  The new version is mase 0.1.2/
 
-Received the following message:
+Received the following message from CRAN:
 
 "This concerns packages
 
@@ -23,8 +23,13 @@ I have added "Encoding: UTF-8" to the DESCRIPTION file and that fixed the issue.
 
 Again I tested the package on two systems:
 
-* 
-* 
+* local OS High Sierra (10.13.6), R 3.5.1
+* win builder, R Under development (unstable) (2018-10-10 r75427)
+
+With results:
+
+R CMD check results
+0 errors | 0 warnings | 0 notes
 
 
 
