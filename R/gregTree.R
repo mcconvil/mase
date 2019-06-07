@@ -40,32 +40,36 @@
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
 
-gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="lin_HB", B = 1000, 
-                      p_value = 0.05, perm_reps = 500, bin_size = NULL, strata = NULL){
-
-  
-
-### INPUT VALIDATION ###
+gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
+                      var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
+                      bin_size = NULL, strata = NULL){
 
   #Make sure the var_method is valid
   if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
     message("Variance method input incorrect. It has to be \"lin_HB\", \"lin_HH\", \"lin_HT\", \"lin_HTSRS\", or \"bootstrap_SRS\".")
     return(NULL)
   }
-  
-  #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
-    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
-  }
-  
+  #Check that x_sample is a df
   if(class(x_sample) != "data.frame"){
     message("x_sample must be a data.frame.")
     return(NULL)
   }
-  
+  #Check that y is numeric
+  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+  }
   #Convert y to a vector
   y <- as.vector(y)
-
+  
+  #Check that the number of observations are consistent
+  if(nrow(x_sample) != length(y)){
+    message("y and x_sample must have same number of observations")
+  }
+  #Make sure y is complete
+  if(NA %in% y){
+    message("Must supply complete cases for y")
+    return(NULL)
+  }
   #sample size
   n <- length(y)
 
@@ -99,8 +103,20 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   x_pop_tree <- treeDesignMatrix(splits = tree$ln_split, data = x_pop)
   #Design matrix for sample
   x_sample_tree <- treeDesignMatrix(splits = tree$ln_split, data = x_sample)
+  
+  #Make sure data was complete
+  if(NA %in% x_pop_tree || NA %in% x_sample_tree){
+    if(NA %in% x_pop_tree){
+      message("Must supply complete cases for x_pop")
+    }
+    if(NA %in% x_sample_tree){
+      message("Must supply complete cases for x_sample")
+    }
+    return(NULL)
+  }
+  #weights
   w <- (1 + t(colSums(x_pop_tree)- colSums(x_sample_tree*pi^(-1)))%*%solve(t(x_sample_tree)%*%diag(pi^(-1))%*%as.matrix(x_sample_tree))%*%t(x_sample_tree))%*%diag(pi^(-1)) 
-
+  
   #calculating the total estimate for y
   t <- w %*% y
 
@@ -111,35 +127,36 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   
 
   if(var_est==TRUE){
-    if(var_method!="bootstrap_SRS"){
+    if(var_method != "bootstrap_SRS"){
     y_hat <- predict(object = tree, newdata = x_sample)
-    e <- y-y_hat
-    varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
-
-    }else if(var_method=="bootstrap_SRS"){
+    e <- y - y_hat
+    varEst <- varMase(y = e, pi = pi, pi2 = pi2, method = var_method, N = N,
+                      strata = strata)
+    }
+    else if(var_method == "bootstrap_SRS"){
       #Find bootstrap variance
       dat <- cbind(y, pi, x_sample)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregTreet, R = B, x_pop = x_pop, p_value= p_value, perm_reps = perm_reps, bin_size = bin_size, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat, statistic = gregTreet, R = B, x_pop = x_pop,
+                     p_value= p_value, perm_reps = perm_reps, bin_size = bin_size,
+                     parallel = "multicore", ncpus = 2)
 
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
     }
-    
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  pop_total_var=varEst,
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
                  tree = tree))
-  }else{
+  }
+  else{
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  weights = as.vector(w), 
                  tree = tree))
-
-  }
-
+    }
   }
 
 
