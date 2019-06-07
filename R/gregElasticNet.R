@@ -84,7 +84,6 @@ gregElasticNet  <- function(
     }
   }
   
-  
   #create design matrix, x matrix and transpose design matrix
   x_sample_d <- model.matrix(~., data = data.frame(x_sample))
   x_sample <- data.frame(x_sample_d[,-1])
@@ -94,12 +93,30 @@ gregElasticNet  <- function(
   y <- as.vector(y)
   n <- length(y)
   
+  #Make sure y is complete
+  if(NA %in% y){
+    message("Must supply complete cases for y.")
+    return(NULL)
+  }
+  #Check that the number of observations are consistent
+  if(nrow(x_sample) != length(y)){
+    message("y and x_sample must have same number of observations.")
+    return(NULL)
+  }
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
     message("Assuming simple random sampling")
   }  
-  
-  
+  #Check for missing data:
+  if(FALSE %in% complete.cases(x_sample) || FALSE %in% complete.cases(x_pop)){
+    if(FALSE %in% complete.cases(x_sample)){
+      message("Must supply complete cases for x_sample")
+    }
+    if(FALSE %in% complete.cases(x_pop)){
+      message("Must supply complete cases for x_pop")
+    }
+    return(NULL)
+  }
   # convert pi into diagonal matrix format
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
@@ -115,7 +132,8 @@ gregElasticNet  <- function(
     fam <- "binomial"
   } 
   
-  cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, weights = weight, nfolds = cvfolds,family=fam, standardize=FALSE)
+  cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, weights = weight,
+                  nfolds = cvfolds,family=fam, standardize=FALSE)
   
   if(lambda == "lambda.min"){
     lambda_opt <- cv$lambda.min
@@ -126,8 +144,10 @@ gregElasticNet  <- function(
   
   
   ## MODEL SELECTION COEFFICIENTS ##
-  pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam, standardize = FALSE, weights=weight)
-  elasticNet_coef <- predict(pred_mod,type = "coefficients",s = lambda_opt)[1:dim(x_sample_d)[2],]
+  pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
+                     standardize = FALSE, weights=weight)
+  elasticNet_coef <- predict(pred_mod,type = "coefficients",
+                             s = lambda_opt)[1:dim(x_sample_d)[2],]
   
   #Estimated y values in sample
   y_hats_s <- as.vector(predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response"))

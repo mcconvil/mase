@@ -61,13 +61,14 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   #Convert y to a vector
   y <- as.vector(y)
   
-  #Check that the number of observations are consistent
-  if(nrow(x_sample) != length(y)){
-    message("y and x_sample must have same number of observations")
-  }
   #Make sure y is complete
   if(NA %in% y){
     message("Must supply complete cases for y")
+    return(NULL)
+  }
+  #Check that the number of observations are consistent
+  if(nrow(x_sample) != length(y)){
+    message("y and x_sample must have same number of observations.")
     return(NULL)
   }
   #sample size
