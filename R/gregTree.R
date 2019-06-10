@@ -7,7 +7,7 @@
 #' @param x_pop A data frame of population level auxiliary information. It must contain the same names as x_sample.
 #' @param p_value Designated p-value level to reject null hypothesis in permutation test used to fit the regression tree. Default value is 0.05.
 #' @param perm_reps An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.
-#' @param bin_size A integer specifying the minimum number of observations in each node.
+#' @param bin_size An integer specifying the minimum number of observations in each node.
 #' 
 #' @examples
 #' library(survey)
@@ -81,6 +81,17 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   if(is.null(pi)){
     message("Assuming simple random sampling")
   }
+  
+  #Check for missing data:
+  if(FALSE %in% complete.cases(x_sample) || FALSE %in% complete.cases(x_pop)){
+    if(FALSE %in% complete.cases(x_sample)){
+      message("Must supply complete cases for x_sample")
+    }
+    if(FALSE %in% complete.cases(x_pop)){
+      message("Must supply complete cases for x_pop")
+    }
+    return(NULL)
+  }
 
   # Create pi
   if (is.null(pi)) {
@@ -105,16 +116,6 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   #Design matrix for sample
   x_sample_tree <- treeDesignMatrix(splits = tree$ln_split, data = x_sample)
   
-  #Make sure data was complete
-  if(NA %in% x_pop_tree || NA %in% x_sample_tree){
-    if(NA %in% x_pop_tree){
-      message("Must supply complete cases for x_pop")
-    }
-    if(NA %in% x_sample_tree){
-      message("Must supply complete cases for x_sample")
-    }
-    return(NULL)
-  }
   #weights
   w <- (1 + t(colSums(x_pop_tree)- colSums(x_sample_tree*pi^(-1)))%*%solve(t(x_sample_tree)%*%diag(pi^(-1))%*%as.matrix(x_sample_tree))%*%t(x_sample_tree))%*%diag(pi^(-1)) 
   
