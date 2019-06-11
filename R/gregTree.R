@@ -36,6 +36,7 @@
 #' @importFrom stats as.formula
 #' @include varMase.R
 #' @include gregt.R
+#' @include gregObject.R
 #' 
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
@@ -151,13 +152,17 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
                  pop_total_var=varEst,
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
-                 tree = tree))
+                 formula = f,
+                 tree = tree) %>%
+           gregify())
   }
   else{
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  weights = as.vector(w), 
-                 tree = tree))
+                 formula = f,
+                 tree = tree) %>%
+             gregify())
     }
   }
 

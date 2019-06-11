@@ -32,12 +32,13 @@
 #' \item{tree: rpms object}
 #' }
 #' 
-#' @export gregTree
+#' @export gregForest
 #' @import rpms
 #' @import boot
 #' @importFrom stats as.formula
 #' @include varMase.R
 #' @include gregt.R
+#' @include gregObject.R
 #' 
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
@@ -113,7 +114,8 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                         cores = cores)
     
     #calculating the total estimate for y
-    t <- sum(weights * (y - predict(object = forest, newdata = x_sample))) + sum(predict(object = forest, newdata = x_pop))
+    t <- sum(weights * (y - predict(object = forest, newdata = x_sample))) +
+      sum(predict(object = forest, newdata = x_pop))
     
     if(var_est==TRUE){
       if(var_method != "bootstrap_SRS"){
@@ -137,12 +139,16 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    pop_mean = as.numeric(t)/N,
                    pop_total_var=varEst,
                    pop_mean_var=varEst/N^2,
-                   forest = forest))
+                   formula = f,
+                   forest = forest) %>%
+               gregify())
     }
     else{
       return(list( pop_total = as.numeric(t),
                    pop_mean = as.numeric(t)/N,
-                   forest = forest))
+                   formula = f,
+                   forest = forest) %>%
+               gregify())
     }
   }
   

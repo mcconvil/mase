@@ -37,6 +37,7 @@
 #' @export gregElasticNet
 #' @include varMase.R
 #' @include gregElasticNett.R
+#' @include gregObject.R
 #' 
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
@@ -142,6 +143,8 @@ gregElasticNet  <- function(
     lambda_opt <- cv$lambda.1se
   }
   
+  #formula
+  f <- as.formula(paste("y ~ ", paste(names(x_sample), collapse= "+")))
   
   ## MODEL SELECTION COEFFICIENTS ##
   pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
@@ -157,7 +160,6 @@ if (model == "logistic") {
     message("For the Logistic Elastic Net Estimator, user must supply all x values for population.  Populations totals or means for x are not enough.")
     return(NULL)
   }
-  
   #Population matrix
   x_pop <- data.frame(model.matrix(~., data = x_pop))[,-1]
   #Make sure to only take the columns which are also in x_sample
@@ -242,12 +244,16 @@ if (model == "linear") {
                  pop_mean = as.numeric(t)/N, 
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2,
-                 coefficients = elasticNet_coef))
+                 formula = f,
+                 coefficients = elasticNet_coef) %>%
+             gregify())
   }else{
     
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N, 
-                 coefficients = elasticNet_coef))
+                 formula = f,
+                 coefficients = elasticNet_coef) %>%
+             gregify())
     
   }
 }

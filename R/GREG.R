@@ -45,6 +45,7 @@
 #' @importFrom stats model.matrix predict quasibinomial var
 #' @include varMase.R
 #' @include gregt.R
+#' @include gregObject.R
 #' 
 #' @seealso \code{\link{gregElasticNet}} for a penalized regression model.
 
@@ -322,12 +323,14 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2, 
                  weights = as.vector(w),
-                 coefficients =  coefs))
+                 coefficients =  coefs) %>%
+             gregify())
   }else{
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N,           
                  weights = as.vector(w),
-                 coefficients =  coefs))      
+                 coefficients =  coefs) %>%
+             gregify())      
     
   }
   
