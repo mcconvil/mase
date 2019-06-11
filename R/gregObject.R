@@ -12,10 +12,16 @@ print.greg <- function(obj) {
     f <- as.character(obj$formula)
     cat("formula:", "\n", f[2], f[1], f[3], "\n")
   }
-  cat("population estimates:", "\n", "total:", obj$pop_total, "\n",
-      "total variance:", obj$pop_total_var, "\n", 
-      "mean:", obj$pop_mean, "\n",
-      "mean variance:", obj$pop_mean_var, "\n")
+  if(!identical(obj$pop_total_var, NULL)){
+    cat("population estimates:", "\n", "total:", obj$pop_total, "\n",
+        "total variance:", obj$pop_total_var, "\n", 
+        "mean:", obj$pop_mean, "\n",
+        "mean variance:", obj$pop_mean_var, "\n")
+  }
+  else{
+    cat("population estimates:", "\n", "total:", obj$pop_total, "\n",
+        "mean:", obj$pop_mean, "\n")
+  }
 } 
 
 summary.greg <- function(obj) {
