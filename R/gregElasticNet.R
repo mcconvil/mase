@@ -44,7 +44,7 @@
 
 gregElasticNet  <- function(
   y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear", pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
-  data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL){
+  data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL, standardize = FALSE){
   
   
   ### INPUT VALIDATION ###
@@ -134,7 +134,7 @@ gregElasticNet  <- function(
   } 
   
   cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, weights = weight,
-                  nfolds = cvfolds,family=fam, standardize=FALSE)
+                  nfolds = cvfolds,family=fam, standardize = standardize)
   
   if(lambda == "lambda.min"){
     lambda_opt <- cv$lambda.min
@@ -148,7 +148,7 @@ gregElasticNet  <- function(
   
   ## MODEL SELECTION COEFFICIENTS ##
   pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
-                     standardize = FALSE, weights=weight)
+                     standardize = standardize, weights=weight)
   elasticNet_coef <- predict(pred_mod,type = "coefficients",
                              s = lambda_opt)[1:dim(x_sample_d)[2],]
   
