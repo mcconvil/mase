@@ -85,6 +85,14 @@ gregElasticNet  <- function(
     }
   }
   
+  #Check standardization
+  if(standardize == TRUE){
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
+    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
+                         scale = apply(x_sample, 2, sd)) %>%
+      as.data.frame()
+  }
+  
   #create design matrix, x matrix and transpose design matrix
   x_sample_d <- model.matrix(~., data = data.frame(x_sample))
   x_sample <- data.frame(x_sample_d[,-1])
@@ -134,7 +142,7 @@ gregElasticNet  <- function(
   } 
   
   cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, weights = weight,
-                  nfolds = cvfolds,family=fam, standardize = standardize)
+                  nfolds = cvfolds,family=fam, standardize = FALSE)
   
   if(lambda == "lambda.min"){
     lambda_opt <- cv$lambda.min
@@ -148,7 +156,7 @@ gregElasticNet  <- function(
   
   ## MODEL SELECTION COEFFICIENTS ##
   pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
-                     standardize = standardize, weights=weight)
+                     standardize = FALSE, weights=weight)
   elasticNet_coef <- predict(pred_mod,type = "coefficients",
                              s = lambda_opt)[1:dim(x_sample_d)[2],]
   
@@ -165,9 +173,9 @@ if (model == "logistic") {
   #Make sure to only take the columns which are also in x_sample
   x_pop <- dplyr::select_(x_pop, .dots=names(x_sample))
   x_pop_d <- model.matrix(~., data = x_pop)
-  
-  #Total estimate
+  #Estimated y values in population
   y_hats_U <- predict(cv,newx = x_pop_d[,-1], s = lambda_opt, type = "response")
+  #Total estimate
   t <- sum(y_hats_U) + t(y-y_hats_s)%*%pi^(-1)
   
   if ( var_est == TRUE){
@@ -201,15 +209,20 @@ if (model == "linear") {
     #Make sure to only take the columns which are also in x_sample
     x_pop <- dplyr::select_(x_pop, .dots=names(x_sample))
     x_pop_d <- model.matrix(~., data = x_pop)
+    #Estimated y values in population
+    y_hats_U <- predict(cv,newx = x_pop_d[,-1], s = lambda_opt, type = "response")
+    #Column sums
     x_pop_d <- apply(x_pop_d,2,sum)
   }
   if (data_type=="totals"){
     #Make sure to only take the values which are also in x_sample
     x_pop_d <- unlist(c(N,x_pop[names(x_sample)]))
+    y_hats_U <- NULL
   }
   if (data_type=="means"){
     #Make sure to only take the values which are also in x_sample
     x_pop_d <- unlist(c(N,x_pop[names(x_sample)]*N))
+    y_hats_U <- NULL
   }
   
   #Total estimate
@@ -245,14 +258,20 @@ if (model == "linear") {
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2,
                  formula = f,
-                 coefficients = elasticNet_coef) %>%
+                 coefficients = elasticNet_coef,
+                 model = pred_mod,
+                 y_hat_sample = y_hats_s,
+                 y_hat_pop = y_hats_U %>% as.vector()) %>%
              gregify())
   }else{
     
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N, 
                  formula = f,
-                 coefficients = elasticNet_coef) %>%
+                 coefficients = elasticNet_coef,
+                 model = pred_mod,
+                 y_hat_sample = y_hats_s,
+                 y_hat_pop = y_hats_U %>% as.vector()) %>%
              gregify())
     
   }
