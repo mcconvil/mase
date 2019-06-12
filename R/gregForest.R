@@ -114,13 +114,13 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                         cores = cores)
     
     #calculating the total estimate for y
-    t <- sum(weights * (y - predict(object = forest, newdata = x_sample))) +
-      sum(predict(object = forest, newdata = x_pop))
+    y_hat_sample <- predict(object = forest, newdata = x_sample)
+    y_hat_pop <- predict(object = forest, newdata = x_pop)
+    t <- sum(weights * (y - y_hat_sample)) + sum(y_hat_pop)
     
     if(var_est==TRUE){
       if(var_method != "bootstrap_SRS"){
-        y_hat <- predict(object = forest, newdata = x_sample)
-        e <- y - y_hat
+        e <- y - y_hat_sample
         varEst <- varMase(y = e, pi = pi, pi2 = pi2, method = var_method, N = N,
                           strata = strata)
       }
@@ -140,14 +140,18 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    pop_total_var=varEst,
                    pop_mean_var=varEst/N^2,
                    formula = f,
-                   forest = forest) %>%
+                   forest = forest,
+                   y_hat_sample = y_hat_sample,
+                   y_hat_pop = y_hat_pop) %>%
                gregify())
     }
     else{
       return(list( pop_total = as.numeric(t),
                    pop_mean = as.numeric(t)/N,
                    formula = f,
-                   forest = forest) %>%
+                   forest = forest,
+                   y_hat_sample = y_hat_sample,
+                   y_hat_pop = y_hat_pop) %>%
                gregify())
     }
   }
