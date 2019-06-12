@@ -24,26 +24,58 @@ print.greg <- function(obj) {
   }
 } 
 
+#Summary method
 summary.greg <- function(obj) {
   cat("variable importance:")
 }
 
+#predict method
 predict.greg <- function(obj, new_data) {
-  if(!identical(obj$coefficients, NULL)){
-    X <- as.matrix(new_data)
-    return(X %*% obj$coefficients)
-  }
-  if(!identical(obj$tree, NULL)){
-    return(predict(obj$tree, new_data))
-  }
-  if(!identical(obj$forest, NULL)){
-    return(predict(obj$forest, new_data))
+  if(class(obj) == "greg"){
+    if(!identical(obj$model, NULL)){
+      return(predict(obj$model, as.matrix(new_data)))
+    }
+    if(!identical(obj$tree, NULL)){
+      return(predict(obj$tree, new_data))
+    }
+    if(!identical(obj$forest, NULL)){
+      return(predict(obj$forest, new_data))
+    }
+    else{
+      message("greg object has no predict method.")
+      return(NULL)
+    }
   }
   else{
+    message("object class is not 'greg'.")
     return(NULL)
   }
 }
 
-plot.greg <- function(obj, spatial1, spatial2) {
-  ggplot()
+#plot method
+plot.greg <- function(obj, x_sample, x_pop, spatial_x, spatial_y, bins = 300,
+                      fun = function(x) mean(x)) {
+  #create dataframe
+  d <- x_sample %>%
+    mutate(plot_key = "sample") %>%
+    rbind(x_pop %>%
+            mutate(plot_key = "pop"))
+  #predict using GREG object
+  pred <- predict.greg(obj = obj,
+                       new_data = d %>% dplyr::select(-LAT_PUBLIC))
+  d <- d %>% mutate(y_hat = pred)
+  
+  #create ggplot
+  plt <- ggplot(d %>% arrange(plot_key),
+                    aes(x = LON_PUBLIC, y = LAT_PUBLIC, z = nlcd11)) +
+    stat_summary_hex(data = d %>% filter(key == "pop"),
+                     position = "identity",
+                     bins = bins,
+                     fun = fun) +
+    scale_fill_viridis_c() +
+    geom_point(data = d %>% filter(key == "plot")) +
+    labs(title = "Daggett County Survey Plot Locations", x = "longitude", y = "latitude",
+         fill = "")
+  
+  return(plt)
 }
