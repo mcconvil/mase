@@ -106,7 +106,8 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   dat <- data.frame(y, x_sample, weights = weights)
   #Create formula for rpms equation
   f <- as.formula(paste("y ~ ", paste(names(x_sample), collapse= "+")))
-  tree <- rpms(rp_equ = f, data = dat, weights = weights, pval = p_value, perm_reps = perm_reps, bin_size = bin_size)
+  tree <- rpms(rp_equ = f, data = dat, weights = weights, pval = p_value,
+               perm_reps = perm_reps, bin_size = bin_size)
   
   
   #Calculate weights
@@ -122,7 +123,9 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
   
   #calculating the total estimate for y
   t <- w %*% y
-
+  #find 
+  y_hat_sample <- predict(object = tree, newdata = x_sample)
+  y_hat_pop <- predict(object = tree, newdata = x_pop)
 
   #NOTE: check that weights times x's should equal total of x's to check for correct weight values
   # w %*% x_sample_tree[,4]
@@ -131,8 +134,7 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
 
   if(var_est==TRUE){
     if(var_method != "bootstrap_SRS"){
-    y_hat <- predict(object = tree, newdata = x_sample)
-    e <- y - y_hat
+    e <- y - y_hat_sample
     varEst <- varMase(y = e, pi = pi, pi2 = pi2, method = var_method, N = N,
                       strata = strata)
     }
@@ -153,7 +155,9 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
                  formula = f,
-                 tree = tree) %>%
+                 tree = tree,
+                 y_hat_sample = y_hat_sample,
+                 y_hat_pop = y_hat_pop) %>%
            gregify())
   }
   else{
@@ -161,7 +165,9 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
                  pop_mean = as.numeric(t)/N,
                  weights = as.vector(w), 
                  formula = f,
-                 tree = tree) %>%
+                 tree = tree,
+                 y_hat_sample = y_hat_sample,
+                 y_hat_pop = y_hat_pop) %>%
              gregify())
     }
   }
