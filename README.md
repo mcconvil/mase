@@ -17,7 +17,7 @@ You can install mase from github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("Swarthmore-Statistics/mase")
+devtools::install_github("mcconvil/mase")
 ```
 
 Example
