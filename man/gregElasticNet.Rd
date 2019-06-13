@@ -7,7 +7,8 @@
 gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1,
   model = "linear", pi2 = NULL, var_est = FALSE,
   var_method = "lin_HB", data_type = "raw", N = NULL,
-  lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL)
+  lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL,
+  standardize = FALSE)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}

@@ -2,6 +2,7 @@
 
 export(greg)
 export(gregElasticNet)
+export(gregForest)
 export(gregTree)
 export(horvitzThompson)
 export(postStrat)

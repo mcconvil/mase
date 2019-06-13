@@ -45,11 +45,13 @@ Suggests:
 Depends:
     R (>= 3.1)    
 Collate: 
+    'gregObject.R'
     'gregt.R'
     'varMase.R'
     'GREG.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
+    'gregForest.R'
     'gregTree.R'
     'gregtreet.R'
     'htt.R'
@@ -61,5 +63,5 @@ Collate:
     'ratioEstimatort.R'
     'ratioEstimator.R'
     'treeDesignMatrix.R'
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 RdMacros: Rdpack
