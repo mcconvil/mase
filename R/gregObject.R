@@ -52,7 +52,8 @@ predict.greg <- function(obj, new_data) {
         new_data <- new_data %>% dplyr::select(var_names)
       }
       design <- model.matrix(~., data = new_data)
-      return(design %*% (as.vector(obj$coefficients)))
+      return((design %*% (as.vector(obj$coefficients))) %>%
+               as.vector())
       }
     else{
       message("This greg object has no predict method.")
