@@ -1,11 +1,7 @@
 #An R script that contains all of the GREG S3 class methods
 
-#Helper function to modify object class in place
-gregify <- function(obj) {
-  class(obj) <- "greg"
-  return(obj)
-}
-#Print method for greg object
+#print method
+#' @export
 print.greg <- function(obj) {
   if(!identical(obj$formula, NULL)){
     f <- as.character(obj$formula)
@@ -22,11 +18,9 @@ print.greg <- function(obj) {
         "mean:", obj$pop_mean, "\n")
   }
 } 
-#Summary method
-summary.greg <- function(obj) {
-  cat("variable importance:")
-}
+
 #predict method
+#' @export
 predict.greg <- function(obj, new_data) {
   if(class(obj) == "greg"){
     if(!identical(obj$logistic_model, NULL)){
@@ -65,7 +59,7 @@ predict.greg <- function(obj, new_data) {
   }
 }
 
-#plot method
+#plot method (work in progress)
 plot.greg <- function(obj, x_sample, x_pop, spatial_x, spatial_y, bins = 300,
                       fun = function(x) mean(x)) {
   #create dataframe
