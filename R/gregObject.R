@@ -1,5 +1,11 @@
 #An R script that contains all of the GREG S3 class methods
 
+#helper function to modify object class in place.
+gregify <- function(obj) {
+  class(obj) <- "greg"
+  return(obj)
+}
+
 #print method
 #' @export
 print.greg <- function(obj) {
