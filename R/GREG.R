@@ -303,15 +303,16 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
   #Coefficients
   coefs <- solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt) %*% diag(weight) %*% y
   
+  #model estimates
+  y_hat <- (x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*%
+    (x_sample_dt) %*% diag(weight)%*%y) %>% as.vector()
   y_hat_pop <- NULL
-  if(data_type == "raw"){
-    y_hat_pop <- 1
+  if(data_type == "raw") {
+    y_hat_pop <- (model.matrix(~., data = x_pop) %*% coefs) %>% as.vector()
   }
   
   if(var_est==TRUE){
     if(var_method!="bootstrap_SRS"){
-      y_hat <- x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*%
-        (x_sample_dt) %*% diag(weight)%*%y
       e <- y-y_hat
       varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
       }
