@@ -5,7 +5,6 @@ gregify <- function(obj) {
   class(obj) <- "greg"
   return(obj)
 }
-
 #Print method for greg object
 print.greg <- function(obj) {
   if(!identical(obj$formula, NULL)){
@@ -23,26 +22,40 @@ print.greg <- function(obj) {
         "mean:", obj$pop_mean, "\n")
   }
 } 
-
 #Summary method
 summary.greg <- function(obj) {
   cat("variable importance:")
 }
-
 #predict method
 predict.greg <- function(obj, new_data) {
   if(class(obj) == "greg"){
-    if(!identical(obj$model, NULL)){
-      return(predict(obj$model, as.matrix(new_data)))
-    }
+    if(!identical(obj$logistic_model, NULL)){
+      return(predict(obj$logistic_model, new_data))
+      }    
     if(!identical(obj$tree, NULL)){
       return(predict(obj$tree, new_data))
-    }
+      }
     if(!identical(obj$forest, NULL)){
       return(predict(obj$forest, new_data))
-    }
+      }
+    if(!identical(obj$coefficients, NULL)){
+      if(!identical(names(obj$coefficients), NULL)){
+        var_names <- (obj$coefficients) %>% names()
+      }
+      else{
+        var_names <- (obj$coefficients)[,1] %>% names()
+      }
+      if("(Intercept)" %in% var_names){
+        var_names <- var_names[-1]
+      }
+      if(length(var_names) != base::ncol(new_data)){
+        new_data <- new_data %>% dplyr::select(var_names)
+      }
+      design <- model.matrix(~., data = new_data)
+      return(design %*% (as.vector(obj$coefficients)))
+      }
     else{
-      message("greg object has no predict method.")
+      message("This greg object has no predict method.")
       return(NULL)
     }
   }

@@ -147,19 +147,16 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
     } 
     
     #Run cv to find optimal lambda
-    cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = 1, weights = weight, nfolds = 10, family = fam, standardize = FALSE)
+    cv <- cv.glmnet(x = as.matrix(x_sample), y = y, alpha = 1, weights = weight,
+                    nfolds = 10, family = fam, standardize = FALSE)
     
     #Pick lambda
     if(lambda == "lambda.min"){
       lambda_opt <- cv$lambda.min
     }
-    
     if(lambda == "lambda.1se"){
       lambda_opt <- cv$lambda.1se
     }
-    
-
-    
     
     ## MODEL SELECTION COEFFICIENTS ##
     pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = 1, family = fam, standardize = FALSE, weights=weight)
@@ -180,21 +177,20 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                    pop_mean = HT$pop_total/N,
                    pop_total_var = HT$pop_total_var, 
                    pop_mean_var = HT$pop_total_var/N^2, 
-                   weights = as.vector(pi^{-1})))
-    }else {
+                   weights = as.vector(pi^{-1})) %>%
+               gregify())
+      }
+      else {
       
       HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
       
       return(list( pop_total = HT$pop_total, 
                    pop_mean = HT$pop_total/N,
-                   weights = as.vector(pi^{-1})))
-     
-      
-    }
+                   weights = as.vector(pi^{-1})) %>%
+               gregify())
+      }
     }  
      
-    
-    
     #Create a new x_sample with only the columns in coef_select
     x_sample <- x_sample[,coef_select, drop = FALSE]#dplyr::select_(x_sample, .dots=coef_select)
     x_sample_d <- model.matrix(~., data = x_sample)
@@ -241,8 +237,8 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
       if(var_method!="bootstrap_SRS"){
         e <- y-y_hats_s
         varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, strata = strata)
-      
-      }else if(var_method=="bootstrap_SRS"){
+        }
+      else if(var_method=="bootstrap_SRS"){
   
         #Find bootstrap variance
  
@@ -260,14 +256,21 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                    pop_mean = as.numeric(t)/N,
                    pop_total_var=varEst, 
                    pop_mean_var=varEst/N^2,
-                   coefficients =  coefs))
-    }else{
-      return(list( pop_total = as.numeric(t), 
+                   coefficients = coefs,
+                   logistic_model = mod,
+                   y_hat_sample = y_hats_s,
+                   y_hat_pop = y_hats_U) %>%
+               gregify())
+      }else{
+        return(list( pop_total = as.numeric(t), 
                    pop_mean = as.numeric(t)/N,
-                   coefficients =  coefs))     
-      
+                   coefficients =  coefs,
+                   logistic_model = mod,
+                   y_hat_sample = y_hats_s,
+                   y_hat_pop = y_hats_U) %>%
+               gregify())
+      }
     }
-  }
 ### LINEAR REGRESSION ###
   else if (model == "linear"){
     
@@ -279,19 +282,17 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
       x_pop <- dplyr::select(x_pop, dplyr::one_of(colnames(x_sample)))
       x_pop_d <- model.matrix(~., data = x_pop)
       x_pop_d <- apply(x_pop_d,2,sum)
-    }
+      }
     if (data_type=="totals"){
       #Make sure to only take the values which are also in x_sample
       x_pop_d <- unlist(c(N,x_pop[names(x_sample)]))
-    }
+      }
     if (data_type=="means"){
       #Make sure to only take the values which are also in x_sample
       x_pop_d <- unlist(c(N,x_pop[names(x_sample)]*N))
-    }
-    
+      }
     
     w <- as.matrix(1 + t(as.matrix(x_pop_d) - x_sample_dt %*% weight) %*% solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt)) %*% diag(weight)
-  
   
   #calculating the total estimate for y
   t <- w %*% y
@@ -302,14 +303,19 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
   #Coefficients
   coefs <- solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt) %*% diag(weight) %*% y
   
+  y_hat_pop <- NULL
+  if(data_type == "raw"){
+    y_hat_pop <- 1
+  }
   
   if(var_est==TRUE){
     if(var_method!="bootstrap_SRS"){
-    y_hat <- x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt) %*% diag(weight)%*%y
-    e <- y-y_hat
-    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
-    
-    }else if(var_method=="bootstrap_SRS"){
+      y_hat <- x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*%
+        (x_sample_dt) %*% diag(weight)%*%y
+      e <- y-y_hat
+      varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
+      }
+    else if(var_method=="bootstrap_SRS"){
       #Find bootstrap variance
       dat <- cbind(y,pi, x_sample_d)
       #Bootstrap total estimates
@@ -323,18 +329,20 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2, 
                  weights = as.vector(w),
-                 coefficients =  coefs) %>%
+                 coefficients =  coefs,
+                 y_hat_sample = y_hat,
+                 y_hat_pop = y_hat_pop) %>%
              gregify())
-  }else{
+    }
+  else{
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N,           
                  weights = as.vector(w),
-                 coefficients =  coefs) %>%
+                 coefficients =  coefs,
+                 y_hat_sample = y_hat,
+                 y_hat_pop = y_hat_pop) %>%
              gregify())      
-    
+    }
   }
-  
-  }
-  
 }
 
