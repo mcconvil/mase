@@ -4,13 +4,13 @@ Title: Model-Assisted Survey Estimators
 Version: 0.1.2
 Date: 2018-10-12
 Encoding: UTF-8
-Authors@R: c(person("Kelly", "McConville", role = c("aut", "cre", "cph"), 
+Authors@R: c(person("Kelly", "McConville", role = c("aut", "cre", "cph"),
                     email = "mcconville@reed.edu"),
             person("Becky", "Tang", role = "aut"),
             person("George", "Zhu", role = "aut"),
             person("Sida", "Li", role = "ctb"),
             person("Shirley", "Chueng", role = "ctb"),
-            person("Daniell", "Toth", role = c("ctb", "cph"), 
+            person("Daniell", "Toth", role = c("ctb", "cph"),
             comment = "Author and copyright holder of treeDesignMatrix helper function")
             )
 Maintainer: Kelly McConville <mcconville@reed.edu>
@@ -43,8 +43,8 @@ Suggests:
     roxygen2,
     testthat
 Depends:
-    R (>= 3.1)    
-Collate: 
+    R (>= 3.1)
+Collate:
     'gregObject.R'
     'gregt.R'
     'varMase.R'
