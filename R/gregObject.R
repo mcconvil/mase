@@ -66,30 +66,55 @@ predict.greg <- function(obj, new_data) {
   }
 }
 
-#plot method (work in progress)
-plot.greg <- function(obj, x_sample, x_pop, spatial_x, spatial_y, bins = 300,
-                      fun = function(x) mean(x)) {
+#plot method
+#' Compute a geospatial heat map to summarize a generalized regression estimator
+#' 
+#' Computes a geospatial heat map of fitted values of a 'greg' object
+#'
+#' @param obj Object of class 'greg'.
+#' @param x_sample A data frame of the sample level data with two spatial variables. Must have the same indicies as the original data frame used to train model.
+#' @param x_pop A data frame of the population level data with two spatial variables. Must have the same indicies as the original population data frame used to make model.
+#' @param spatial_1 A string for the name of variable in `x_sample` and `x_pop` to plot as x axis (column name of longitude). 
+#' @param spatial_2 A string for the name of variable in `x_sample` and `x_pop` to plot as y axis (column name of latitude). 
+#' @param bins An integer specifying the number of bins to aggregate estimated values
+#' @param hexagon Boolean. Specify if you want hexagonal shaped bins or not.
+#' @param fun Summary function to apply within each bin to be plotted. Default is `mean(x)`. See `stat_summary`.
+#' 
+#' @export plot.greg
+#' @import dplyr
+#' @import ggplot2
+#' 
+plot.greg <- function(obj, x_sample, x_pop, spatial_1, spatial_2, bins = 300,
+                      fun = function(x) mean(x), hexagon = FALSE) {
+  #Check if population estimates are available
+  if(identical(obj$y_hat_pop, NULL)){
+    message("individual population estimates not available without 'raw' data type")
+    obj$y_hat_pop <- rep(NA, nrow(x_pop))
+  }
   #create dataframe
-  d <- x_sample %>%
-    mutate(plot_key = "sample") %>%
-    rbind(x_pop %>%
-            mutate(plot_key = "pop"))
-  #predict using GREG object
-  pred <- predict.greg(obj = obj,
-                       new_data = d %>% dplyr::select(-LAT_PUBLIC))
-  d <- d %>% mutate(y_hat = pred)
-  
+  d <- rbind(x_sample, x_pop) %>%
+    dplyr::select(x = spatial_1,y = spatial_2) %>%
+    mutate(y_hat = c(obj$y_hat_sample, obj$y_hat_pop),
+           plot_key = c(rep("sample", nrow(x_sample)),
+                        rep("pop", nrow(x_pop)))) %>%
+    arrange(plot_key)
+  #summary kernel
+  if(hexagon == TRUE){
+    kern <- stat_summary_hex(data = d %>% filter(plot_key == "pop"),
+                             bins = bins,
+                             fun = fun)
+  }
+  else{
+    kern <- stat_summary_2d(data = d %>% filter(plot_key == "pop"),
+                            bins = bins,
+                            fun = fun)
+  }
   #create ggplot
-  plt <- ggplot(d %>% arrange(plot_key),
-                    aes(x = LON_PUBLIC, y = LAT_PUBLIC, z = nlcd11)) +
-    stat_summary_hex(data = d %>% filter(key == "pop"),
-                     position = "identity",
-                     bins = bins,
-                     fun = fun) +
-    scale_fill_viridis_c() +
-    geom_point(data = d %>% filter(key == "plot")) +
-    labs(title = "Daggett County Survey Plot Locations", x = "longitude", y = "latitude",
-         fill = "")
-  
+  plt <- ggplot(d, aes(x = x, y = y, z = y_hat)) +
+    kern +
+    geom_point(data = d %>% filter(plot_key == "sample")) +
+    labs(fill = "y_hat") + theme_minimal()
+  #return plot using viridis scale, if client has it
+  try(return(plt + scale_fill_viridis_c()), silent = TRUE)
   return(plt)
 }
