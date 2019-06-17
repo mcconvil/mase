@@ -9,19 +9,22 @@ gregify <- function(obj) {
 #print method
 #' @export
 print.greg <- function(obj) {
-  if(!identical(obj$formula, NULL)){
+  if(!identical(obj$formula, NULL)) {
     f <- as.character(obj$formula)
     cat("formula:", "\n", f[2], f[1], f[3], "\n")
   }
-  if(!identical(obj$pop_total_var, NULL)){
+  if(!identical(obj$pop_total_var, NULL)) {
     cat("population estimates:", "\n", "total:", obj$pop_total, "\n",
         "total variance:", obj$pop_total_var, "\n", 
         "mean:", obj$pop_mean, "\n",
         "mean variance:", obj$pop_mean_var, "\n")
   }
-  else{
+  else {
     cat("population estimates:", "\n", "total:", obj$pop_total, "\n",
         "mean:", obj$pop_mean, "\n")
+  }
+  if(!identical(obj$strat_ests, NULL)) {
+    cat("stata estimates:", obj$strat_ests, "\n")
   }
 } 
 

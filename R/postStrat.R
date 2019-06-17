@@ -36,6 +36,7 @@
 #' @export postStrat
 #' @include postStratt.R
 #' @include varMase.R
+#' @include gregObject.R
 #' 
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 
@@ -177,12 +178,12 @@ postStrat <- function(
                  pop_total_var = varEst, 
                  pop_mean_var = varEst/N^2, 
                  strat_ests = strat_ests,
-                 weights = wts))
+                 weights = wts) %>% gregify())
   }else{
     return(list( pop_total = pop_total, 
                  pop_mean = pop_total/N,
                  strat_ests = strat_ests,
-                 weights = wts))
+                 weights = wts) %>% gregify())
     
   }
 
