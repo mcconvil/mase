@@ -22,7 +22,7 @@
 #' 
 #'\insertRef{sar92}{mase}
 #'
-#' @return A list of output containing:
+#' @return A greg object containing:
 #' \itemize{
 #' \item{pop_total: Estimate of population total}
 #' \item{pop_mean: Estimate of the population mean}

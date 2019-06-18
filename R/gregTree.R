@@ -20,14 +20,17 @@
 #'\insertRef{mcc17b}{mase}
 
 #' 
-#' @return A list of output containing:
+#' @return A greg object containing:
 #' \itemize{
 #' \item{pop_total: Estimate of population total}
 #' \item{pop_mean: Estimate of the population mean}
 #' \item{pop_total_var: Estimated variance of population total estimate}
 #' \item{pop_mean_var: Estimated variance of population mean estimate}
 #' \item{weights: Survey weights produced by regression tree}
+#' \item{formula: Model formula}
 #' \item{tree: rpms object}
+#' \item{y_hat_sample: Response estimates for sample}
+#' \item{y_hat_pop: Response estimates for population}
 #' }
 #' 
 #' @export gregTree
