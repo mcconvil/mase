@@ -1,6 +1,6 @@
 # Random Forest helper function from rpms package modified for mtry and out of bag error estimateion
 
-rpms_forest <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1, 
+rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1, 
                         e_equ=~1, mtry = NULL, bin_size = NULL, perm_reps=100, pval=.25, 
                         f_size=200, cores=1){
   
@@ -177,7 +177,14 @@ rpms_forest <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
     #-------end randomize ------------------------------------
     ti <- rpms(rp_equ=f_equ, data[s,], weights[s], strata[s], clusters[s],
                e_equ=e_equ, perm_reps=perm_reps, pval=pval, bin_size = bin_size)
-    ti$oob_error <- mean((predict(ti, newdata = data[oob,]) - data$y[oob])^2)
+    if(typeof(data$y) %in% c("numeric", "integer", "double")){
+      #MSE
+      ti$oob_error <- mean((predict(ti, newdata = data[oob,]) - data$y[oob])^2)
+    }
+    else{
+      #Misclassification rate
+      ti$oob_error <- mean(ifelse(predict(ti, newdata = data[oob,]) == data$y[oob], 0, 1))
+    }
     return(ti)
     
   }#---end get_trees ---------------------------

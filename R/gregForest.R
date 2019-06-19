@@ -39,7 +39,7 @@
 #' @export gregForest
 #' @import rpms
 #' @import boot
-#' @import rpmsForest.R
+#' @import rpmsForestt.R
 #' @importFrom stats as.formula
 #' @include varMase.R
 #' @include gregt.R
@@ -114,7 +114,7 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
     dat <- data.frame(y, x_sample, weights = weights)
     #Create formula for rpms equation
     f <- as.formula(paste("y ~ ", paste(names(x_sample), collapse= "+")))
-    forest <- rpms_forest(rp_equ = f, data = dat, weights = weights, pval = p_value,
+    forest <- rpmsForestt(rp_equ = f, data = dat, weights = weights, pval = p_value,
                         perm_reps = perm_reps, bin_size = bin_size, mtry = mtry, f_size = ntrees,
                         cores = cores)
     
