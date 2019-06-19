@@ -119,6 +119,7 @@ gregElasticNet  <- function(
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
     message("Assuming simple random sampling")
+    pi <- rep(length(y)/N, length(y))
   }  
   #Check for missing data:
   if(FALSE %in% complete.cases(x_sample) || FALSE %in% complete.cases(x_pop)){
@@ -129,10 +130,6 @@ gregElasticNet  <- function(
       message("Must supply complete cases for x_pop")
     }
     return(NULL)
-  }
-  # convert pi into diagonal matrix format
-  if (is.null(pi)) {
-    pi <- rep(length(y)/N, length(y))
   }
   
   #weight: inverse first order inclusion probabilities
