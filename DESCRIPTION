@@ -51,6 +51,8 @@ Collate:
     'GREG.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
+    'gregEstimate.R'
+    'rpmsForestt.R'
     'gregForest.R'
     'gregTree.R'
     'gregtreet.R'

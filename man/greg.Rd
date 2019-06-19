@@ -39,7 +39,7 @@ greg(y, x_sample, x_pop, pi = NULL, model = "linear", pi2 = NULL,
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
-A list of output containing:
+A greg object containing:
 \itemize{
 \item{pop_total: Estimate of population total}
 \item{pop_mean: Estimate of the population mean}
@@ -47,6 +47,9 @@ A list of output containing:
 \item{pop_mean_var: Estimated variance of population mean estimate}
 \item{weights: Survey weights produced by greg (linear model only)}
 \item{coefficients: Survey-weighted model coefficients}
+\item{logistic_model: glmnet logistic regression model object (logistic regression model only)}
+\item{y_hat_sample: Response estimates for sample}
+\item{y_hat_pop: Response estimates for population}
 }
 }
 \description{

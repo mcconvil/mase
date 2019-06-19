@@ -6,8 +6,8 @@
 \usage{
 gregForest(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
   var_est = FALSE, var_method = "lin_HB", B = 1000, p_value = 0.05,
-  perm_reps = 500, bin_size = NULL, strata = NULL, ntrees = 100,
-  cores = 1)
+  perm_reps = 500, bin_size = NULL, strata = NULL, mtry = NULL,
+  ntrees = 100, cores = 1)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -34,19 +34,24 @@ gregForest(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 
+\item{mtry}{A number specifying how many predictors each tree uses. Default is the square root of total number of predictors.}
+
 \item{ntrees}{An integer specifying the number of trees to train in forest.}
 
 \item{cores}{An integer specifying the number of cores to use in parallel if > 1 (not implemented)}
 }
 \value{
-A list of output containing:
+A greg object containing:
 \itemize{
 \item{pop_total: Estimate of population total}
 \item{pop_mean: Estimate of the population mean}
 \item{pop_total_var: Estimated variance of population total estimate}
 \item{pop_mean_var: Estimated variance of population mean estimate}
-\item{weights: Survey weights produced by regression tree}
-\item{tree: rpms object}
+\item{formula: Model formula}
+\item{forest: rpms random forest object}
+\item{oob_error: Out of bag error, average tree out of bag MSE or misclassification rate}
+\item{y_hat_sample: Response estimates for sample}
+\item{y_hat_pop: Response estimates for population}
 }
 }
 \description{

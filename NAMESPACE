@@ -3,6 +3,7 @@
 S3method(predict,greg)
 export(greg)
 export(gregElasticNet)
+export(gregEstimate)
 export(gregForest)
 export(gregTree)
 export(horvitzThompson)

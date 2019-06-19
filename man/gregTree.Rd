@@ -34,14 +34,17 @@ gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
-A list of output containing:
+A greg object containing:
 \itemize{
 \item{pop_total: Estimate of population total}
 \item{pop_mean: Estimate of the population mean}
 \item{pop_total_var: Estimated variance of population total estimate}
 \item{pop_mean_var: Estimated variance of population mean estimate}
 \item{weights: Survey weights produced by regression tree}
+\item{formula: Model formula}
 \item{tree: rpms object}
+\item{y_hat_sample: Response estimates for sample}
+\item{y_hat_pop: Response estimates for population}
 }
 }
 \description{

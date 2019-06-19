@@ -39,11 +39,11 @@
 #' @export gregForest
 #' @import rpms
 #' @import boot
-#' @import rpmsForestt.R
 #' @importFrom stats as.formula
 #' @include varMase.R
 #' @include gregt.R
 #' @include gregObject.R
+#' @include rpmsForestt.R
 #' 
 #' @seealso \code{\link{greg}} for a linear or logistic regression model.
 

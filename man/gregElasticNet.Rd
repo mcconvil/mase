@@ -42,13 +42,17 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1,
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 }
 \value{
-A list of output containing:
+A greg object containing:
 \itemize{
 \item{pop_total: Estimate of population total}
 \item{pop_mean: Estimate of the population mean}
 \item{pop_total_var: Estimated variance of population total estimate}
 \item{pop_mean_var: Estimated variance of population mean estimate}
 \item{coefficients: Survey-weighted model coefficients}
+\item{formula: Model formula}
+\item{model: glmnet model object}
+\item{y_hat_sample: Response estimates for sample}
+\item{y_hat_pop: Response estimates for population}
 }
 }
 \description{
