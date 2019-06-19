@@ -45,11 +45,6 @@ gregEstimate <- function(y, y_hat_sample, pi = NULL, y_hat_pop, pi2 = NULL,
     return(NULL)
   }
   
-  if(!is.element(model, c("linear","logistic"))){
-    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-    return(NULL)
-  }
-  
   #Need to provide either data_type="raw", N, or pi.  Give warning if not
   if(data_type %in% c("means", "totals") & is.null(N) & is.null(pi)){
     message("Must supply N, pi, or raw population data so that we can estimate N.")
@@ -119,7 +114,7 @@ gregEstimate <- function(y, y_hat_sample, pi = NULL, y_hat_pop, pi2 = NULL,
   
   if ( var_est == TRUE ) {
     if ( var_method != "bootstrap_SRS") {
-      varEst <- varMase(y = (y-y_hats_s), pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
+      varEst <- varMase(y = (y-y_hat_sample), pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
       }
     if ( var_method == "bootstrap_SRS"){
       #Find bootstrap variance
@@ -136,14 +131,14 @@ gregEstimate <- function(y, y_hat_sample, pi = NULL, y_hat_pop, pi2 = NULL,
                  pop_mean = as.numeric(t)/N, 
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2,
-                 y_hat_sample = y_hats_sample,
+                 y_hat_sample = y_hat_sample,
                  y_hat_pop = y_hat_pop %>% as.vector()) %>%
              gregify())
   }
   else{
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N, 
-                 y_hat_sample = y_hats_sample,
+                 y_hat_sample = y_hat_sample,
                  y_hat_pop = y_hat_pop %>% as.vector()) %>%
              gregify())
     
