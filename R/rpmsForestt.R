@@ -118,7 +118,7 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
     # ----- randomize tree growth ------------------------------
     
     #--randomize data set ----- 
-    s <- sample(N, size=N, replace = TRUE) #bootstap sample
+    s <- sample(N, size= round((2/3)*N), replace = FALSE) #2/3 sample
     oob <- which(!(1:N %in% s)) #out of bag set
     #-------------------------------------------------------
     
@@ -191,8 +191,13 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
   
   tree<-replicate(f_size, get_trees(), simplify = FALSE)
   oob_error <- sapply(1:f_size, FUN = function(x) tree[[x]]$oob_error) %>% mean()
-    
-  f1<-list(oob_error = oob_error, tree = tree)
+  var_imp <- lapply(1:f_size, FUN = function(x) tree[[x]]$frame) %>%
+    bind_rows(.id = "column_label") %>%
+    select("var", "loss") %>%
+    filter(var != "Root") %>%
+    group_by(var) %>%
+    summarise(num_splits = n(), avg_loss = mean(loss))
+  f1<-list(tree = tree, oob_error = oob_error, var_imp = var_imp)
   class(f1)<-c("rpms_forest")
   
   return(f1)
