@@ -190,13 +190,17 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
   }#---end get_trees ---------------------------
   
   tree<-replicate(f_size, get_trees(), simplify = FALSE)
+  #find average oob error
   oob_error <- sapply(1:f_size, FUN = function(x) tree[[x]]$oob_error) %>% mean()
-  var_imp <- lapply(1:f_size, FUN = function(x) tree[[x]]$frame) %>%
-    bind_rows(.id = "column_label") %>%
-    select("var", "loss") %>%
-    filter(var != "Root") %>%
-    group_by(var) %>%
-    summarise(num_splits = n(), avg_loss = mean(loss))
+  #variable importance
+  var_imp <- suppressWarnings(as.expression( #warning from bind_rows
+    lapply(1:f_size, function(x) tree[[x]]$frame %>%
+             select("var", "loss")) %>%
+      bind_rows() %>% #rbind each tree's split info
+      filter(var != "Root") %>% #ignore roots of each tree
+      group_by(var) %>% #summarize decrease of loss function for each var.
+      summarise(num_splits = n(), avg_loss = mean(loss))))
+  #output
   f1<-list(tree = tree, oob_error = oob_error, var_imp = var_imp)
   class(f1)<-c("rpms_forest")
   
