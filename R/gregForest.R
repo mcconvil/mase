@@ -147,6 +147,7 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    formula = f,
                    forest = forest,
                    oob_error = forest$oob_error,
+                   var_imp = forest$var_imp,
                    y_hat_sample = y_hat_sample,
                    y_hat_pop = y_hat_pop) %>%
                gregify())
@@ -157,6 +158,7 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    formula = f,
                    forest = forest,
                    oob_error = forest$oob_error,
+                   var_imp = forest$var_imp,
                    y_hat_sample = y_hat_sample,
                    y_hat_pop = y_hat_pop) %>%
                gregify())
