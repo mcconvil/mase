@@ -5,11 +5,9 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
                         f_size=200, cores=1){
   
   
-  if(is.null(bin_size)) bin_size <- ceiling(nrow(data)^(1/2))
-  else 
-    if(bin_size<20) {
-      warning("bin_size set to 20")  
-      bin_size <- 20}
+  if(is.null(bin_size)){
+    bin_size <- ceiling(nrow(data)^(1/2))
+  } 
   
   #============= format data set ================================================
   varlist <- unique(c(all.vars(rp_equ), all.vars(e_equ), all.vars(weights), 
@@ -195,7 +193,7 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
   #variable importance
   var_imp <- suppressWarnings(as.expression( #warning from bind_rows
     lapply(1:f_size, function(x) tree[[x]]$frame %>%
-             select("var", "loss")) %>%
+             dplyr::select("var", "loss")) %>%
       bind_rows() %>% #rbind each tree's split info
       filter(var != "Root") %>% #ignore roots of each tree
       group_by(var) %>% #summarize decrease of loss function for each var.

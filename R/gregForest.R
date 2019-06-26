@@ -37,6 +37,7 @@
 #' }
 #' 
 #' @export gregForest
+#' @import dplyr
 #' @import rpms
 #' @import boot
 #' @importFrom stats as.formula
@@ -164,7 +165,3 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                gregify())
     }
   }
-  
-  
-  
-  
