@@ -26,6 +26,9 @@ print.greg <- function(obj) {
   if(!identical(obj$strat_ests, NULL)) {
     cat("stata estimates:", obj$strat_ests, "\n")
   }
+  if(!identical(obj$oob_error, NULL)) {
+    cat("out of bag error:", obj$oob_error, "\n")
+  }
 } 
 
 #predict method
