@@ -175,6 +175,7 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
     #-------end randomize ------------------------------------
     ti <- rpms(rp_equ=f_equ, data[s,], weights[s], strata[s], clusters[s],
                e_equ=e_equ, perm_reps=perm_reps, pval=pval, bin_size = bin_size)
+    ti$inclusion_ind <- s
     if(typeof(data$y) %in% c("numeric", "integer", "double")){
       #MSE
       ti$oob_error <- mean((predict(ti, newdata = data[oob,]) - data$y[oob])^2)
@@ -200,8 +201,29 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
       summarise(num_splits = n(), avg_loss = mean(loss))))
   #output
   f1<-list(tree = tree, oob_error = oob_error, var_imp = var_imp)
-  class(f1)<-c("rpms_forest")
+  class(f1)<-c("mase_rpms_forest")
   
   return(f1)
   
+}
+
+predict.mase_rpms_forest <- function(obj, newdata, oob = FALSE) {
+  ntree <- length(obj$tree)
+  p_matrix <- sapply(1:ntree, FUN = function(x)
+    predict(obj$tree[[x]], newdata = newdata)) %>%
+    matrix(nrow = ntree, byrow = TRUE)
+  if(oob == TRUE){
+    incl_mat <- sapply(1:ntree, FUN = function(x)
+      1:nrow(newdata) %in% (obj$tree[[x]]$inclusion_ind)) %>%
+      matrix(nrow = ntree, byrow = TRUE) %>%
+      t()
+    p_matrix <- p_matrix %*% incl_mat
+    bag_counts <- rowSums(incl_mat)
+    print(p_matrix)
+    return(colSums(p_matrix)/bag_counts)
+  }
+  else{
+    return(colSums(p_matrix)/ntree)
+  }
+
 }

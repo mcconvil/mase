@@ -11,6 +11,7 @@
 #' @param mtry A number specifying how many predictors each tree uses. Default is the square root of total number of predictors.
 #' @param ntrees An integer specifying the number of trees to train in forest.
 #' @param cores An integer specifying the number of cores to use in parallel if > 1 (not implemented)
+#' @param oob_pred Logical. If TRUE, make predictions using only trees out of bag.
 #' 
 #' @examples
 #' library(survey)
@@ -51,7 +52,8 @@
 
 gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                       var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
-                      bin_size = NULL, strata = NULL, mtry = NULL, ntrees = 100, cores = 1){
+                      bin_size = NULL, strata = NULL, mtry = NULL, ntrees = 100,
+                      oob_pred = FALSE, cores = 1){
     
     #Make sure the var_method is valid
     if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
@@ -120,8 +122,8 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                         cores = cores)
     
     #calculating the total estimate for y
-    y_hat_sample <- predict(object = forest, newdata = x_sample)
-    y_hat_pop <- predict(object = forest, newdata = x_pop)
+    y_hat_sample <- predict(obj = forest, newdata = x_sample, oob = oob_pred)
+    y_hat_pop <- predict(obj = forest, newdata = x_pop)
     t <- sum(weights * (y - y_hat_sample)) + sum(y_hat_pop)
     
     if(var_est==TRUE){
