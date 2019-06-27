@@ -215,11 +215,9 @@ predict.mase_rpms_forest <- function(obj, newdata, oob = FALSE) {
   if(oob == TRUE){
     incl_mat <- sapply(1:ntree, FUN = function(x)
       1:nrow(newdata) %in% (obj$tree[[x]]$inclusion_ind)) %>%
-      matrix(nrow = ntree, byrow = TRUE) %>%
-      t()
-    p_matrix <- p_matrix %*% incl_mat
-    bag_counts <- rowSums(incl_mat)
-    print(p_matrix)
+      matrix(nrow = ntree, byrow = TRUE)
+    p_matrix <- p_matrix * incl_mat
+    bag_counts <- colSums(incl_mat)
     return(colSums(p_matrix)/bag_counts)
   }
   else{
