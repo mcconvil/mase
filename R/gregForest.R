@@ -10,8 +10,10 @@
 #' @param bin_size An integer specifying the minimum number of observations in each node.
 #' @param mtry A number specifying how many predictors each tree uses. Default is the square root of total number of predictors.
 #' @param ntrees An integer specifying the number of trees to train in forest.
-#' @param cores An integer specifying the number of cores to use in parallel if > 1 (not implemented)
+#' @param forest_fun A string specifying which randomForest algorithm to use. Choices are "rpms" or "randomForest", default is mase modified rpms random forest.
 #' @param oob_pred Logical. If TRUE, make predictions using only trees out of bag.
+#' @param cores An integer specifying the number of cores to use in parallel if > 1 (not implemented)
+
 #' 
 #' @examples
 #' library(survey)
@@ -53,7 +55,7 @@
 gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                       var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
                       bin_size = NULL, strata = NULL, mtry = NULL, ntrees = 100,
-                      oob_pred = FALSE, cores = 1){
+                      forest_fun = "default", oob_pred = FALSE, cores = 1){
     
     #Make sure the var_method is valid
     if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
@@ -92,6 +94,9 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
     if(is.null(pi)){
       message("Assuming simple random sampling")
     }
+    if(is.null(mtry)){
+      mtry <- round(sqrt(ncol(x_pop)))
+    }
     #Check for missing data:
     if(FALSE %in% complete.cases(x_sample) || FALSE %in% complete.cases(x_pop)){
       if(FALSE %in% complete.cases(x_sample)){
@@ -117,13 +122,28 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
     dat <- data.frame(y, x_sample, weights = weights)
     #Create formula for rpms equation
     f <- as.formula(paste("y ~ ", paste(names(x_sample), collapse= "+")))
-    forest <- rpmsForestt(rp_equ = f, data = dat, weights = weights, pval = p_value,
-                        perm_reps = perm_reps, bin_size = bin_size, mtry = mtry, f_size = ntrees,
-                        cores = cores)
-    
+    if(tolower(forest_fun) == "rpms"){ #use original rpms
+      forest <- rpms::rpms_forest(rp_equ = f, data = dat, weights = weights,
+                            pval = p_value, perm_reps = perm_reps, 
+                            bin_size = bin_size, f_size = ntrees, cores = cores)
+      y_hat_sample <- predict(obj = forest, newdata = x_sample)
+      y_hat_pop <- predict(obj = forest, newdata = x_pop)
+    }
+    else if(tolower(forest_fun) == "randomforest"){
+      message("using randomForest")
+      forest <- randomForest::randomForest(formula = f, data = dat, nodesize = bin_size, mtry = mtry, ntree = ntrees,
+                            cores = cores)
+      y_hat_sample <- predict(obj = forest, newdata = x_sample)
+      y_hat_pop <- predict(obj = forest, newdata = x_pop)
+    }
+    else{ #use mase edited rpms forest function
+      forest <- rpmsForestt(rp_equ = f, data = dat, weights = weights, pval = p_value,
+                            perm_reps = perm_reps, bin_size = bin_size, mtry = mtry, f_size = ntrees,
+                            cores = cores)
+      y_hat_sample <- predict(obj = forest, newdata = x_sample, oob = oob_pred)
+      y_hat_pop <- predict(obj = forest, newdata = x_pop)
+    }
     #calculating the total estimate for y
-    y_hat_sample <- predict(obj = forest, newdata = x_sample, oob = oob_pred)
-    y_hat_pop <- predict(obj = forest, newdata = x_pop)
     t <- sum(weights * (y - y_hat_sample)) + sum(y_hat_pop)
     
     if(var_est==TRUE){

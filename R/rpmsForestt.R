@@ -104,9 +104,6 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
   y <- all.vars(rp_equ)[1] 
   N<-nrow(data)
   xp <- length(vX) # number of variables
-  if(is.null(mtry)){
-    mtry <- sqrt(xp)
-  }
   
   
   tree <- vector(mode="list", length=f_size) # forest
