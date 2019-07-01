@@ -55,7 +55,7 @@
 gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                       var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
                       bin_size = NULL, strata = NULL, mtry = NULL, ntrees = 100,
-                      forest_fun = "default", oob_pred = FALSE, cores = 1){
+                      forest_fun = "default", oob_pred = TRUE, cores = 1){
     
     #Make sure the var_method is valid
     if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
@@ -152,17 +152,6 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
         varEst <- varMase(y = e, pi = pi, pi2 = pi2, method = var_method, N = N,
                           strata = strata)
       }
-      else if(var_method == "bootstrap_SRS"){
-        #Find bootstrap variance
-        dat <- cbind(y, pi, x_sample)
-        #Bootstrap total estimates
-        t_boot <- boot(data = dat, statistic = gregTreet, R = B, x_pop = x_pop,
-                       p_value= p_value, perm_reps = perm_reps, bin_size = bin_size,
-                       parallel = "multicore", ncpus = 2)
-        
-        #Adjust for bias and without replacement sampling
-        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
-      }
       return(list( pop_total = as.numeric(t),
                    pop_mean = as.numeric(t)/N,
                    pop_total_var=varEst,
@@ -170,7 +159,7 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    formula = f,
                    forest = forest,
                    oob_error = forest$oob_error,
-                   var_imp = forest$var_imp,
+                   var_imp = forest$importance,
                    y_hat_sample = y_hat_sample,
                    y_hat_pop = y_hat_pop) %>%
                gregify())
@@ -181,7 +170,7 @@ gregForest <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FAL
                    formula = f,
                    forest = forest,
                    oob_error = forest$oob_error,
-                   var_imp = forest$var_imp,
+                   var_imp = forest$importance,
                    y_hat_sample = y_hat_sample,
                    y_hat_pop = y_hat_pop) %>%
                gregify())

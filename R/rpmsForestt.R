@@ -197,7 +197,7 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
       group_by(var) %>% #summarize decrease of loss function for each var.
       summarise(num_splits = n(), avg_loss = mean(loss))))
   #output
-  f1<-list(tree = tree, oob_error = oob_error, var_imp = var_imp)
+  f1<-list(tree = tree, oob_error = oob_error, importance = var_imp %>% as.data.frame())
   class(f1)<-c("mase_rpms_forest")
   
   return(f1)
