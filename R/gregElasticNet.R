@@ -237,19 +237,16 @@ if (model == "linear") {
     }
     
     if ( var_method == "bootstrap_SRS"){
-        #Find bootstrap variance
-        
-        #Sample data
-        dat <- cbind(y,pi, x_sample_d)
-        #Bootstrap total estimates
-        t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
-        
-        #Adjust for bias and without replacement sampling
-        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
-      }
-
+      #Find bootstrap variance via residual bootstrap
+      dat <- cbind(y-y_hats_s, pi)
+      #Bootstrap total estimates
+      t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, x_pop_d = x_pop_d,
+                     y = y, x_sample_d = x_sample_d, alpha=alpha, lambda = lambda_opt,
+                     parallel = "multicore", ncpus = 2)
+      #Adjust for bias and without replacement sampling
+      varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+    }
   }
-  
 }   
   
   if(var_est==TRUE){

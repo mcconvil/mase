@@ -320,11 +320,11 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
       varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
       }
     else if(var_method=="bootstrap_SRS"){
-      #Find bootstrap variance
-      dat <- cbind(y,pi, x_sample_d)
+      #Find bootstrap variance via residual bootstrap
+      dat <- cbind(y-y_hat, pi)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregt, R = B, x_pop_d = x_pop_d, parallel = "multicore", ncpus = 2)
-      
+      t_boot <- boot(data = dat, statistic = gregt, R = B, y = y, x_pop_d = x_pop_d,
+                     x_sample_d = x_sample_d, parallel = "multicore", ncpus = 2)
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
     }
