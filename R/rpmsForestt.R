@@ -172,7 +172,7 @@ rpmsForestt <- function(rp_equ, data, weights=~1, strata=~1, clusters=~1,
     #-------end randomize ------------------------------------
     ti <- rpms(rp_equ=f_equ, data[s,], weights[s], strata[s], clusters[s],
                e_equ=e_equ, perm_reps=perm_reps, pval=pval, bin_size = bin_size)
-    ti$inclusion_ind <- s
+    ti$oob_ind <- oob
     if(typeof(data$y) %in% c("numeric", "integer", "double")){
       #MSE
       ti$oob_error <- mean((predict(ti, newdata = data[oob,]) - data$y[oob])^2)
@@ -211,7 +211,7 @@ predict.mase_rpms_forest <- function(obj, newdata, oob = FALSE) {
     matrix(nrow = ntree, byrow = TRUE)
   if(oob == TRUE){
     incl_mat <- sapply(1:ntree, FUN = function(x)
-      1:nrow(newdata) %in% (obj$tree[[x]]$inclusion_ind)) %>%
+      1:nrow(newdata) %in% (obj$tree[[x]]$oob_ind)) %>%
       matrix(nrow = ntree, byrow = TRUE)
     p_matrix <- p_matrix * incl_mat
     bag_counts <- colSums(incl_mat)
