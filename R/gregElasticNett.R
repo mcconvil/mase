@@ -1,15 +1,14 @@
 #Helper function to compute linear gregElasticNet total for bootstrapping
 library(glmnet)
 
-gregElasticNett <- function(data, x_pop_d, x_sample_d, y, indices, alpha, lambda){
-  #data: 1st column:y, 2nd column:pis, rest: x_sample_d
-  d <- data[indices,]
-  #resids
-  e <- d[,1]
+gregElasticNett <- function(data, x_pop_d, x_sample_d, y_hat, indices, alpha, lambda){
+  #data: 1st column:resids, 2nd:pis
+  #resids, wild bootstrap Mammen's dist.
+  e <- data[,1]*ifelse(rbinom(length(y_hat), 1, 0.7236), -0.618, 1.618 )
   #pis 
   pis <- data[,2]
   #y star
-  y_star <- y + e
+  y_star <- y_hat + e
   
   #beta-hats
   pred_mod <- glmnet(x = as.matrix(x_sample_d[,-1]), y = y_star, alpha = alpha, family = "gaussian", standardize = FALSE, weights = pis^{-1})

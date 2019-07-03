@@ -182,9 +182,9 @@ gregElasticNet  <- function(
     e2 <- ((y-y_hats_s)^2) #fit model on squared residuals
     resid_mod <- lm(vf, data = cbind(e2, x_sample))
     #adjust weights, truncate if not positive
-    weight <- weight/ifelse(resid_mod$fitted.values <= 0,
-                            sd(resid_mod$fitted.values)/n,
-                            resid_mod$fitted.values)
+    weight <- weight/sqrt(ifelse(resid_mod$fitted.values <= 0,
+                            0, #truncate to zero and then add small constant
+                            resid_mod$fitted.values) + median(e2)/n)
     #refit model
     pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
                        standardize = FALSE, weights=weight)
@@ -209,8 +209,8 @@ if (model == "logistic") {
   
   if ( var_est == TRUE){
     if (var_method != "bootstrap_SRS") {
-      varEst <- varMase(y = (y - y_hats_s), pi = pi, pi2 = pi2, method = var_method, N = N, strata = strata)
-      
+      varEst <- varMase(y = (y - y_hats_s), pi = pi, pi2 = pi2,
+                        method = var_method, N = N, strata = strata)
     }
     
     if(var_method == "bootstrap_SRS"){
@@ -219,7 +219,8 @@ if (model == "logistic") {
       #Sample data
       dat <- cbind(y,pi, x_sample_d)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B,
+                     x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
       
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
@@ -269,7 +270,7 @@ if (model == "linear") {
       dat <- cbind(y-y_hats_s, pi)
       #Bootstrap total estimates
       t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, x_pop_d = x_pop_d,
-                     y = y, x_sample_d = x_sample_d, alpha=alpha, lambda = lambda_opt,
+                     y_hat = y_hats_s, x_sample_d = x_sample_d, alpha=alpha, lambda = lambda_opt,
                      parallel = "multicore", ncpus = 2)
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
