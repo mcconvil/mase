@@ -8,6 +8,7 @@
 #' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used. Default is alpha = 1. 
 #' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda_value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param cvfolds The number of folds for the cross-validation to tune lambda.
+#' @param hetero Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample.
 #' 
 #' @examples 
 #' library(survey)
@@ -48,7 +49,8 @@
 
 gregElasticNet  <- function(
   y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear", pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
-  data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL, standardize = FALSE){
+  data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL, standardize = FALSE,
+  hetero = FALSE){
   
   
   ### INPUT VALIDATION ###
@@ -160,10 +162,36 @@ gregElasticNet  <- function(
                      standardize = FALSE, weights=weight)
   elasticNet_coef <- predict(pred_mod,type = "coefficients",
                              s = lambda_opt)[1:dim(x_sample_d)[2],]
-  
   #Estimated y values in sample
   y_hats_s <- as.vector(predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response"))
-
+  #Heteroskedasticity weighting
+  resid_mod <- NULL
+  if(hetero != FALSE){
+    selected <- names(x_sample)[which(elasticNet_coef != 0)-1]
+    message("Adjusting sample weights for heteroskedasticity")
+    vf <- as.formula(paste("e2 ~ ", paste(selected, collapse= "+")))
+    if(typeof(hetero) == "character"){
+      if(sum(hetero %in% selected) == length(hetero)){
+        vf <- as.formula(paste("e2 ~ ", paste(hetero, collapse= "+")))
+      }
+      else{
+        message(paste0("Heteroskedastic variable(s) supplied was not selected by ElasticNet: ",
+                   paste(selected), ". Using selected variables instead."))
+      }
+    }
+    e2 <- ((y-y_hats_s)^2) #fit model on squared residuals
+    resid_mod <- lm(vf, data = cbind(e2, x_sample))
+    #adjust weights, truncate if not positive
+    weight <- weight/ifelse(resid_mod$fitted.values <= 0,
+                            sd(resid_mod$fitted.values)/n,
+                            resid_mod$fitted.values)
+    #refit model
+    pred_mod <- glmnet(x = as.matrix(x_sample), y = y, alpha = alpha, family=fam,
+                       standardize = FALSE, weights=weight)
+    elasticNet_coef <- predict(pred_mod,type = "coefficients",
+                               s = lambda_opt)[1:dim(x_sample_d)[2],]
+    y_hats_s <- as.vector(predict(cv,newx = as.matrix(x_sample), s = lambda_opt, type="response"))
+  }
 if (model == "logistic") {
   if (data_type != "raw"){
     message("For the Logistic Elastic Net Estimator, user must supply all x values for population.  Populations totals or means for x are not enough.")
@@ -259,7 +287,8 @@ if (model == "linear") {
                  coefficients = elasticNet_coef,
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
-                 y_hat_pop = y_hats_U %>% as.vector()) %>%
+                 y_hat_pop = y_hats_U %>% as.vector(),
+                 resid_mod = resid_mod) %>%
              gregify())
   }else{
     
@@ -269,7 +298,8 @@ if (model == "linear") {
                  coefficients = elasticNet_coef,
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
-                 y_hat_pop = y_hats_U %>% as.vector()) %>%
+                 y_hat_pop = y_hats_U %>% as.vector(),
+                 resid_mod = resid_mod) %>%
              gregify())
     
   }
