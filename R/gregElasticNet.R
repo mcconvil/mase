@@ -289,7 +289,7 @@ if (model == "linear") {
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
                  y_hat_pop = y_hats_U %>% as.vector(),
-                 resid_mod = resid_mod) %>%
+                 skedastic_mod = resid_mod) %>%
              gregify())
   }else{
     
@@ -300,7 +300,7 @@ if (model == "linear") {
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
                  y_hat_pop = y_hats_U %>% as.vector(),
-                 resid_mod = resid_mod) %>%
+                 skedastic_mod = resid_mod) %>%
              gregify())
     
   }
