@@ -9,7 +9,8 @@
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
 #' @param model_select A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
 #' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
-#' 
+#' @param hetero Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample. Not applicable for logistic regression.
+#'
 #' @examples 
 #' library(survey)
 #' data(api)
@@ -52,8 +53,10 @@
 #' 
 #' @seealso \code{\link{gregElasticNet}} for a penalized regression model.
 
-greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
-                  data_type = "raw", N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000, strata = NULL){
+greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
+                  var_est = FALSE, var_method = "lin_HB", data_type = "raw",
+                  N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000,
+                  strata = NULL, hetero = FALSE){
 
   
   
@@ -309,6 +312,47 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
   #model estimates
   y_hat <- (x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*%
     (x_sample_dt) %*% diag(weight)%*%y) %>% as.vector()
+  #heteroskedasticity
+  resid_mod <- NULL
+  if(hetero != FALSE){
+    selected <- coef_select
+    message("Adjusting sample weights for heteroskedasticity")
+    vf <- as.formula(paste("e2 ~ ", paste(selected, collapse= "+")))
+    if(typeof(hetero) == "character"){
+      if(sum(hetero %in% selected) == length(hetero)){
+        vf <- as.formula(paste("e2 ~ ", paste(hetero, collapse= "+")))
+      }
+      else{
+        message(paste0("Heteroskedastic variable(s) supplied was not selected by LASSO: ",
+                       paste(selected), ". Using selected variables instead."))
+      }
+    }
+    e2 <- ((y-y_hat)^2) #fit model on squared residuals
+    resid_mod <- lm(vf, data = cbind(e2, x_sample))
+    #adjust weights, truncate if not positive
+    weight <- weight/sqrt(ifelse(resid_mod$fitted.values <= 0,
+                                 0, #truncate to zero and then add small constant
+                                 resid_mod$fitted.values) + median(e2)/n)
+    #refit original model
+    cv <- cv.glmnet(x = as.matrix(cbind(rep(1, nrow(x_sample)), x_sample)),
+                    y = y, alpha = 1, weights = weight, nfolds = 10, family = fam,
+                    standardize = FALSE)
+    if(lambda == "lambda.min"){
+      lambda_opt <- cv$lambda.min
+    }
+    if(lambda == "lambda.1se"){
+      lambda_opt <- cv$lambda.1se
+    }
+    pred_mod <- glmnet(x = as.matrix(cbind(rep(1, nrow(x_sample)), x_sample)),
+                       y = y, alpha = 1, family = fam, standardize = FALSE, weights=weight)
+    lasso_coef <- predict(pred_mod,type = "coefficients", s = lambda_opt)[1:dim(x_sample_d)[2],]
+    coef_select <- names(lasso_coef[lasso_coef != 0])[-1]
+    w <- as.matrix(1 + t(as.matrix(x_pop_d) - x_sample_dt %*% weight) %*% solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt)) %*% diag(weight)
+    t <- w %*% y
+    coefs <- solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*% (x_sample_dt) %*% diag(weight) %*% y
+    y_hat <- (x_sample_d%*%solve(x_sample_dt %*% diag(weight) %*% x_sample_d) %*%
+                (x_sample_dt) %*% diag(weight)%*%y) %>% as.vector()
+  }
   y_hat_pop <- NULL
   if(data_type == "raw") {
     y_hat_pop <- (model.matrix(~., data = x_pop) %*% coefs) %>% as.vector()
@@ -323,7 +367,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
       #Find bootstrap variance via residual bootstrap
       dat <- cbind(y-y_hat, pi)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregt, R = B, y = y, x_pop_d = x_pop_d,
+      t_boot <- boot(data = dat, statistic = gregt, R = B, y_hat = y_hat, x_pop_d = x_pop_d,
                      x_sample_d = x_sample_d, parallel = "multicore", ncpus = 2)
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
@@ -335,7 +379,8 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                  weights = as.vector(w),
                  coefficients =  coefs,
                  y_hat_sample = y_hat,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 skedastic_mod = resid_mod) %>%
              gregify())
     }
   else{
@@ -344,7 +389,8 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL, 
                  weights = as.vector(w),
                  coefficients =  coefs,
                  y_hat_sample = y_hat,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 skedastic_mod = resid_mod) %>%
              gregify())      
     }
   }
