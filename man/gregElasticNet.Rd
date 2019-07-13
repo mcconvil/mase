@@ -8,7 +8,7 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1,
   model = "linear", pi2 = NULL, var_est = FALSE,
   var_method = "lin_HB", data_type = "raw", N = NULL,
   lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL,
-  standardize = FALSE)
+  standardize = FALSE, hetero = FALSE)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -40,6 +40,8 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1,
 \item{cvfolds}{The number of folds for the cross-validation to tune lambda.}
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
+
+\item{hetero}{Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample.}
 }
 \value{
 A greg object containing:

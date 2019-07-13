@@ -7,7 +7,7 @@
 gregForest(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
   var_est = FALSE, var_method = "lin_HB", B = 1000, p_value = 0.05,
   perm_reps = 500, bin_size = NULL, strata = NULL, mtry = NULL,
-  ntrees = 100, cores = 1)
+  ntrees = 100, forest_fun = "default", oob_pred = TRUE, cores = 1)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -37,6 +37,10 @@ gregForest(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
 \item{mtry}{A number specifying how many predictors each tree uses. Default is the square root of total number of predictors.}
 
 \item{ntrees}{An integer specifying the number of trees to train in forest.}
+
+\item{forest_fun}{A string specifying which randomForest algorithm to use. Choices are "rpms" or "randomForest", default is mase modified rpms random forest.}
+
+\item{oob_pred}{Logical. If TRUE, make predictions using only trees out of bag.}
 
 \item{cores}{An integer specifying the number of cores to use in parallel if > 1 (not implemented)}
 }

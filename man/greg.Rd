@@ -7,7 +7,7 @@
 greg(y, x_sample, x_pop, pi = NULL, model = "linear", pi2 = NULL,
   var_est = FALSE, var_method = "lin_HB", data_type = "raw",
   N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000,
-  strata = NULL)
+  strata = NULL, hetero = FALSE)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -37,6 +37,8 @@ greg(y, x_sample, x_pop, pi = NULL, model = "linear", pi2 = NULL,
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
+
+\item{hetero}{Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample. Not applicable for logistic regression.}
 }
 \value{
 A greg object containing:
