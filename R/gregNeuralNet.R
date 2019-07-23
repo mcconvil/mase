@@ -124,14 +124,24 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
     layer_dense(units = H, activation = 'relu',
                 kernel_initializer = initializer_glorot_normal()) %>%
     layer_dense(units = 1)
+  #specify loss function
+  if(tolower(loss) != "mse"){
+    message("Using custom loss function")
+    loss <- function(...) loss(...)
+  }
+  #use RMSprop gradient descent if optimizer not specified
+  if(is.null(optimizer)){
+    optimizer <- keras::optimizer_rmsprop(lr = lr, rho = 0.9)
+  }
   #compile neural network
-  ffnn <- ffnn %>% compile(loss = loss,
-                           optimizer = optimizer_rmsprop(lr = lr, rho = 0.9),
+  ffnn <- ffnn %>% keras::compile(loss = loss,
+                           optimizer = optimizer,
                            metrics = list("mean_absolute_error"))
   #train neural network
-  fit(ffnn, x = model_mat, y = y, epochs = epochs,
+  keras::fit(ffnn, x = model_mat, y = y, epochs = epochs,
       batch_size = ifelse(is.null(batch_size), nrow(x_sample), batch_size), 
-      validation_split = validation_split, verbose = verbose)
+      validation_split = validation_split, verbose = verbose,
+      sample_weight = weights)
   
   #find estimates
   y_hat_sample <- predict(ffnn, model_mat) %>% as.vector()
