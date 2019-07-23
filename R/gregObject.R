@@ -44,6 +44,9 @@ predict.greg <- function(obj, new_data) {
     if(!identical(obj$forest, NULL)){
       return(predict(obj$forest, new_data))
       }
+    if(!identical(obj$model, NULL)){
+      return(predict(obj$model, new_data))
+      }
     if(!identical(obj$coefficients, NULL)){
       if(!identical(names(obj$coefficients), NULL)){
         var_names <- (obj$coefficients) %>% names()
@@ -78,29 +81,36 @@ predict.greg <- function(obj, new_data) {
 #' Computes a geospatial heat map of fitted values of a 'greg' object
 #'
 #' @param obj Object of class 'greg'.
+#' @param y_sample A vector of observed (or fitted) response values. Must have the same indicies as the original response vector used to train model. If not specified, model fitted values will be used instead.
 #' @param x_sample A data frame of the sample level data with two spatial variables. Must have the same indicies as the original data frame used to train model.
 #' @param x_pop A data frame of the population level data with two spatial variables. Must have the same indicies as the original population data frame used to make model.
 #' @param spatial_1 A string for the name of variable in `x_sample` and `x_pop` to plot as x axis (column name of longitude). 
 #' @param spatial_2 A string for the name of variable in `x_sample` and `x_pop` to plot as y axis (column name of latitude). 
 #' @param bins An integer specifying the number of bins to aggregate estimated values
 #' @param hexagon Boolean. Specify if you want hexagonal shaped bins or not.
-#' @param fun Summary function to apply within each bin to be plotted. Default is `mean(x)`. See `stat_summary`.
+#' @param fun Summary function to apply within each bin to be plotted. Default is `mean(x)`. See `ggplot2::stat_summary`.
 #' 
 #' @export plot.greg
 #' @import dplyr
 #' @import ggplot2
 #' 
-plot.greg <- function(obj, x_sample, x_pop, spatial_1, spatial_2, bins = 300,
+plot.greg <- function(obj, y_sample = NULL, x_sample, x_pop, spatial_1, spatial_2, bins = 300,
                       fun = function(x) mean(x), hexagon = FALSE) {
   #Check if population estimates are available
   if(identical(obj$y_hat_pop, NULL)){
     message("individual population estimates not available without 'raw' data type")
     obj$y_hat_pop <- rep(NA, nrow(x_pop))
   }
+  #Check if y_sample was included
+  if(is.null(y_sample)){
+    y_sample <- obj$y_hat_sample
+    message("observed sample response vector not provided, using fitted values instead.")
+  }
   #create dataframe
   d <- rbind(x_sample, x_pop) %>%
     dplyr::select(x = spatial_1,y = spatial_2) %>%
-    mutate(y_hat = c(obj$y_hat_sample, obj$y_hat_pop),
+    mutate(y_hat = c(y_sample,
+                     obj$y_hat_pop),
            plot_key = c(rep("sample", nrow(x_sample)),
                         rep("pop", nrow(x_pop)))) %>%
     arrange(plot_key)
@@ -118,7 +128,9 @@ plot.greg <- function(obj, x_sample, x_pop, spatial_1, spatial_2, bins = 300,
   #create ggplot
   plt <- ggplot(d, aes(x = x, y = y, z = y_hat)) +
     kern +
-    geom_point(data = d %>% filter(plot_key == "sample")) +
+    geom_point(data = d %>% filter(plot_key == "sample"),
+               mapping = aes(fill = y_hat),
+               colour = "black", pch = 21) +
     labs(fill = "y_hat") + theme_minimal()
   #return plot using viridis scale, if client has it
   try(return(plt + scale_fill_viridis_c()), silent = TRUE)

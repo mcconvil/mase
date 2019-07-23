@@ -4,11 +4,13 @@
 \alias{plot.greg}
 \title{Compute a geospatial heat map to summarize a generalized regression estimator}
 \usage{
-\method{plot}{greg}(obj, x_sample, x_pop, spatial_1, spatial_2,
-  bins = 300, fun = function(x) mean(x), hexagon = FALSE)
+\method{plot}{greg}(obj, y_sample = NULL, x_sample, x_pop, spatial_1,
+  spatial_2, bins = 300, fun = function(x) mean(x), hexagon = FALSE)
 }
 \arguments{
 \item{obj}{Object of class 'greg'.}
+
+\item{y_sample}{A vector of observed (or fitted) response values. Must have the same indicies as the original response vector used to train model. If not specified, model fitted values will be used instead.}
 
 \item{x_sample}{A data frame of the sample level data with two spatial variables. Must have the same indicies as the original data frame used to train model.}
 
@@ -20,7 +22,7 @@
 
 \item{bins}{An integer specifying the number of bins to aggregate estimated values}
 
-\item{fun}{Summary function to apply within each bin to be plotted. Default is `mean(x)`. See `stat_summary`.}
+\item{fun}{Summary function to apply within each bin to be plotted. Default is `mean(x)`. See `ggplot2::stat_summary`.}
 
 \item{hexagon}{Boolean. Specify if you want hexagonal shaped bins or not.}
 }
