@@ -6,7 +6,7 @@
 \usage{
 gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
   var_method = "lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
-  bin_size = NULL, strata = NULL)
+  bin_size = NULL, strata = NULL, ncpus = 1)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -32,6 +32,8 @@ gregTree(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 \item{bin_size}{An integer specifying the minimum number of observations in each node.}
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
+
+\item{ncpus}{Integer denoting the number of cpu cores to use in parallel for bootstrap variance.}
 }
 \value{
 A greg object containing:

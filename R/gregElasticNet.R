@@ -9,6 +9,7 @@
 #' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda_value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param cvfolds The number of folds for the cross-validation to tune lambda.
 #' @param hetero Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample.
+#' @param ncpus Integer denoting the number of cpu cores to use in parallel for bootstrap variance.
 #' 
 #' @examples 
 #' library(survey)
@@ -50,7 +51,7 @@
 gregElasticNet  <- function(
   y, x_sample, x_pop, pi = NULL, alpha = 1, model = "linear", pi2 = NULL, var_est = FALSE, var_method = "lin_HB", 
   data_type = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, strata = NULL, standardize = FALSE,
-  hetero = FALSE){
+  hetero = FALSE, ncpus = 1){
   
   
   ### INPUT VALIDATION ###
@@ -222,7 +223,7 @@ if (model == "logistic") {
       dat <- cbind(y,pi, x_sample_d)
       #Bootstrap total estimates
       t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B,
-                     x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = 2)
+                     x_pop_d = x_pop_d, alpha=alpha, lambda = lambda_opt, parallel = "multicore", ncpus = ncpus)
       
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)

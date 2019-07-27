@@ -8,6 +8,7 @@
 #' @param p_value Designated p-value level to reject null hypothesis in permutation test used to fit the regression tree. Default value is 0.05.
 #' @param perm_reps An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.
 #' @param bin_size An integer specifying the minimum number of observations in each node.
+#' @param ncpus Integer denoting the number of cpu cores to use in parallel for bootstrap variance.
 #' 
 #' @examples
 #' library(survey)
@@ -46,7 +47,7 @@
 
 gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                       var_method="lin_HB", B = 1000, p_value = 0.05, perm_reps = 500,
-                      bin_size = NULL, strata = NULL){
+                      bin_size = NULL, strata = NULL, ncpus = 1){
 
   #Make sure the var_method is valid
   if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
@@ -147,7 +148,7 @@ gregTree  <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALS
       #Bootstrap total estimates
       t_boot <- boot(data = dat, statistic = gregTreet, R = B, x_pop = x_pop,
                      p_value= p_value, perm_reps = perm_reps, bin_size = bin_size,
-                     parallel = "multicore", ncpus = 2)
+                     parallel = "multicore", ncpus = ncpus)
 
       #Adjust for bias and without replacement sampling
       varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)

@@ -10,6 +10,7 @@
 #' @param model_select A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
 #' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if model_select = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param hetero Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample. Not applicable for logistic regression.
+#' @param ncpus Integer denoting the number of cpu cores to use in parallel for bootstrap variance.
 #'
 #' @examples 
 #' library(survey)
@@ -56,7 +57,7 @@
 greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
                   var_est = FALSE, var_method = "lin_HB", data_type = "raw",
                   N = NULL, model_select = FALSE, lambda = "lambda.min", B = 1000,
-                  strata = NULL, hetero = FALSE){
+                  strata = NULL, hetero = FALSE, ncpus = 1){
 
   
   
@@ -252,7 +253,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
         dat <- data.frame(y, weight, x_sample)
         colnames(dat) <- c("y", "weight", colnames(x_sample))
         
-        t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, x_pop_d = x_pop_d, parallel = "multicore", ncpus = 2)
+        t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, x_pop_d = x_pop_d, parallel = "multicore", ncpus = ncpus)
     
        
         #Adjust for bias and without replacement sampling
