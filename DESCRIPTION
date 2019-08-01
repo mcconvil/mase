@@ -55,6 +55,7 @@ Collate:
     'rpmsForestt.R'
     'gregForest.R'
     'gregNeuralNet.R'
+    'gregRBF.R'
     'gregTree.R'
     'gregtreet.R'
     'htt.R'
