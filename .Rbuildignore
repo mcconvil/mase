@@ -8,3 +8,4 @@
 .Rhistory
 .RData
 cran-comments.md
+^data-raw$
