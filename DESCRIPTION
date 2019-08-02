@@ -49,6 +49,7 @@ Collate:
     'gregt.R'
     'varMase.R'
     'GREG.R'
+    'data.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregEstimate.R'

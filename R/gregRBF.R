@@ -31,7 +31,7 @@
 #' \item{y_hat_pop: Response estimates for population}
 #' }
 #' 
-#' @export gregNeuralNet
+#' @export gregRBF
 #' @import dplyr
 #' @importFrom stats as.formula
 #' @include varMase.R
