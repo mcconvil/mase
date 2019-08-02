@@ -179,7 +179,7 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
 
 predict.greg_rbf <- function(obj, newdata) {
   newdata <- as.matrix(newdata)
-  if(!is.null(obj$pca_obj)){ 
+  if(!is.null(obj$model$pca_obj)){ 
     #If PCA used, project onto first two loadings
     newdata <- (newdata %*% pca_obj$loadings)[,1:2]
   }
