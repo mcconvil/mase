@@ -5,6 +5,7 @@
 #' @inheritParams horvitzThompson
 #' @param x_sample A data frame of the auxiliary data in the sample.
 #' @param x_pop A data frame of population level auxiliary information. It must contain the same names as x_sample.
+#' @param standardize A logical for whether or not to standardize the predictors before fitting model.
 #' @param H An integer for the size of the hidden layers.
 #' @param lr The learning rate of the gradient descent algorithm.
 #' @param epochs The number of training epochs to run.
@@ -48,7 +49,7 @@
 
 
 gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
-                       var_method="lin_HB", strata = NULL, H = 256, lr = 0.001,
+                       var_method="lin_HB", strata = NULL, standardize = FALSE, H = 256, lr = 0.001,
                        epochs = 10, batch_size = NULL, validation_split = 0.2,
                        optimizer = NULL, loss = "MSE", verbose = 1){
   #load keras
@@ -85,7 +86,16 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
   
   #population size
   N <- dim(x_pop)[1]
-  
+  #Check standardization
+  if(standardize == TRUE && data_type == "raw"){
+    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
+                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
+      as.data.frame()
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
+  }
+  if(standardize == TRUE && data_type != "raw"){
+    message("Data type must be 'raw' for data standardization to work. Setting standardize = FALSE")
+  }
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
     message("Assuming simple random sampling")

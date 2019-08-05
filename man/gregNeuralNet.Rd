@@ -5,10 +5,10 @@
 \title{Compute a neural network model assisted estimator}
 \usage{
 gregNeuralNet(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
-  var_est = FALSE, var_method = "lin_HB", strata = NULL, H = 256,
-  lr = 0.001, epochs = 10, batch_size = NULL,
-  validation_split = 0.2, optimizer = NULL, loss = "MSE",
-  verbose = 1)
+  var_est = FALSE, var_method = "lin_HB", strata = NULL,
+  standardize = FALSE, H = 256, lr = 0.001, epochs = 10,
+  batch_size = NULL, validation_split = 0.2, optimizer = NULL,
+  loss = "MSE", verbose = 1)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -26,6 +26,8 @@ gregNeuralNet(y, x_sample, x_pop, pi = NULL, pi2 = NULL,
 \item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "lin_HB"= Hajek-Berger estimator, "lin_HH" = Hansen-Hurwitz estimator, "lin_HTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "lin_HT" = Horvitz-Thompson estimator or a resampling technique: "bootstrap_SRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "lin_HB".}
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
+
+\item{standardize}{A logical for whether or not to standardize the predictors before fitting model.}
 
 \item{H}{An integer for the size of the hidden layers.}
 
