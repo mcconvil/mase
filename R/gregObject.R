@@ -131,8 +131,9 @@ plot.greg <- function(obj, y_sample = NULL, x_sample, x_pop, spatial_1, spatial_
     geom_point(data = d %>% filter(plot_key == "sample"),
                mapping = aes(fill = y_hat),
                colour = "black", pch = 21) +
-    labs(fill = "y_hat") + theme_minimal()
-  #return plot using viridis scale, if client has it
+    coord_equal() +
+    labs(fill = "y_hat", x = spatial_1, y = spatial_2) + theme_minimal()
+  #return plot using viridis color scale, if client has it
   try(return(plt + scale_fill_viridis_c()), silent = TRUE)
   return(plt)
 }
