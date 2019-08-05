@@ -87,14 +87,11 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
   #population size
   N <- dim(x_pop)[1]
   #Check standardization
-  if(standardize == TRUE && data_type == "raw"){
+  if(standardize == TRUE){
     x_pop <- base::scale(x_pop, center = colMeans(x_sample),
                          scale = apply(as.matrix(x_sample), 2, sd)) %>%
       as.data.frame()
     x_sample <- base::scale(x_sample) %>% as.data.frame()
-  }
-  if(standardize == TRUE && data_type != "raw"){
-    message("Data type must be 'raw' for data standardization to work. Setting standardize = FALSE")
   }
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
