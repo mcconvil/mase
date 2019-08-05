@@ -1,6 +1,8 @@
 ## code to prepare raster data frames in mase/data directory
 library(raster)
+#shape files found at https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=Ecomap
 province_shape <- sf::read_sf("S_USA.EcoMapProvinces.shp")
+#image files found at https://data.fs.usda.gov/geodata/rastergateway/biomass/index.php
 black_hills_pop_bio <- raster::raster("conus_forest_biomass_mg_per_ha.img")
 black_hills_pop_for <- raster::raster("conus_forest_nonforest_probability.img")
 
