@@ -41,6 +41,8 @@ gregElasticNet(y, x_sample, x_pop, pi = NULL, alpha = 1,
 
 \item{strata}{A factor vector of the stratum membership.  If NULL, all units are put into the same stratum.  Must have same length as y.}
 
+\item{standardize}{A logical for whether or not to standardize the predictors before fitting model.}
+
 \item{hetero}{Set `TRUE` if model residuals show linear heteroskedasticity (non constant variance, "fanning", etc.). Alternatively, if an x variable is known to be heteroskedastic with y, provide a character vector of variable names. When used, the model weights will be divided by model estimated residual variance at each datum in x_sample.}
 
 \item{ncpus}{Integer denoting the number of cpu cores to use in parallel for bootstrap variance.}

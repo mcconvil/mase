@@ -94,10 +94,10 @@ gregElasticNet  <- function(
   
   #Check standardization
   if(standardize == TRUE && data_type == "raw"){
-    x_sample <- base::scale(x_sample) %>% as.data.frame()
     x_pop <- base::scale(x_pop, center = colMeans(x_sample),
-                         scale = apply(x_sample, 2, sd)) %>%
+                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
       as.data.frame()
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
   }
   if(standardize == TRUE && data_type != "raw"){
     message("Data type must be 'raw' for data standardization to work. Setting standardize = FALSE")
