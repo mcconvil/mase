@@ -94,7 +94,7 @@ predict.greg <- function(obj, new_data) {
 #' @import dplyr
 #' @import ggplot2
 #' 
-plot.greg <- function(obj, y_sample = NULL, x_sample, x_pop, spatial_1, spatial_2, bins = 300,
+plot.greg <- function(obj, y_sample = NULL, x_sample, x_pop, spatial_1, spatial_2, bins = 175,
                       fun = function(x) mean(x), hexagon = FALSE) {
   #Check if population estimates are available
   if(identical(obj$y_hat_pop, NULL)){
