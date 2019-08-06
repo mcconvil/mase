@@ -5,7 +5,8 @@
 \title{Compute a neural network model assisted estimator}
 \usage{
 gregRBF(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "lin_HB", strata = NULL, lambda = NULL, PCA = FALSE)
+  var_method = "lin_HB", strata = NULL, lambda = NULL, PCA = FALSE,
+  standardize = FALSE)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}

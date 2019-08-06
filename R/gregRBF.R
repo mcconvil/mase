@@ -43,7 +43,8 @@
 
 
 gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
-                          var_method="lin_HB", strata = NULL, lambda = NULL, PCA = FALSE){
+                    var_method="lin_HB", strata = NULL, lambda = NULL, PCA = FALSE,
+                    standardize = FALSE){
   #Make sure the var_method is valid
   if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
     message("Variance method input incorrect. It has to be \"lin_HB\", \"lin_HH\", \"lin_HT\", \"lin_HTSRS\", or \"bootstrap_SRS\".")
