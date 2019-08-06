@@ -27,6 +27,8 @@ gregRBF(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 \item{lambda}{scale parameter of gaussian kernel (unnormalized). If NULL, this will be numerically optimized until the condition number for interpolation matrix is near 10e12.}
 
 \item{PCA}{If TRUE, principal component analysis will be done and the first two principal components will be used to support the RBF.}
+
+\item{standardize}{A logical indicating whether or not to standardize predictors before making model.}
 }
 \value{
 A greg object containing:

@@ -5,7 +5,7 @@
 \title{Compute a geospatial heat map to summarize a generalized regression estimator}
 \usage{
 \method{plot}{greg}(obj, y_sample = NULL, x_sample, x_pop, spatial_1,
-  spatial_2, bins = 300, fun = function(x) mean(x), hexagon = FALSE)
+  spatial_2, bins = 175, fun = function(x) mean(x), hexagon = FALSE)
 }
 \arguments{
 \item{obj}{Object of class 'greg'.}

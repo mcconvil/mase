@@ -5,6 +5,7 @@
 #' @inheritParams horvitzThompson
 #' @param x_sample A data frame of the auxiliary data in the sample.
 #' @param x_pop A data frame of population level auxiliary information. It must contain the same names as x_sample.
+#' @param standardize A logical indicating whether or not to standardize predictors before making model.
 #' @param lambda scale parameter of gaussian kernel (unnormalized). If NULL, this will be numerically optimized until the condition number for interpolation matrix is near 10e12.
 #' @param PCA If TRUE, principal component analysis will be done and the first two principal components will be used to support the RBF.
 #' 
@@ -100,6 +101,14 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   
   #Make sure x_pop and x_sample have the same columns (in same order)
   x_pop <- x_pop[names(x_sample)]
+  
+  #Check standardization
+  if(standardize == TRUE){
+    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
+                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
+      as.data.frame()
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
+  }
   
   #Create formula and model matrix
   f <- as.formula(paste("y ~ ", paste(names(x_sample), collapse= "+"), "+ 0"))

@@ -41,7 +41,9 @@ Imports: glmnet,
     Rdpack
 Suggests:
     roxygen2,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 Depends:
     R (>= 3.1)
 Collate:
@@ -70,3 +72,4 @@ Collate:
     'treeDesignMatrix.R'
 RoxygenNote: 6.1.1
 RdMacros: Rdpack
+VignetteBuilder: knitr
