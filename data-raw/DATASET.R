@@ -35,12 +35,12 @@ bh_fg <- black_hills_pop_fg %>%
   projectRaster(crs="+proj=utm +zone=13  +ellps=GRS80 +units=m +no_defs") %>%
   as("SpatialGridDataFrame") %>%
   as.data.frame() %>% rename(forest_group = conus_forestgroup) %>%
-  head(nrow(bh_for))
+  head(nrow(bh_for)) #data doesn't always line up, remove the 3 straggler pixels
 #tidy up
 black_hills_pop <- cbind(biomass = bh_bio %>% pull(biomass),
                          forest_group = bh_fg %>% pull(forest_group),
                          bh_for)
-remove(list = setdiff(ls(), c("black_hills_pop")))
+#remove(list = setdiff(ls(), c("black_hills_pop")))
 
 #create the sample
 set.seed(128)

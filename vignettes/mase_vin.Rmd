@@ -1,0 +1,84 @@
+---
+title: "mase_vin"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mase_vin}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+The R package `mase` contains a set of model assisted survey estimation functions, along with a 
+
+
+```{r load data}
+library(tidyverse)
+devtools::install_github("mcconvil/mase")
+library(mase)
+
+data("black_hills_pop", "black_hills_samp", package = "mase")
+head(black_hills_pop)
+head(black_hills_samp)
+```
+
+
+```{r}
+#prepare data
+biomass <- black_hills_samp %>%
+  pull(biomass)
+x_samp <- black_hills_samp %>%
+  dplyr::select(forest_group, forest_nonforest_probability, s1, s2)
+# inclusion probs
+inclusion_probs <- rep(c(0.0055, 0.00325, 0.00128128, 0.00721010), 58)
+```
+
+```{r}
+m_enet <- gregElasticNet(y = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+                       pi = inclusion_probs, standardize = TRUE, var_est = TRUE)
+m_enet$coefficients
+plot(m_enet, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+     spatial_1 = "s1", spatial_2 = "s2") +
+  labs(x = "", y = "", fill = "Est. Biomass")
+```
+
+```{r random forest}
+m_forest <- gregForest(y = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+                       pi = inclusion_probs, ntrees = 300, mtry = 2, var_est = TRUE)
+m_forest
+plot(m_forest, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+     spatial_1 = "s1", spatial_2 = "s2") +
+  labs(x = "", y = "", fill = "Est. Biomass")
+```
+
+
+```{r RBF}
+m_rbf <- gregRBF(y = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+                         pi = inclusion_probs, lambda = 2, standardize = T, var_est = T, bag = T, B =50)
+m_rbf
+plot(m_rbf, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+     spatial_1 = "s1", spatial_2 = "s2") +
+  labs(x = "", y = "", fill = "Est. Biomass")
+predict(m_rbf, x_samp)
+```
+
+
+```{r neural nets}
+m_nn <- gregNeuralNet(y = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+                      pi = inclusion_probs, standardize = T, lr = .005, epochs = 30,
+                      H = 128, verbose = 0, var_est = TRUE)
+m_nn
+plot(m_nn, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
+     spatial_1 = "s1", spatial_2 = "s2")  +
+  labs(x = "", y = "", fill = "Est. Biomass")
+predict(m_nn, x_samp)
+```
+
+
+
+
+
