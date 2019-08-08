@@ -190,7 +190,8 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                  formula = f,
                  model = rbf_obj,
                  y_hat_sample = y_hat_samp,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 standardize = standardize) %>%
              gregify())
   }
   else{
@@ -199,7 +200,8 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
                  formula = f,
                  model = rbf_obj,
                  y_hat_sample = y_hat_samp,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 standardize = standardize) %>%
              gregify())
   }
 }

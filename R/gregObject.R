@@ -68,7 +68,10 @@ predict.greg <- function(obj, new_data) {
                as.vector())
     }
     if(!identical(obj$model, NULL)){
-      return(predict(obj$model, new_data))
+      if("keras.engine.sequential.Sequential" %in% class(obj$model)){
+        new_data <- model.matrix(~., data = new_data)
+      }
+      return(predict(obj$model, new_data) %>% as.vector())
       }
     else{
       message("This greg object has no predict method.")

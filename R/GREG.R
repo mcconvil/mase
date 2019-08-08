@@ -397,6 +397,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
                  coefficients =  coefs,
                  y_hat_sample = y_hat,
                  y_hat_pop = y_hat_pop,
+                 standardize = standardize,
                  skedastic_mod = resid_mod) %>%
              gregify())
     }
@@ -407,6 +408,7 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
                  coefficients =  coefs,
                  y_hat_sample = y_hat,
                  y_hat_pop = y_hat_pop,
+                 standardize = standardize,
                  skedastic_mod = resid_mod) %>%
              gregify())      
     }
