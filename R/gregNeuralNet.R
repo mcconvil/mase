@@ -88,10 +88,13 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
   N <- dim(x_pop)[1]
   #Check standardization
   if(standardize == TRUE){
-    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
-                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
+    cent <- colMeans(x_sample) #find means and sds of sample by x variable
+    scl <- apply(as.matrix(x_sample), 2, sd)
+    x_pop <- base::scale(x_pop, center = cent,
+                         scale = scl) %>%
       as.data.frame()
     x_sample <- base::scale(x_sample) %>% as.data.frame()
+    standardize <- list(center = cent, scale = scl) #save centers and scales
   }
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
@@ -173,7 +176,8 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
                  formula = f,
                  model = ffnn,
                  y_hat_sample = y_hat_sample,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 standardize = standardize) %>%
              gregify())
   }
   else{
@@ -182,7 +186,8 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
                  formula = f,
                  model = ffnn,
                  y_hat_sample = y_hat_sample,
-                 y_hat_pop = y_hat_pop) %>%
+                 y_hat_pop = y_hat_pop,
+                 standardize = standardize) %>%
              gregify())
   }
 }

@@ -93,14 +93,17 @@ gregElasticNet  <- function(
   }
   
   #Check standardization
-  if(standardize == TRUE && data_type == "raw"){
-    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
-                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
-      as.data.frame()
-    x_sample <- base::scale(x_sample) %>% as.data.frame()
-  }
   if(standardize == TRUE && data_type != "raw"){
     message("Data type must be 'raw' for data standardization to work. Setting standardize = FALSE")
+  }
+  if(standardize == TRUE && data_type == "raw"){
+    cent <- colMeans(x_sample)
+    scl <- apply(as.matrix(x_sample), 2, sd)
+    x_pop <- base::scale(x_pop, center = cent,
+                         scale = scl) %>%
+      as.data.frame()
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
+    standardize <- list(center = cent, scale = scl)
   }
   #create design matrix, x matrix and transpose design matrix
   x_sample_d <- model.matrix(~., data = data.frame(x_sample))
@@ -292,6 +295,7 @@ if (model == "linear") {
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
                  y_hat_pop = y_hats_U %>% as.vector(),
+                 standardize = standardize,
                  skedastic_mod = resid_mod) %>%
              gregify())
   }else{
@@ -303,6 +307,7 @@ if (model == "linear") {
                  model = pred_mod,
                  y_hat_sample = y_hats_s,
                  y_hat_pop = y_hats_U %>% as.vector(),
+                 standardize = standardize,
                  skedastic_mod = resid_mod) %>%
              gregify())
     

@@ -34,6 +34,12 @@ print.greg <- function(obj) {
 #predict method
 #' @export
 predict.greg <- function(obj, new_data) {
+  #check for data standardization
+  if(typeof(obj$standardize) == "list"){
+    new_data <- new_data %>% base::scale(center = obj$standardize$center,
+                                         scale = obj$standardize$scale) %>%
+      as.data.frame()
+  }
   if(class(obj) == "greg"){
     if(!identical(obj$logistic_model, NULL)){
       return(predict(obj$logistic_model, new_data))
@@ -43,9 +49,6 @@ predict.greg <- function(obj, new_data) {
       }
     if(!identical(obj$forest, NULL)){
       return(predict(obj$forest, new_data))
-      }
-    if(!identical(obj$model, NULL)){
-      return(predict(obj$model, new_data))
       }
     if(!identical(obj$coefficients, NULL)){
       if(!identical(names(obj$coefficients), NULL)){
@@ -63,6 +66,9 @@ predict.greg <- function(obj, new_data) {
       design <- model.matrix(~., data = new_data)
       return((design %*% (as.vector(obj$coefficients))) %>%
                as.vector())
+    }
+    if(!identical(obj$model, NULL)){
+      return(predict(obj$model, new_data))
       }
     else{
       message("This greg object has no predict method.")

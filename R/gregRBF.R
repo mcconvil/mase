@@ -8,7 +8,8 @@
 #' @param standardize A logical indicating whether or not to standardize predictors before making model.
 #' @param lambda scale parameter of gaussian kernel (unnormalized). If NULL, this will be numerically optimized until the condition number for interpolation matrix is near 10e12.
 #' @param PCA If TRUE, principal component analysis will be done and the first two principal components will be used to support the RBF.
-#' 
+#' @param bag If TRUE, the weights will be bagged.
+#' @param B Number of times to bag the weights
 #' @examples
 #' library(survey)
 #' data(api)
@@ -43,8 +44,8 @@
 
 
 gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
-                    var_method="lin_HB", strata = NULL, lambda = NULL, PCA = FALSE,
-                    standardize = FALSE){
+                    var_method="lin_HB", strata = NULL, lambda = 1.666, PCA = FALSE,
+                    standardize = FALSE, bag = FALSE, B = 100){
   #Make sure the var_method is valid
   if(!is.element(var_method, c("lin_HB", "lin_HH", "lin_HTSRS", "lin_HT", "bootstrap_SRS"))){
     message("Variance method input incorrect. It has to be \"lin_HB\", \"lin_HH\", \"lin_HT\", \"lin_HTSRS\", or \"bootstrap_SRS\".")
@@ -105,10 +106,13 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   
   #Check standardization
   if(standardize == TRUE){
-    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
-                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
+    cent <- colMeans(x_sample)
+    scl <- apply(as.matrix(x_sample), 2, sd)
+    x_pop <- base::scale(x_pop, center = cent,
+                         scale = scl) %>%
       as.data.frame()
     x_sample <- base::scale(x_sample) %>% as.data.frame()
+    standardize <- list(center = cent, scale = scl)
   }
   
   #Create formula and model matrix
@@ -140,8 +144,21 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   }
   #make final interpolation matrix
   G <- exp(-(lambda*G0)^2)
-  remove(G0) #free up some RAM
-  rbf_weights <- solve(G) %*% y #find rbf_weights
+  rbf_weights <- as.vector(solve(G) %*% y) #find rbf_weights
+  #bag
+  if(bag == TRUE){
+    smp <- round(2/3*length(y))
+    bagged_weights <- lapply(1:B, function(i){
+      #sample 2/3 in bag
+      samp <- sample(rep(c(NA, 1), c(length(y) - smp, smp)))
+      ind <- as.vector(na.omit(1:length(y)*samp))
+      y_bag <- y[ind]
+      #apply kernel
+      G <- exp(-(lambda*(G0[ind, ind]))^2)
+      return(as.vector(solve(G) %*% y_bag) * samp) #return as length y vector
+    })
+    rbf_weights <- bagged_weights %>% Reduce(f = "rbind") %>% colMeans(na.rm = TRUE)
+  }
   
   #create rbf model
   phi <- function(x) { # x is a vector of predictors for obs i
@@ -162,7 +179,7 @@ gregRBF <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = FALSE,
   
   if(var_est==TRUE){
     if(var_method != "bootstrap_SRS"){
-      e <- y - y_hat_sample
+      e <- y - y_hat_samp
       varEst <- varMase(y = e, pi = pi, pi2 = pi2, method = var_method, N = N,
                         strata = strata)
     }

@@ -5,8 +5,8 @@
 \title{Compute a neural network model assisted estimator}
 \usage{
 gregRBF(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
-  var_method = "lin_HB", strata = NULL, lambda = NULL, PCA = FALSE,
-  standardize = FALSE)
+  var_method = "lin_HB", strata = NULL, lambda = 1.666,
+  PCA = FALSE, standardize = FALSE, bag = FALSE, B = 100)
 }
 \arguments{
 \item{y}{A numeric vector of the sampled response variable.}
@@ -30,6 +30,10 @@ gregRBF(y, x_sample, x_pop, pi = NULL, pi2 = NULL, var_est = FALSE,
 \item{PCA}{If TRUE, principal component analysis will be done and the first two principal components will be used to support the RBF.}
 
 \item{standardize}{A logical indicating whether or not to standardize predictors before making model.}
+
+\item{bag}{If TRUE, the weights will be bagged.}
+
+\item{B}{Number of times to bag the weights}
 }
 \value{
 A greg object containing:

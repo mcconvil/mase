@@ -121,14 +121,17 @@ greg  <- function(y, x_sample, x_pop, pi = NULL, model = "linear",  pi2 = NULL,
   }
   
   #Check standardization
-  if(standardize == TRUE && data_type == "raw"){
-    x_pop <- base::scale(x_pop, center = colMeans(x_sample),
-                         scale = apply(as.matrix(x_sample), 2, sd)) %>%
-      as.data.frame()
-    x_sample <- base::scale(x_sample) %>% as.data.frame()
-  }
   if(standardize == TRUE && data_type != "raw"){
     message("Data type must be 'raw' for data standardization to work. Setting standardize = FALSE")
+  }
+  if(standardize == TRUE && data_type == "raw"){
+    cent <- colMeans(x_sample)
+    scl <- apply(as.matrix(x_sample), 2, sd)
+    x_pop <- base::scale(x_pop, center = cent,
+                         scale = scl) %>%
+      as.data.frame()
+    x_sample <- base::scale(x_sample) %>% as.data.frame()
+    standardize <- list(center = cent, scale = scl)
   }
   
   #Convert y to a vector
