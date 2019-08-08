@@ -34,6 +34,23 @@ print.greg <- function(obj) {
 #predict method
 #' @export
 predict.greg <- function(obj, new_data) {
+  # sub method for rbf greg
+  predict.greg_rbf <- function(obj, newdata) {
+    newdata <- as.matrix(newdata)
+    if(!is.null(obj$model$pca_obj)){ 
+      #If PCA used, project onto first two loadings
+      newdata <- (newdata %*% pca_obj$loadings)[,1:2]
+    }
+    sapply(1:nrow(newdata),function(i) obj$phi(x = newdata[i,]))
+  }
+  # sub method for mase modified rpms random forest greg
+  predict.mase_rpms_forest <- function(obj, newdata) {
+    ntree <- length(obj$tree)
+    p_matrix <- sapply(1:ntree, FUN = function(x)
+      predict(obj$tree[[x]], newdata = newdata)) %>%
+      matrix(nrow = ntree, byrow = TRUE)
+    return(colSums(p_matrix)/ntree)
+  }
   #check for data standardization
   if(typeof(obj$standardize) == "list"){
     new_data <- new_data %>% base::scale(center = obj$standardize$center,
