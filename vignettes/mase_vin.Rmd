@@ -1,5 +1,5 @@
 ---
-title: "mase_vin"
+title: "Mase Vignette"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{mase_vin}
@@ -8,21 +8,34 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+library(tidyverse)
+#devtools::install_github("mcconvil/mase")
+library(mase)
 knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.align = "center",
+  cache = TRUE,
   collapse = TRUE,
   comment = "#>"
 )
 ```
-The R package `mase` contains a set of model assisted survey estimation functions, along with a 
+The R package `mase` contains a set of model assisted survey estimation functions for estimating population estimates, subject to a complex sampling design. In particular, `mase` offers a multitude of model assisted Generalized Regression Estimators (GREGs), as well as  other direct estimators such as the ratio estimator for variances and the post-stratified and Horvitz-Thompson estimators for population totals.
 
+To install `mase`, simply run the `R` code: `devtools::install_github("mcconvil/mase")`, and then attach it to your library. `tidyverse` is not required by `mase`, but will be used for the purpose of this vignette:
+
+```{r install, eval = FALSE}
+library(mase)
+library(tidyverse)
+```
+
+The primary dataset we will be using for this vignette is a spatially indexed satellite raster dataset of forest attributes in the Black Hills in South Dakota from the U.S. Forest Service's Geodata Clearinghouse (https://data.fs.usda.gov/geodata/rastergateway/). The sample dataset is a subset of these spatially indexed raster data, and they represent a survey sample.
 
 ```{r load data}
-library(tidyverse)
-devtools::install_github("mcconvil/mase")
-library(mase)
-
 data("black_hills_pop", "black_hills_samp", package = "mase")
 head(black_hills_pop)
+```
+The population dataset contains the variables `forest_group`, `forest_nonforest_probability` and spatial grid indicies `s1` and `s2`, which represent longitudinal and latitudinal dimensions respectively. The `forest_group` variable 
+```{r}
 head(black_hills_samp)
 ```
 
@@ -53,12 +66,13 @@ m_forest
 plot(m_forest, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
      spatial_1 = "s1", spatial_2 = "s2") +
   labs(x = "", y = "", fill = "Est. Biomass")
+predict(m_forest, x_samp)
 ```
 
 
 ```{r RBF}
 m_rbf <- gregRBF(y = biomass, x_sample = x_samp, x_pop = black_hills_pop,
-                         pi = inclusion_probs, lambda = 2, standardize = T, var_est = T, bag = T, B =50)
+                         pi = inclusion_probs, lambda = 2, standardize = T, var_est = T)
 m_rbf
 plot(m_rbf, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
      spatial_1 = "s1", spatial_2 = "s2") +
@@ -75,7 +89,7 @@ m_nn
 plot(m_nn, y_sample = biomass, x_sample = x_samp, x_pop = black_hills_pop,
      spatial_1 = "s1", spatial_2 = "s2")  +
   labs(x = "", y = "", fill = "Est. Biomass")
-predict(m_nn, x_samp)
+
 ```
 
 
