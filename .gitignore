@@ -1,5 +1,7 @@
+.gitignore
 .Rproj.user
 .Rhistory
 .RData
 tests
 .DS_Store
+inst/doc
