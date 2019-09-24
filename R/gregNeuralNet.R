@@ -90,6 +90,10 @@ gregNeuralNet <- function(y, x_sample, x_pop, pi = NULL,  pi2 = NULL, var_est = 
   if(standardize == TRUE){
     cent <- colMeans(x_sample) #find means and sds of sample by x variable
     scl <- apply(as.matrix(x_sample), 2, sd)
+    if(0 %in% scl) {
+      message("can not standardize a variable with zero variance.")
+      return(NULL)
+    }
     x_pop <- base::scale(x_pop, center = cent,
                          scale = scl) %>%
       as.data.frame()
