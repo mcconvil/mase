@@ -41,7 +41,7 @@
 
 
 postStrat <- function(
-  y, xsample, xpop, pi = NULL, N = NULL, var_est = FALSE, var_method = "HB", pi2 = NULL, datatype= "raw", B = 1000, fpc = TRUE){
+  y, xsample, xpop, pi = NULL, N = NULL, var_est = FALSE, var_method = "LinHB", pi2 = NULL, datatype= "raw", B = 1000, fpc = TRUE){
 
   
   #Define variables
@@ -169,19 +169,19 @@ postStrat <- function(
       t_boot <- boot(data = xsample_pi_y, statistic = postStratt, R = B, xpoptab = xpop_tab)
       
       #Adjust for bias and without replacement sampling
-      if(fpc == TRUE){
-        var_est <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
-      }
-      if(fpc == FALSE){
-        var_est <- var(t_boot$t)*n/(n-1)
-      }
+      # if(fpc == TRUE){
+      #   var_est <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      # }
+      # if(fpc == FALSE){
+      #   var_est <- var(t_boot$t)*n/(n-1)
+      # }
         
     }
     
-    if(is.element(var_method, c("HB", "HH", "HT", "HTSRS"))){
+    if(is.element(var_method, c("LinHB", "LinHH", "LinHT", "LinHTSRS"))){
       
       y_hat <- dat_s$strat_pop_mean
-      var_est <- varMase(y = (y-y_hat),pi = pi,pi2 = pi2, method = var_method, N = N)
+      var_est <- varMase(y = (y-y_hat), pi = pi, pi2 = pi2, method = var_method, N = N)
       
     }
     return(list( pop_total = pop_total, 
