@@ -174,6 +174,9 @@ if (model == "linear") {
     xpop_d <- unlist(c(N,xpop[names(xsample)]*N))
   }
   
+  # Compute weights
+  w <- as.matrix(1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt)) %*% diag(weight)
+  
   #Total estimate
   t <- elasticNet_coef %*% (xpop_d) + t(y-y.hats.s)%*%pi^(-1)
   
@@ -206,11 +209,13 @@ if (model == "linear") {
                  pop_mean = as.numeric(t)/N, 
                  pop_total_var=varEst, 
                  pop_mean_var=varEst/N^2,
+                 weights = as.vector(w),
                  coefficients = elasticNet_coef))
   }else{
     
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N, 
+                 weights = as.vector(w),
                  coefficients = elasticNet_coef))
     
   }
