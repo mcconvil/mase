@@ -8,7 +8,7 @@
 #' @param alpha A numeric value between 0 and 1 which signifies the mixing parameter for the lasso and ridge penalties in the elastic net.  When alpha = 1, only a lasso penalty is used.  When alpha = 0, only a ridge penalty is used. Default is alpha = 1. 
 #' @param lambda A string specifying how to tune the lambda hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param cvfolds The number of folds for the cross-validation to tune lambda.
-#' @param weights_method A string specifying which method to use to calculate survey weights. Defaults to "calibration". The possible values are "calibration", which employs the model calibration method of Wu and Sitter (2001) or "ridge", which uses a ridge regression approximation to calculate weights (see McConville et al (2017), section 3.2 for details).
+#' @param weights_method A string specifying which method to use to calculate survey weights. Currently, "ridge" is the only option. The "ridge" method uses a ridge regression approximation to calculate weights (see McConville et al (2017), section 3.2 for details). Support for "calibration" to come soon, which employs the model calibration method of Wu and Sitter (2001).
 #' @param eta A small positive number. Defaults to 0.0001. See McConville et al (2017), section 3.2 for details. 
 #' 
 #' @examples 
@@ -39,7 +39,7 @@
 #' @include gregElasticNett.R
 
 gregElasticNet  <- function(
-  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="LinHB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, weights_method = "calibration", eta = 0.0001){
+  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="LinHB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, weights_method = "ridge", eta = 0.0001){
   
   
   ### INPUT VALIDATION ###
@@ -177,12 +177,12 @@ if (model == "linear") {
   }
   
   # Compute weights
-  if (weights_method == "calibration") {
-    # not correct, currently
-    # w <- as.matrix(1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt)) %*% diag(weight)
-    print("weights_method 'calibration' not yet supported. Using 'ridge' instead.")
-    weights_method <- "ridge"
-  }
+  # if (weights_method == "calibration") {
+  #   # not correct, currently
+  #   # w <- as.matrix(1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt)) %*% diag(weight)
+  #   print("weights_method 'calibration' not yet supported. Using 'ridge' instead.")
+  #   weights_method <- "ridge"
+  # }
   if (weights_method == "ridge") {
     abs_beta_hat <- abs(c(0, elasticNet_coef[2:length(elasticNet_coef)]))
     Q_inverse <- diag(abs_beta_hat + eta)
