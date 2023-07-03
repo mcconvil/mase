@@ -85,7 +85,7 @@ weights_aoi <- rep(weights[1], nrow(sampx_aoi))
 
 # for specific aoi
 xpop <- popx_aoi[1:2]*popx_aoi$npixels
-xpop_d <- unlist(c(popx_aoi$npixels,xpop))
+xpop_d <- unlist(c(popx_aoi$npixels, xpop))
 
 
 
@@ -94,7 +94,7 @@ xpop_d <- unlist(c(popx_aoi$npixels,xpop))
 w <- as.matrix(weights*ids + 
             (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*% 
             solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
-            t(diag(weights) %*% xsample.d))
+            t(weights * xsample.d))
 
 t <- w %*% sampx$BA_TPA_live_ADJ
 
