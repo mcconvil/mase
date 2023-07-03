@@ -28,7 +28,7 @@ sampx <- tsumdatp %>%
   drop_na()
 
 sampx_aoi <- sampx %>% 
-  filter(COUNTYCD == 1) %>% 
+  filter(COUNTYCD == 3) %>% 
   select(BA_TPA_live_ADJ, tcc16, elev)
 
 popx <- unitzonal %>% 
@@ -36,7 +36,7 @@ popx <- unitzonal %>%
   drop_na()
 
 popx_aoi <- popx %>% 
-  filter(COUNTYFIPS == "41001") %>% 
+  filter(COUNTYFIPS == "41003") %>% 
   select(tcc16, elev, npixels)
 
 
@@ -69,7 +69,7 @@ n <- dim(sampx)[1]
 N <- sum(popx$npixels)
 pi <- rep(n/N, n)
 weights <- as.vector(pi^(-1))
-ids <- as.integer(sampx$COUNTYCD == 1)
+ids <- as.integer(sampx$COUNTYCD == 3)
 
 # for whole sample
 xsample.d <- model.matrix(~., data = data.frame(sampx[c("tcc16", "elev")]))
@@ -84,9 +84,7 @@ xsample.dt_aoi <- t(xsample.d_aoi)
 weights_aoi <- rep(weights[1], nrow(sampx_aoi))
 
 # for specific aoi
-#xpop <- data.frame(model.matrix(~.-1, data = data.frame(popx_aoi)))
 xpop <- popx_aoi[1:2]*popx_aoi$npixels
-#xpop_d <- model.matrix(~., data = xpop)
 xpop_d <- unlist(c(popx_aoi$npixels,xpop))
 
 
@@ -94,10 +92,9 @@ xpop_d <- unlist(c(popx_aoi$npixels,xpop))
 
 
 w <- as.matrix(weights*ids + 
-            t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*% 
-            solve(xsample.dt %*% diag(weights) %*% xsample.d) %*% 
-            (xsample.dt %*% diag(weights))
-          )
+            (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*% 
+            solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
+            t(diag(weights) %*% xsample.d))
 
 t <- w %*% sampx$BA_TPA_live_ADJ
 

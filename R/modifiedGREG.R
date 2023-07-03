@@ -24,8 +24,7 @@ xsample <- sampx
 
 modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
   
-  # need xpop by domain var
-  
+
   if (model == "linear") {
     
     if (datatype == "raw"){
