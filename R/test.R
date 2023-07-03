@@ -48,6 +48,7 @@ greg(y = sampx_aoi$BA_TPA_live_ADJ, xsample = sampx_aoi[c("tcc16", "elev")],
 
 # rough bones of modified greg
 # first test by doing manual fitting
+# this is wrong for this given data because the population auxiliary data is given as means
 
 mod_full <- lm(BA_TPA_live_ADJ ~ tcc16 + elev, data = sampx)
 
