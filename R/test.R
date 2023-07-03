@@ -8,7 +8,7 @@ unitzonal <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/unitzonal.rds")
 unitarea <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/unitarea.rds")
 
 # plot level forest attribute data
-tsumdatp <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/tsumdatp.rds")
+tsumdatp <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/tsumdatp.rds") 
 
 # plot level forest attribute data
 tsumdatc <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/tsumdatc.rds")
@@ -24,14 +24,16 @@ pltassign <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/pltassgn.rds")
 # using greg
 sampx <- tsumdatp %>% 
   left_join(pltassign, by = "CN") %>% 
-  select(tcc16, elev)
+  select(tcc16, elev, COUNTYCD, BA_TPA_live_ADJ) %>% 
+  drop_na()
 
 sampx_aoi <- sampx %>% 
   filter(COUNTYCD == 1) %>% 
-  select(tcc16, elev)
+  select(BA_TPA_live_ADJ, tcc16, elev)
 
 popx <- pltassign %>% 
-  select(tcc16, elev, COUNTYFIPS)
+  select(tcc16, elev, COUNTYFIPS) %>% 
+  drop_na()
 
 popx_aoi <- popx %>% 
   filter(COUNTYFIPS == "41001") %>% 
@@ -53,10 +55,10 @@ mod <- lm(BA_TPA_live_ADJ ~ tcc16 + elev, data = sampx_aoi)
 
 mod_full <- lm(BA_TPA_live_ADJ ~ tcc16 + elev, data = sampx)
 
-for_aoi <- function(model, popdata, sampdata) {
+for_aoi <- function(model, popdata_aoi, sampdata) {
   
   est <- (1/nrow(sampdata))*sum(sampdata$BA_TPA_live_ADJ - predict(model, sampdata)) +
-    (1/nrow(popdata)*sum(predict(model, popdata)))
+    (1/nrow(popdata_aoi)*sum(predict(model, popdata_aoi)))
   
   return(est)
   
@@ -64,25 +66,42 @@ for_aoi <- function(model, popdata, sampdata) {
 
 for_aoi(mod_full, popx_aoi, sampx_aoi)
 
-## matrix style
-pi <- rep(length(sampx_aoi$BA_TPA_live_ADJ)/nrow(popx_aoi), length(sampx_aoi$BA_TPA_live_ADJ))
-weights <- as.vector(pi^(-1))
 
-xsample.d <- model.matrix(~., data = data.frame(sampx))
+## modified greg matrix style --------------------------------------------------
+
+n <- dim(sampx)[1]
+N <- dim(popx)[1]
+pi <- rep(n/N, n)
+weights <- as.vector(pi^(-1))
+ids <- as.integer(sampx$COUNTYCD == 1)
+
+# for whole sample
+xsample.d <- model.matrix(~., data = data.frame(sampx[c("tcc16", "elev")]))
 xsample <- data.frame(xsample.d[,-1, drop = FALSE])
 xsample.dt <- t(xsample.d) 
 
-xpop <- data.frame(model.matrix(~.-1, data = data.frame(popx)))
+# for specific aoi
+xsample.d_aoi <- model.matrix(~., data = data.frame(sampx_aoi[c("tcc16", "elev")]))
+xsample_aoi <- data.frame(xsample.d_aoi[,-1, drop = FALSE])
+xsample.dt_aoi <- t(xsample.d_aoi) 
+weights_aoi <- rep(weights[1], nrow(sampx_aoi))
 
-xpop <- dplyr::select(xpop, one_of(colnames(sampx)))
+# for specific aoi
+xpop <- data.frame(model.matrix(~.-1, data = data.frame(popx_aoi)))
 xpop_d <- model.matrix(~., data = xpop)
-xpop_d <- xpop_d <- apply(xpop_d,2,sum)
-
-weights + (as.matrix(xpop_d) - xsample.dt %*% weights) %*% 
+xpop_d <- xpop_d <- apply(xpop_d, 2, sum)
 
 
+w <- as.matrix(weights*ids + 
+            t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*% 
+            solve(xsample.dt %*% diag(weights) %*% xsample.d) %*% 
+            (xsample.dt)
+          ) %*% 
+  diag(weights)
 
-as.matrix(1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt)) %*% diag(weight)
+t <- w %*% sampx$BA_TPA_live_ADJ
+
+
 
 
 
