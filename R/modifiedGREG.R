@@ -22,28 +22,39 @@ aggregate( . ~ domain, xpop, FUN = sum)
 xpop <- popx_ex
 xsample <- sampx
 
+# notes
+# xsample and xpop must contain a label/column that tells us which domain each point belongs to
+# these labels must match up with the labels given in the domain_labels argument
+# the harder case is when the datatype is raw, but can still be managed
+
 modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
   
 
   if (model == "linear") {
     
     if (datatype == "raw"){
-      # sum by domain var
-      xpop <- data.frame(model.matrix(~.-1, data = data.frame(xpop)))
-      xpop <- xpop[intersect(names(xpop), names(xsample))]
-      xpop_d <- cbind(as.data.frame(model.matrix(~., data = xpop)), domain = xpop_domain)
-      aggregate( . ~ domain, xpop_d, FUN = sum)
-      xpop_d <- apply(xpop_d, 2, sum)
-      
+      # sum auxiliary pop values by domain
     }
     if (datatype == "totals"){
       # check length
-      xpop_d <- unlist(c(N, xpop[names(xsample)]))
     }
     if (datatype == "means"){
       # check length
-      xpop_d <- unlist(c(N,xpop[names(xsample)]*N))
     }
+    
+    # perform this computation by domain based on domain_labels argument
+    # preferably use some functional programming style (e.g map, apply) or figure out a matrix algebra way to do it
+    w <- as.matrix(
+      weights*ids + 
+        (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*%
+           solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
+        t(weights * xsample.d)
+      )
+    
+    t <- w %*% y
+    
+    
+    
     
   }
   
