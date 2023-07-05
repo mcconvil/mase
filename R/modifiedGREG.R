@@ -104,6 +104,7 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
     # computing the pieces that remain the same across all domains
     constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
     constant_component2 <- t(weight * xsample_d)
+    betas <- solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y
 
     by_domain <- function(domain_id) {
 
@@ -126,23 +127,24 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
         constant_component2
         )
       
+      aoi_N <- unlist(xpop_aoi["N"])
+      
       if(var_est == TRUE) {
         if(var_method != "bootstrapSRS") {
-          y_hat <- xsample_d_aoi %*% (solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y)
+          y_hat <- xsample_d_aoi %*% betas
           y_aoi <- y[domain_indic_vec]
           e <- y_aoi - y_hat
-          varEst <- varMase(y = e, pi = pi[domain_indic_vec], pi2 = pi2, method = var_method, N = unlist(xpop_aoi["N"]))
+          varEst <- varMase(y = e, pi = pi[domain_indic_vec], pi2 = pi2, method = var_method, N = aoi_N)
         }
       }
       
-      pop_total <- w %*% y
-      pop_mean <- pop_total/unlist(xpop_aoi["N"])
+      t <- w %*% y
       
       return(list(
-        pop_total = as.numeric(pop_total),
-        pop_mean = as.numeric(pop_mean),
+        pop_total = as.numeric(t),
+        pop_mean = as.numeric(t)/aoi_N,
         pop_total_var = as.numeric(varEst),
-        pop_mean_var = as.numeric(varEst/unlist(xpop_aoi["N"])^2) 
+        pop_mean_var = as.numeric(varEst/aoi_N^2) 
       ))
 
     }
@@ -150,8 +152,7 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
 
     # run by_domain function over domain_labels argument
     res <- lapply(domain_labels, FUN = by_domain)
-    
-    
+
     
   }
   return(res)
@@ -164,7 +165,7 @@ t <- modified_greg(
   xpop = popx,
   datatype = "means",
   domain = "COUNTYFIPS",
-  domain_labels = c("41037"),
+  domain_labels = c("41025","41037"),
   N = sum(popx$N),
   var_est = T
   )
