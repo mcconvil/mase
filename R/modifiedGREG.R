@@ -1,4 +1,5 @@
 library(tidyverse)
+library(mase)
 unitzonal <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/unitzonal.rds")
 tsumdatp <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/tsumdatp.rds") 
 pltassign <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/pltassgn.rds") 
@@ -7,9 +8,24 @@ sampx <- tsumdatp %>%
   left_join(pltassign, by = "CN") %>% 
   select(tcc16, elev, COUNTYCD) %>% 
   rename(COUNTYFIPS = COUNTYCD) %>% 
-  drop_na()
+  drop_na() %>% 
+  mutate(COUNTYFIPS = paste0("410", COUNTYFIPS))
 
-y <- tsumdatp$BA_TPA_live_ADJ
+y_aoi <- tsumdatp %>% 
+  left_join(pltassign, by = "CN") %>% 
+  select(tcc16, elev, COUNTYCD, BA_TPA_live_ADJ) %>%  
+  drop_na() %>% 
+  filter(COUNTYCD == "25") %>% 
+  select(BA_TPA_live_ADJ) %>% 
+  pull()
+
+y <- tsumdatp %>% 
+  left_join(pltassign, by = "CN") %>% 
+  select(tcc16, elev, COUNTYCD, BA_TPA_live_ADJ) %>%  
+  drop_na() %>% 
+  select(BA_TPA_live_ADJ) %>% 
+  pull()
+  
 
 popx <- unitzonal %>% 
   select(tcc16, elev, COUNTYFIPS, npixels) %>% 
@@ -24,10 +40,19 @@ popx <- unitzonal %>%
 # these labels must match up with the labels given in the domain_labels argument
 # the harder case is when the datatype is raw, but can still be managed
 
-modified_greg <- function(y, xsample, xpop, domain = "COUNTYFIPS", domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
+modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
   
   # probably need to drop NAs from xpop in a preprocessing step
+  # need to check that all domain_labels exist in both xpop and xsample
   # xpop and xsample must be dataframes 
+  
+  # convert pi into diagonal matrix format
+  if (is.null(pi)) {
+    pi <- rep(length(y)/N, length(y))
+  }
+  
+  #weight: inverse first order inclusion probabilities
+  weight <- as.vector(pi^(-1))
   
   # creating a vector of common auxiliary variable names
   common_vars <- intersect(names(xsample), names(xpop))
@@ -77,59 +102,69 @@ modified_greg <- function(y, xsample, xpop, domain = "COUNTYFIPS", domain_labels
     }
     
     # computing the pieces that remain the same across all domains
-    constant_component1 <- solve(xsample.dt %*% diag(weights) %*% xsample.d)
-    constant_component2 <- t(weights * xsample.d)
+    constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
+    constant_component2 <- t(weight * xsample_d)
 
-    by_domain <- function(weights, domain_indic_vec, xpop_d, domain_id) {
-      
-      xpop_aoi <- xpop_d[xpop_d[domain] == domain_id, drop = FALSE]
-      xpop_d_aoi <- as.matrix(xpop_aoi[-which(names(xpop_aoi) == domain)])
-      xsample_d_aoi <- as.matrix(xsample[xsample[domain] == domain_id, drop = FALSE])
+    by_domain <- function(y, weight, xpop_d, domain_id) {
+
+      domain_indic_vec <- as.integer(xsample[domain] == domain_id)
+
+      xpop_aoi <- xpop_d[xpop_d[domain] == domain_id, ,drop = FALSE]
+      xpop_d_aoi <- unlist(xpop_aoi[-which(names(xpop_aoi) == domain)])
+      xsample_aoi <- xsample[xsample[domain] == domain_id, ,drop = FALSE]
+      xsample_d_aoi <- model.matrix(~., data = data.frame(xsample_aoi[common_pred_vars]))
       xsample_dt_aoi <- t(xsample_d_aoi)
-      weights_aoi <- weights[domain_indic_vec]
-      
-      w <- as.matrix(weights*domain_indic_vec + (
+      weights_aoi <- weight[domain_indic_vec]
+
+      w <- as.matrix(
+        weight*domain_indic_vec + (
         t(as.matrix(xpop_d_aoi) - xsample_dt_aoi %*% weights_aoi) %*%
           constant_component1
         ) %*%
-        constant_component2)
+        constant_component2
+        )
       
-      return(w)
+      pop_total <- w %*% y
+      pop_mean <- pop_total/unlist(xpop_aoi["N"])
+      
+      return(list(
+        pop_total = as.numeric(pop_total),
+        pop_mean = as.numeric(pop_mean)
+      ))
 
     }
 
-    
-    
-    
-    
-    # perform this computation by domain based on domain_labels argument
-    # preferably use some functional programming style (e.g map, apply) or figure out a matrix algebra way to do it
-    
-    # w <- as.matrix(
-    #   weights*ids + 
-    #     (t(as.matrix(xpop_d_aoi) - xsample.dt_aoi %*% weights_aoi) %*%
-    #        solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
-    #     t(weights * xsample.d)
-    #   )
-    # 
-    # t <- w %*% y
+    # run by_domain function over domain_labels argument
+
+    res <- by_domain(y, weight, xpop_d, domain_labels[1])
+
+    #res <- lapply(domain_labels, FUN = by_domain(y, weights, xpop_d, x))
     
     
   }
-  return(xpop_d)
+  return(res)
   
 }
 
-modified_greg(y, sampx, popx, datatype = "means")
+t <- modified_greg(
+  y = y,
+  xsample = sampx,
+  xpop = popx,
+  datatype = "means",
+  domain = "COUNTYFIPS",
+  domain_labels = c("41025"),
+  N = sum(popx$N)
+  )
 
-a <- data.frame(
-  N = c(100, 200, 300),
-  id = c(1,2,3),
-  x1 = c(12, 14, 15),
-  x2 = c(50, 60, 70)
-)
+greg_est <- greg(
+  y = y_aoi,
+  xsample = sampx[sampx$COUNTYFIPS == "41025", ][c("tcc16", "elev")],
+  xpop = popx[popx$COUNTYFIPS == "41025", ][c("tcc16", "elev")],
+  datatype = "means",
+  N = popx[popx$COUNTYFIPS == "41025", ]$N
+  )
 
-a[a["id"] == 1, ]
+greg_est$pop_mean
 
 
 
