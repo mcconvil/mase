@@ -40,7 +40,7 @@ popx <- unitzonal %>%
 # these labels must match up with the labels given in the domain_labels argument
 # the harder case is when the datatype is raw, but can still be managed
 
-modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
+modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", pi2 = NULL, var_est = F, var_method = "LinHB", datatype = "raw", N = NULL) {
   
   # probably need to drop NAs from xpop in a preprocessing step
   # need to check that all domain_labels exist in both xpop and xsample
@@ -115,6 +115,8 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
       xsample_d_aoi <- model.matrix(~., data = data.frame(xsample_aoi[common_pred_vars]))
       xsample_dt_aoi <- t(xsample_d_aoi)
       weights_aoi <- weight[domain_indic_vec]
+      
+      test <- xsample_d_aoi %*% (solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y)
 
       w <- as.matrix(
         weight*domain_indic_vec + (
@@ -124,21 +126,32 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
         constant_component2
         )
       
+      if(var_est == TRUE) {
+        if(var_method != "bootstrapSRS") {
+          y_hat <- xsample_d_aoi %*% (solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y)
+          y_aoi <- y[domain_indic_vec]
+          e <- y_aoi - y_hat
+          varEst <- varMase(y = e, pi = pi[domain_indic_vec], pi2 = pi2, method = var_method, N = unlist(xpop_aoi["N"]))
+        }
+      }
+      
       pop_total <- w %*% y
       pop_mean <- pop_total/unlist(xpop_aoi["N"])
       
       return(list(
         pop_total = as.numeric(pop_total),
-        pop_mean = as.numeric(pop_mean)
+        pop_mean = as.numeric(pop_mean),
+        pop_total_var = as.numeric(varEst),
+        pop_mean_var = as.numeric(varEst/unlist(xpop_aoi["N"])^2) 
       ))
 
     }
+    
 
     # run by_domain function over domain_labels argument
-
-    #res <- by_domain(y, weight, xpop_d, domain_labels[1])
-
     res <- lapply(domain_labels, FUN = by_domain)
+    
+    
     
   }
   return(res)
@@ -151,8 +164,9 @@ t <- modified_greg(
   xpop = popx,
   datatype = "means",
   domain = "COUNTYFIPS",
-  domain_labels = c("41025", "41037"),
-  N = sum(popx$N)
+  domain_labels = c("41037"),
+  N = sum(popx$N),
+  var_est = T
   )
 
 greg_est <- greg(
@@ -160,10 +174,11 @@ greg_est <- greg(
   xsample = sampx[sampx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
   xpop = popx[popx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
   datatype = "means",
-  N = popx[popx$COUNTYFIPS == "41037", ]$N
+  N = popx[popx$COUNTYFIPS == "41037", ]$N,
+  var_est = T
   )
 
-greg_est$pop_mean
+
 
 
 
