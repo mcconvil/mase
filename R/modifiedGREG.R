@@ -5,57 +5,102 @@ pltassign <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/pltassgn.rds")
 
 sampx <- tsumdatp %>% 
   left_join(pltassign, by = "CN") %>% 
-  select(tcc16, elev, COUNTYCD, BA_TPA_live_ADJ) %>% 
+  select(tcc16, elev, COUNTYCD) %>% 
+  rename(COUNTYFIPS = COUNTYCD) %>% 
   drop_na()
+
+y <- tsumdatp$BA_TPA_live_ADJ
 
 popx <- unitzonal %>% 
   select(tcc16, elev, COUNTYFIPS, npixels) %>% 
-  drop_na()
+  drop_na() 
 
 
-xpop <- data.frame(model.matrix(~.-1, data = data.frame(popx_ex)))
-xpop <- dplyr::select(xpop, all_of(colnames(xsample)))
+
+xpop <- data.frame(model.matrix(~.-1, data = data.frame(popx)))
+xpop <- dplyr::select(xpop, any_of(colnames(sampx)))
 xpop_d <- model.matrix(~., data = xpop)
 
 aggregate( . ~ domain, xpop, FUN = sum)
 
-xpop <- popx_ex
-xsample <- sampx
+
 
 # notes
 # xsample and xpop must contain a label/column that tells us which domain each point belongs to
 # these labels must match up with the labels given in the domain_labels argument
 # the harder case is when the datatype is raw, but can still be managed
 
-modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
+modified_greg <- function(y, xsample, xpop, domain = "COUNTYFIPS", domain_labels, pi = NULL, model = "linear", datatype = "raw", N = NULL) {
   
-
+  # probably need to drop NAs from xpop in a preprocessing step
+  # xpop and xsample must be dataframes 
+  
+  # creating a vector of common auxiliary variable names
+  common_vars <- intersect(names(xsample), names(xpop))
+  common_pred_vars <- common_vars[!common_vars %in% domain]
+  
   if (model == "linear") {
     
     if (datatype == "raw"){
+      
+      # only using columns that occur in xsample too
+      xpop_subset <- xpop[common_pred_vars]
+      
+      # expand factors and interaction terms and then re-add the domain column
+      xpop <- cbind(data.frame(model.matrix(~. -1, data = data.frame(xpop_subset))), xpop[domain])
+      xpop$`(Intercept)` <- 1
+      
       # sum auxiliary pop values by domain
+      bydomain_formula <- as.formula(paste0(". ~", domain))
+      xpop_d <- aggregate(bydomain_formula, xpop, FUN = sum)
+      # move intercept column to the front (where it would normally be)
+      xpop_d <- xpop_d[, c(ncol(xpop_d), 1:(ncol(xpop_d) - 1))]
+      
     }
     if (datatype == "totals"){
-      # check length
+      
+      # need N for each specific domain
+      # assume they are there?
+      
     }
     if (datatype == "means"){
-      # check length
+      
+      # need N for each specific domain
+      # assume they are there?
+      xpop[common_pred_vars] <- lapply(xpop[common_pred_vars], function(x) x*xpop$npixels)
+      xpop_d <- xpop
+      
     }
     
     # perform this computation by domain based on domain_labels argument
     # preferably use some functional programming style (e.g map, apply) or figure out a matrix algebra way to do it
-    w <- as.matrix(
-      weights*ids + 
-        (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*%
-           solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
-        t(weights * xsample.d)
-      )
     
-    t <- w %*% y
-    
-    
+    # w <- as.matrix(
+    #   weights*ids + 
+    #     (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*%
+    #        solve(xsample.dt %*% diag(weights) %*% xsample.d)) %*% 
+    #     t(weights * xsample.d)
+    #   )
+    # 
+    # t <- w %*% y
     
     
   }
+  return(xpop_d)
   
 }
+
+modified_greg(sampx$BA_TPA_live_ADJ, sampx, popx, datatype = "means")
+
+a <- data.frame(
+  N = c(100, 200, 300),
+  id = c(1,2,3),
+  x1 = c(12, 14, 15),
+  x2 = c(50, 60, 70)
+)
+
+a[3:ncol(a)] <- lapply(a[3:ncol(a)], function(x) x*a$N)
+
+
+
+
