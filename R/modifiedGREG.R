@@ -15,7 +15,7 @@ y_aoi <- tsumdatp %>%
   left_join(pltassign, by = "CN") %>% 
   select(tcc16, elev, COUNTYCD, BA_TPA_live_ADJ) %>%  
   drop_na() %>% 
-  filter(COUNTYCD == "25") %>% 
+  filter(COUNTYCD == "37") %>% 
   select(BA_TPA_live_ADJ) %>% 
   pull()
 
@@ -105,7 +105,7 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
     constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
     constant_component2 <- t(weight * xsample_d)
 
-    by_domain <- function(y, weight, xpop_d, domain_id) {
+    by_domain <- function(domain_id) {
 
       domain_indic_vec <- as.integer(xsample[domain] == domain_id)
 
@@ -136,10 +136,9 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels, pi = NULL, mo
 
     # run by_domain function over domain_labels argument
 
-    res <- by_domain(y, weight, xpop_d, domain_labels[1])
+    #res <- by_domain(y, weight, xpop_d, domain_labels[1])
 
-    #res <- lapply(domain_labels, FUN = by_domain(y, weights, xpop_d, x))
-    
+    res <- lapply(domain_labels, FUN = by_domain)
     
   }
   return(res)
@@ -152,16 +151,16 @@ t <- modified_greg(
   xpop = popx,
   datatype = "means",
   domain = "COUNTYFIPS",
-  domain_labels = c("41025"),
+  domain_labels = c("41025", "41037"),
   N = sum(popx$N)
   )
 
 greg_est <- greg(
   y = y_aoi,
-  xsample = sampx[sampx$COUNTYFIPS == "41025", ][c("tcc16", "elev")],
-  xpop = popx[popx$COUNTYFIPS == "41025", ][c("tcc16", "elev")],
+  xsample = sampx[sampx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
+  xpop = popx[popx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
   datatype = "means",
-  N = popx[popx$COUNTYFIPS == "41025", ]$N
+  N = popx[popx$COUNTYFIPS == "41037", ]$N
   )
 
 greg_est$pop_mean
