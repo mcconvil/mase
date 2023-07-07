@@ -14,7 +14,12 @@ sampx <- tsumdatp %>%
     T ~ paste0("410", COUNTYCD)
   ))
 
-popx <- unitzonal %>% 
+domains <- sampx$COUNTYFIPS
+
+xsample <- sampx %>% 
+  select(tcc16, elev)
+
+xpop <- unitzonal %>% 
   select(tcc16, elev, COUNTYFIPS, npixels) %>% 
   drop_na() %>% 
   rename(N = npixels)
@@ -37,9 +42,17 @@ y <- tsumdatp %>%
 # notes
 # xsample and xpop must contain a label/column that tells us which domain each point belongs to
 # these labels must match up with the labels given in the domain_labels argument
-# the harder case is when the datatype is raw, but can still be managed
+# domains is a vector of the domains that each element in xsample belongs to
 
-modified_greg <- function(y, xsample, xpop, domain, domain_labels = NULL, pi = NULL, model = "linear", pi2 = NULL, var_est = F, var_method = "LinHB", datatype = "raw", N = NULL) {
+modified_greg <- function(y, xsample, xpop, domains, domain_labels = NULL, pi = NULL, model = "linear", pi2 = NULL, var_est = F, var_method = "LinHB", datatype = "raw", N = NULL) {
+  
+  
+  
+  domain <- names(
+    which(
+      apply(xpop, 2, function(x) sum(unique(domains) %in% x)) == length(unique(domains))
+      )
+    )
   
   # need N by domain if datatype != raw
   # force xpop to have N by domain
@@ -57,17 +70,16 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels = NULL, pi = N
   weight <- as.vector(pi^(-1))
   
   # creating a vector of common auxiliary variable names
-  common_vars <- intersect(names(xsample), names(xpop))
-  common_pred_vars <- common_vars[!common_vars %in% domain]
+  common_pred_vars <- intersect(names(xsample), names(xpop))
   
   # only continue using domains we want to estimate on
   xpop <- xpop[xpop[[domain]] %in% domain_labels, ]
   
   # creating the design matrix for entire xsample
   xsample_d <- model.matrix(~., data = data.frame(xsample[common_pred_vars]))
-  xsample <- cbind(data.frame(xsample_d[,-1, drop = FALSE]), xsample[domain])
+  xsample <- cbind(data.frame(xsample_d[,-1, drop = FALSE]), domains)
+  names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain)
   xsample_dt <- t(xsample_d) 
-  
   
   if (model == "linear") {
     
@@ -163,20 +175,26 @@ modified_greg <- function(y, xsample, xpop, domain, domain_labels = NULL, pi = N
   
 t <- modified_greg(
   y = y,
-  xsample = sampx,
-  xpop = popx,
+  xsample = xsample,
+  xpop = xpop,
+  domains = domains,
   datatype = "means",
-  domain = "COUNTYFIPS",
   domain_labels = c("41025", "41037"),
-  N = sum(popx$N),
+  N = sum(xpop$N),
   var_est = T
 )
   
 
+a <- data.frame(
+  b = 1:4,
+  cat = c("a", "b", "c", "d")
+)
 
+vec <- c("a", "b")
 
+names(which(apply(a, 2, function(x) sum(vec %in% x)) == length(vec)))
 
-## additive test ---------------------------------------------------------------
+## additive test (hold for totals but not variances) ---------------------------------------------------------------
 
 full <- modified_greg(
   y = y,
@@ -206,7 +224,7 @@ greg_est <- greg(
   xpop = test,
   datatype = "totals",
   N = sum(popx$N),
-  var_est = F
+  var_est = T
 )
 
 
