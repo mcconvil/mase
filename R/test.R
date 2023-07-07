@@ -90,7 +90,7 @@ xpop_d <- unlist(c(popx_aoi$npixels, xpop))
 
 
 
-
+# formula from rao and molina
 
 w <- as.matrix(weights*ids + 
             (t(as.matrix(xpop_d) - xsample.dt_aoi %*% weights_aoi) %*% 
