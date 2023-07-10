@@ -1,5 +1,8 @@
 library(tidyverse)
 library(mase)
+
+# data preprocessing -----------------------------------------------------------
+
 unitzonal <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/unitzonal.rds")
 tsumdatp <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/tsumdatp.rds") 
 pltassign <- read_rds("/Users/joshuayamamoto/Downloads/Oregon/pltassgn.rds") 
@@ -39,41 +42,90 @@ y <- tsumdatp %>%
   select(BA_TPA_live_ADJ) %>% 
   pull()
 
-# notes
-# xsample and xpop must contain a label/column that tells us which domain each point belongs to
-# these labels must match up with the labels given in the domain_labels argument
-# domains is a vector of the domains that each element in xsample belongs to
 
-modified_greg <- function(y, xsample, xpop, domains, domain_labels = NULL, pi = NULL, model = "linear", pi2 = NULL, var_est = F, var_method = "LinHB", datatype = "raw", N = NULL) {
+## MODIFIED GREG FUNCTION CODE--------------------------------------------------
+
+
+
+modified_greg <- function(y,
+                          xsample,
+                          xpop,
+                          domains,
+                          domain_labels = NULL,
+                          pi = NULL, 
+                          pi2 = NULL,
+                          model = "linear",
+                          var_est = F,
+                          var_method = "LinHB", 
+                          datatype = "raw",
+                          N = NULL,
+                          B = 1000) {
   
+  if (datatype != "raw" && !("N" %in% names(xpop))) {
+    stop("xpop must contain a column for population size by domain called 'N' when datatype != NULL.")
+  }
+
+
+  if (is.null(N)) {
+    stop("Must supply total population size N")
+  }
+
+  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+    stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+  }
+
+
+  #Make sure the var_method is valid
+  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
+    return(NULL)
+  }
+
+
+  if(!is.element(model, c("linear","logistic"))){
+    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
+    return(NULL)
+  }
+
+  if(model == "logistic" && datatype != "raw"){
+    message("Must supply the raw population data to fit the logistic regression estimator.")
+    return(NULL)
+
+  }
+
+  if(!is.element(datatype, c("raw","totals", "means"))){
+    message("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
+    return(NULL)
+  }
   
-  
-  domain <- names(
-    which(
-      apply(xpop, 2, function(x) sum(unique(domains) %in% x)) == length(unique(domains))
-      )
-    )
-  
-  # need N by domain if datatype != raw
-  # force xpop to have N by domain
   # if domain_labels is null run over everything
   # probably need to drop NAs from xpop in a preprocessing step
   # need to check that all domain_labels exist in both xpop and xsample
-  # xpop and xsample must be dataframes 
+
+  
+  if(is.null(pi)){
+    message("Assuming simple random sampling")
+  } 
   
   # convert pi into diagonal matrix format
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
   }
   
-  #weight: inverse first order inclusion probabilities
   weight <- as.vector(pi^(-1))
+  
+  y <- as.vector(y)
+  
+  # extracting the name of the domain column
+  # potentially just ask for this as an argument to the function
+  domain <- names(
+    which(
+      apply(xpop, 2, function(x) sum(unique(domains) %in% x)) == length(unique(domains))
+    )
+  )
   
   # creating a vector of common auxiliary variable names
   common_pred_vars <- intersect(names(xsample), names(xpop))
-  
-  # only continue using domains we want to estimate on
-  xpop <- xpop[xpop[[domain]] %in% domain_labels, ]
   
   # creating the design matrix for entire xsample
   xsample_d <- model.matrix(~., data = data.frame(xsample[common_pred_vars]))
@@ -103,7 +155,7 @@ modified_greg <- function(y, xsample, xpop, domains, domain_labels = NULL, pi = 
       
       # need N for each specific domain
       # assume they are there?
-      xpop_d <- xpop[ , c("N", common_pred_vars, domain)]
+      xpop_d <- xpop[ ,c("N", common_pred_vars, domain)]
       
     }
     if (datatype == "means"){
@@ -119,8 +171,9 @@ modified_greg <- function(y, xsample, xpop, domains, domain_labels = NULL, pi = 
     constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
     constant_component2 <- t(weight * xsample_d)
     betas <- solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y
-
-    by_domain <- function(domain_id) {
+    
+    # internal function to compute estimates by domain
+    by_domain_linear <- function(domain_id) {
 
       domain_indic_vec <- as.integer(xsample[domain] == domain_id)
 
@@ -145,28 +198,88 @@ modified_greg <- function(y, xsample, xpop, domains, domain_labels = NULL, pi = 
     
       if(var_est == TRUE) {
         if(var_method != "bootstrapSRS") {
+          
           y_hat <- xsample_d_aoi %*% betas
           y_aoi <- y[domain_indic_vec]
           e <- y_aoi - y_hat
           varEst <- varMase(y = e, pi = pi[domain_indic_vec], pi2 = pi2, method = var_method, N = aoi_N)
+          
+        } else if (var_method == "boostrapSRS"){
+          
+          #Find bootstrap variance
+          dat <- cbind(y, pi, xsample_d)
+          #Bootstrap total estimates
+          t_boot <- boot(data = dat, statistic = modifiedgregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
+          
+          #Adjust for bias and without replacement sampling
+          varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+          
         }
+        
+        return(list(
+          domain = domain_id,
+          pop_total = as.numeric(t),
+          pop_mean = as.numeric(t)/aoi_N,
+          pop_total_var = as.numeric(varEst),
+          pop_mean_var = as.numeric(varEst/aoi_N^2) 
+        ))
+        
+        
+      } else {
+        
+        return(list(
+          domain = domain_id,
+          pop_total = as.numeric(t),
+          pop_mean = as.numeric(t)/aoi_N
+        ))
+        
       }
       
-      return(list(
-        domain = domain_id,
-        pop_total = as.numeric(t),
-        pop_mean = as.numeric(t)/aoi_N,
-        pop_total_var = as.numeric(varEst),
-        pop_mean_var = as.numeric(varEst/aoi_N^2) 
-      ))
-
     }
-    
 
     # run by_domain function over domain_labels argument
-    res <- lapply(domain_labels, FUN = by_domain)
+    res <- lapply(domain_labels, FUN = by_domain_linear)
 
+  } else if (model == "logistic") {
+    
+    if(length(levels(as.factor(y)))!=2){
+      stop("Function can only handle categorical response with two categories.")
+    }
+    
+    xpop_subset <- xpop[common_pred_vars]
+    xpop <- cbind(data.frame(model.matrix(~. -1, data = data.frame(xpop_subset))), xpop[domain])
+    
+    xsample_preds <- xsample[ ,!(names(xsample) %in% domain)]
+    dat <- data.frame(y, weight, xsample_preds)
+    colnames(dat) <- c("y", "weight", names(xsample_preds))
+    f <- paste(names(dat)[1], "~", paste(names(dat)[-c(1,2)], collapse = " + "))
+    s.design<-survey::svydesign(ids = ~1, weights = ~weight, data = dat)
+    mod <- survey::svyglm(f, design = s.design, family = quasibinomial())
+    
+    by_domain_logistic <- function(domain_id) {
+      
+      domain_indic_vec <- as.integer(xsample[domain] == domain_id)
+      
+      xpop_aoi <- xpop[xpop[domain] == domain_id, , drop = FALSE]
+      xsample_aoi <- xsample[xsample[domain] == domain_id, , drop = FALSE]
+      
+      y_hats_U <- as.matrix(predict(mod, newdata = xpop_aoi, type = "response", family = quasibinomial()))
+      y_hats_s <- as.matrix(predict(mod, newdata = xsample_aoi, type = "response", family = quasibinomial()))
+      
+      y_aoi <- y[domain_indic_vec]
+      weights_aoi <- weight[domain_indic_vec]
+      
+      t <- t(y_aoi - y_hats_s) %*% weights_aoi + sum(y_hats_U)
+      
+      return(t)
+      
+    }
+    
+    res <- lapply(domain_labels, FUN = by_domain_logistic)
+    
   }
+  
+  
   return(res)
   
 }
@@ -178,6 +291,7 @@ t <- modified_greg(
   xsample = xsample,
   xpop = xpop,
   domains = domains,
+  model = "linear",
   datatype = "means",
   domain_labels = c("41025", "41037"),
   N = sum(xpop$N),
@@ -185,46 +299,54 @@ t <- modified_greg(
 )
   
 
-a <- data.frame(
-  b = 1:4,
-  cat = c("a", "b", "c", "d")
-)
+library(survey)
+data(api)
 
-vec <- c("a", "b")
+modified_greg(y = as.numeric(apisrs$awards) - 1,
+    xsample = apisrs[c("col.grad", "api00")],
+    xpop = apipop[c("col.grad", "api00", "stype")],
+    domains = apisrs$stype,
+    domain_labels = c("H", "E"),
+    model = "logistic",
+    pi = apisrs$pw^(-1),
+    var_est = TRUE,
+    N = nrow(xpop))
 
-names(which(apply(a, 2, function(x) sum(vec %in% x)) == length(vec)))
+
 
 ## additive test (hold for totals but not variances) ---------------------------------------------------------------
 
 full <- modified_greg(
   y = y,
-  xsample = sampx,
-  xpop = popx,
+  xsample = xsample,
+  xpop = xpop,
   datatype = "means",
-  domain = "COUNTYFIPS",
-  domain_labels = popx$COUNTYFIPS,
-  N = sum(popx$N),
+  domain = domains,
+  domain_labels = xpop$COUNTYFIPS,
+  N = sum(xpop$N),
   var_est = T
 )
 
-total <- 0
-var <- 0
-for(i in 1:36) {
-  total <- total + full[[i]]$pop_total
-  var <- var + full[[i]]$pop_total_var
-}
+full %>% 
+  map_df(.f = function(x) data.frame(total = x$pop_total, var = x$pop_total_var)) %>% 
+  summarise(across(everything(), sum))
 
-test <- popx %>% 
+xpop_totals <- xpop %>% 
   mutate(tcc16 = tcc16*N, elev = elev*N) %>% 
   summarise(tcc16 = sum(tcc16), elev = sum(elev))
 
 greg_est <- greg(
   y = y,
-  xsample = sampx[c("tcc16", "elev")],
-  xpop = test,
+  xsample = xsample[c("tcc16", "elev")],
+  xpop = xpop_totals,
   datatype = "totals",
-  N = sum(popx$N),
+  N = sum(xpop$N),
   var_est = T
+)
+
+data.frame(
+  total = greg_est$pop_total,
+  var = greg_est$pop_total_var
 )
 
 
@@ -285,22 +407,6 @@ full_speed_res %>%
 
 
 
-
-
-
-
-
-
-# making sure answers are sensible with regular greg ---------------------------
-
-greg_est <- greg(
-  y = y_aoi,
-  xsample = sampx[sampx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
-  xpop = popx[popx$COUNTYFIPS == "41037", ][c("tcc16", "elev")],
-  datatype = "means",
-  N = popx[popx$COUNTYFIPS == "41037", ]$N,
-  var_est = T
-  )
 
 
 
