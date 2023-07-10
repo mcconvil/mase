@@ -177,16 +177,16 @@ modified_greg <- function(y,
 
       domain_indic_vec <- as.integer(xsample[domain] == domain_id)
 
-      xpop_aoi <- xpop_d[xpop_d[domain] == domain_id, ,drop = FALSE]
-      xpop_d_aoi <- unlist(xpop_aoi[-which(names(xpop_aoi) == domain)])
-      xsample_aoi <- xsample[xsample[domain] == domain_id, ,drop = FALSE]
-      xsample_d_aoi <- model.matrix(~., data = data.frame(xsample_aoi[common_pred_vars]))
-      xsample_dt_aoi <- t(xsample_d_aoi)
-      weights_aoi <- weight[domain_indic_vec]
+      xpop_domain <- xpop_d[xpop_d[domain] == domain_id, ,drop = FALSE]
+      xpop_d_domain <- unlist(xpop_domain[-which(names(xpop_domain) == domain)])
+      xsample_domain <- xsample[xsample[domain] == domain_id, ,drop = FALSE]
+      xsample_d_domain <- model.matrix(~., data = data.frame(xsample_domain[common_pred_vars]))
+      xsample_dt_domain <- t(xsample_d_domain)
+      weights_domain <- weight[which(domain_indic_vec == 1)]
 
       w <- as.matrix(
         weight*domain_indic_vec + (
-        t(as.matrix(xpop_d_aoi) - xsample_dt_aoi %*% weights_aoi) %*%
+        t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
           constant_component1
         ) %*%
         constant_component2
@@ -194,34 +194,28 @@ modified_greg <- function(y,
       
       t <- w %*% y
       
-      aoi_N <- as.numeric(unlist(xpop_aoi["N"]))
+      domain_N <- as.numeric(unlist(xpop_domain["N"]))
     
       if(var_est == TRUE) {
         if(var_method != "bootstrapSRS") {
           
-          y_hat <- xsample_d_aoi %*% betas
-          y_aoi <- y[domain_indic_vec]
-          e <- y_aoi - y_hat
-          varEst <- varMase(y = e, pi = pi[domain_indic_vec], pi2 = pi2, method = var_method, N = aoi_N)
+          y_hat <- xsample_d_domain %*% betas
+          y_domain <- y[which(domain_indic_vec == 1)]
+          e <- y_domain - y_hat
+          varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = aoi_N)
           
         } else if (var_method == "boostrapSRS"){
           
-          #Find bootstrap variance
-          dat <- cbind(y, pi, xsample_d)
-          #Bootstrap total estimates
-          t_boot <- boot(data = dat, statistic = modifiedgregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
-          
-          #Adjust for bias and without replacement sampling
-          varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+          # need to implement
           
         }
         
         return(list(
           domain = domain_id,
           pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/aoi_N,
+          pop_mean = as.numeric(t)/domain_N,
           pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst/aoi_N^2) 
+          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
         
@@ -230,7 +224,7 @@ modified_greg <- function(y,
         return(list(
           domain = domain_id,
           pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/aoi_N
+          pop_mean = as.numeric(t)/domain_N
         ))
         
       }
@@ -242,36 +236,70 @@ modified_greg <- function(y,
 
   } else if (model == "logistic") {
     
-    if(length(levels(as.factor(y)))!=2){
+    if(length(levels(as.factor(y))) != 2){
       stop("Function can only handle categorical response with two categories.")
     }
     
     xpop_subset <- xpop[common_pred_vars]
-    xpop <- cbind(data.frame(model.matrix(~. -1, data = data.frame(xpop_subset))), xpop[domain])
+    xpop <- cbind(data.frame(model.matrix(~., data = data.frame(xpop_subset))), xpop[domain])
     
+    # need N by domain
+    bydomain_formula <- as.formula(paste0(names(xpop)[1], "~", domain))
+    xpop_sums <- aggregate(bydomain_formula, xpop, FUN = sum)
+    
+    # preparing logistic model
     xsample_preds <- xsample[ ,!(names(xsample) %in% domain)]
     dat <- data.frame(y, weight, xsample_preds)
     colnames(dat) <- c("y", "weight", names(xsample_preds))
     f <- paste(names(dat)[1], "~", paste(names(dat)[-c(1,2)], collapse = " + "))
-    s.design<-survey::svydesign(ids = ~1, weights = ~weight, data = dat)
-    mod <- survey::svyglm(f, design = s.design, family = quasibinomial())
+    s_design <- survey::svydesign(ids = ~1, weights = ~weight, data = dat)
+    mod <- survey::svyglm(f, design = s_design, family = quasibinomial())
     
     by_domain_logistic <- function(domain_id) {
       
       domain_indic_vec <- as.integer(xsample[domain] == domain_id)
       
-      xpop_aoi <- xpop[xpop[domain] == domain_id, , drop = FALSE]
-      xsample_aoi <- xsample[xsample[domain] == domain_id, , drop = FALSE]
+      xpop_domain <- xpop[xpop[domain] == domain_id, , drop = FALSE]
+      xsample_domain <- xsample[xsample[domain] == domain_id, , drop = FALSE]
+      domain_N <- xpop_sums[xpop_sums[domain] == domain_id, ,drop = FALSE][names(xpop)[1]]
       
-      y_hats_U <- as.matrix(predict(mod, newdata = xpop_aoi, type = "response", family = quasibinomial()))
-      y_hats_s <- as.matrix(predict(mod, newdata = xsample_aoi, type = "response", family = quasibinomial()))
+      y_hats_U <- as.matrix(predict(mod, newdata = xpop_domain[ , -1], type = "response", family = quasibinomial()))
+      y_hats_s <- as.matrix(predict(mod, newdata = xsample_domain, type = "response", family = quasibinomial()))
       
-      y_aoi <- y[domain_indic_vec]
-      weights_aoi <- weight[domain_indic_vec]
+      y_domain <- y[which(domain_indic_vec == 1)]
+      weights_domain <- weight[which(domain_indic_vec == 1)]
       
-      t <- t(y_aoi - y_hats_s) %*% weights_aoi + sum(y_hats_U)
+      t <- t(y_domain - y_hats_s) %*% weights_domain + sum(y_hats_U)
       
-      return(t)
+      if (var_est == TRUE) {
+        if (var_method != "bootstrapSRS") {
+          
+          e <- y_domain - y_hats_s
+          varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
+          
+        } else if (var_method == "bootstrapSRS") {
+          
+          # need to implement
+          
+        }
+        
+        return(list(
+          domain = domain_id,
+          pop_total = as.numeric(t),
+          pop_mean = as.numeric(t)/as.numeric(domain_N),
+          pop_total_var = as.numeric(varEst),
+          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+        ))
+        
+      } else {
+        
+        return(list(
+          domain = domain_id,
+          pop_total = as.numeric(t),
+          pop_mean = as.numeric(t)/as.numeric(domain_N)
+        ))
+        
+      }
       
     }
     
@@ -283,6 +311,7 @@ modified_greg <- function(y,
   return(res)
   
 }
+
 
 
   
@@ -309,9 +338,16 @@ modified_greg(y = as.numeric(apisrs$awards) - 1,
     domain_labels = c("H", "E"),
     model = "logistic",
     pi = apisrs$pw^(-1),
-    var_est = TRUE,
-    N = nrow(xpop))
+    var_est = T,
+    N = nrow(apipop))
 
+
+greg(y = as.numeric(apisrs$awards) - 1,
+     xsample = apisrs[c("col.grad", "api00")],
+     xpop = apipop[c("col.grad", "api00")],
+     pi = apisrs$pw^(-1),
+     model = "logistic",
+     var_est = TRUE)
 
 
 ## additive test (hold for totals but not variances) ---------------------------------------------------------------
