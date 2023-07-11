@@ -1,9 +1,6 @@
 #' Compute a ratio of two estimators
 #' 
 #' 
-#' @inheritParams horvitzThompson
-#' @inheritParams greg
-#' @inheritParams postStrat
 #' @param y_num A vector containing the response value for each sampled unit in the numerator
 #' @param y_den A vector containing the response value for each sampled unit in the denominator
 #' @param xsample A vector containing the appropriate form of xsample for the estimator of choice. For example see ?mase::greg() to see the appropriate input for xsample when computing a ratio of two greg estimators
@@ -15,6 +12,7 @@
 #' @param datatype Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.
 #' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator.
+#' @param ... Any additional arguments that can be passed to mase::horvitzThompson, mase::greg, and mase::postStrat
 
 #' @examples 
 #' library(survey)

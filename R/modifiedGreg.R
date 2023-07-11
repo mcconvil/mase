@@ -13,7 +13,7 @@
 #' @param var_est A logical value that specifies whether variance estimation should be performed.
 #' @param var_method A string that specifies the variance method to utilize. 
 #' @param domain_col_name A string that specifies the name of the column that contains the domain values in xpop.
-#' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will occur over all of the domains included in xpop.
+#' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
 #' 
 #' @export modifiedGreg
@@ -76,6 +76,14 @@ modifiedGreg <- function(y,
   
   if (!all(names(xsample) %in% names(xpop))) {
     stop("All of the column names in `xsample` must exist in `xpop`.")
+  }
+  
+  # xpop should only have either one or two more columns than xsample
+  ncol_diff <- ncol(xpop) - ncol(xsample)
+  if (datatype == "raw" && (ncol_diff != 1)) {
+    stop("Incorrect number of columns in either xpop or xsample. When datatype = \"raw\" xpop should only contain columns with the same names as xsample and a column with the domains")
+  } else if (is.element(datatype, c("means", "totals")) && (ncol_diff != 2)) {
+    stop("Incorrect number of columns in either xpop or xsample. When datatype != \"raw\" xpop should only contain columns with the same names as xsample as well as column with the domains and a column with the population sizes.")
   }
   
 

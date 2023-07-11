@@ -43,7 +43,7 @@ modifiedGreg(
 
 \item{domain_col_name}{A string that specifies the name of the column that contains the domain values in xpop.}
 
-\item{estimation_domains}{A vector of domain values over which to produce estimates. If NULL, estimation will occur over all of the domains included in xpop.}
+\item{estimation_domains}{A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.}
 
 \item{N}{The total population size.}
 }
