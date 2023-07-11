@@ -10,7 +10,8 @@ Authors@R: c(person("Kelly", "McConville", role = c("aut", "cre", "cph"),
             person("George", "Zhu", role = "aut"),
             person("Sida", "Li", role = "ctb"),
             person("Shirley", "Chueng", role = "ctb"),
-            person("Daniell", "Toth", role = "ctb")
+            person("Daniell", "Toth", role = "ctb"),
+            person("Josh", "Yamamoto", role = "ctb")
             )
 Maintainer: Kelly McConville <mcconville@reed.edu>
 Description: A set of model-assisted survey estimators and corresponding
@@ -54,7 +55,7 @@ Collate:
     'horvitzThompson.R'
     'logisticGregElasticNett.R'
     'logisticGregt.R'
-    'modified_greg.R'
+    'modifiedGreg.R'
     'postStratt.R'
     'postStrat.R'
     'ratio.R'
