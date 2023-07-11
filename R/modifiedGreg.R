@@ -36,18 +36,6 @@ modifiedGreg <- function(y,
                           domain_col_name = NULL,
                           estimation_domains = NULL,
                           N = NULL) {
-  
-  if (datatype != "raw" && !("N" %in% names(xpop))) {
-    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
-  }
-  
-  if (!all(names(xsample) %in% names(xpop))) {
-    stop("All of the column names in `xsample` must exist in `xpop`.")
-  }
-
-  # if (is.null(N)) {
-  #   stop("Must supply total population size N")
-  # }
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -74,14 +62,23 @@ modifiedGreg <- function(y,
     return(NULL)
   }
   
-  pop_unique_domains <- unique(xpop[[domain_col_name]])
-  samp_unique_domains <- unique(domains)
-  
-  if (!setequal(pop_unique_domains, samp_unique_domains)) {
-    stop("`domains` must contain all the same unique domain values as xpop  ")
+  if (is.null(N)) {
+    if (datatype == "raw") {
+      N <- nrow(xpop)
+    } else {
+      N <- sum(xpop$N)
+    }
   }
   
+  if (datatype != "raw" && !("N" %in% names(xpop))) {
+    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
+  }
   
+  if (!all(names(xsample) %in% names(xpop))) {
+    stop("All of the column names in `xsample` must exist in `xpop`.")
+  }
+  
+
   if (is.null(domain_col_name)) {
     
     if (datatype == "raw") {
@@ -92,6 +89,13 @@ modifiedGreg <- function(y,
     
     message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used."))
     
+  }
+  
+  pop_unique_domains <- unique(xpop[[domain_col_name]])
+  samp_unique_domains <- unique(domains)
+  
+  if (!setequal(pop_unique_domains, samp_unique_domains)) {
+    stop("`domains` must contain all the same unique domain values as xpop  ")
   }
 
   if (is.null(pi)) {
@@ -105,7 +109,6 @@ modifiedGreg <- function(y,
   weight <- as.vector(pi^(-1))
   
   y <- as.vector(y)
-  
   
   if (is.null(estimation_domains)) {
     estimation_domains <- pop_unique_domains
