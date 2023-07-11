@@ -41,8 +41,6 @@ ratio(
 \item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator.}
 
 \item{datatype}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.}
-
-\item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional" or the "SRSbootstrap" variance estimator.}
 }
 \value{
 A list of output containing:
