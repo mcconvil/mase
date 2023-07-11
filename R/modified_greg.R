@@ -2,6 +2,7 @@
 #' 
 #' Calculates a modified generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.  
 #' 
+#' @param y A vector of the response values from the sample
 #' @param xsample A data frame of the auxiliary data in the sample.
 #' @param xpop A data frame of population level auxiliary information.  It must contain all of the names from xsample. If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data and must include a column labeled N with the population sizes for each domain. Default is "raw".
 #' @param domains A vector of the specific domain that each row of xsample belongs to.
@@ -11,13 +12,15 @@
 #' @param pi2 Second order inclusion probabilities.
 #' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "totals" or "means" for whether the user is providing population data at the unit level, aggregated to totals, or aggregated to means.  Default is "raw".
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
+#' @param var_est A logical value that specifies whether variance estimation should be performed.
+#' @param var_method A string that specifies the variance method to utilize. 
 #' @param N The total population size.
 #' 
 #' @export modified_greg
 #' @import survey
 #' @import glmnet
 #' @import boot
-#' @importFrom stats model.matrix predict quasibinomial var
+#' @importFrom stats model.matrix predict quasibinomial var aggregate
 #' @include varMase.R
 #' 
 #' 
@@ -33,8 +36,7 @@ modified_greg <- function(y,
                           model = "linear",
                           var_est = F,
                           var_method = "LinHB", 
-                          N = NULL,
-                          B = 1000) {
+                          N = NULL) {
   
   if (datatype != "raw" && !("N" %in% names(xpop))) {
     stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
@@ -275,7 +277,7 @@ modified_greg <- function(y,
       
     }
     
-    res <- lapply(domain_labels, FUN = by_domain_logistic)
+    res <- lapply(estimation_domains, FUN = by_domain_logistic)
     
   }
   
@@ -286,37 +288,3 @@ modified_greg <- function(y,
 
 
   
-t <- modified_greg(
-  y = y,
-  xsample = xsample,
-  xpop = xpop,
-  domains = domains,
-  domain_name = "COUNTYFIPS",
-  model = "linear",
-  datatype = "means",
-  N = sum(xpop$N),
-  var_est = T
-)
-  
-
-library(survey)
-data(api)
-
-modified_greg(y = as.numeric(apisrs$awards) - 1,
-    xsample = apisrs[c("col.grad", "api00")],
-    xpop = apipop[c("col.grad", "api00", "stype")],
-    domains = apisrs$stype,
-    domain_labels = c("H", "E"),
-    model = "logistic",
-    pi = apisrs$pw^(-1),
-    var_est = T,
-    N = nrow(apipop))
-
-
-greg(y = as.numeric(apisrs$awards) - 1,
-     xsample = apisrs[c("col.grad", "api00")],
-     xpop = apipop[c("col.grad", "api00")],
-     pi = apisrs$pw^(-1),
-     model = "logistic",
-     var_est = TRUE)
-
