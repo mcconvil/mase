@@ -21,8 +21,8 @@
 #' library(survey)
 #' data(api) 
 #' ratio(y_num = apisrs$api.stu, y_den = apisrs$enroll, xsample = apisrs$stype,
-#' xpop = apipop$stype, pi = apisrs$pw^(-1)), estimator = "postStrat",
-#' var_est = T, var_method = "LinHB", datatype = "raw")
+#' xpop = apipop$stype, pi = apisrs$pw^(-1), estimator = "postStrat",
+#' var_est = TRUE, var_method = "LinHB", datatype = "raw")
 #' 
 #'@references 
 #'\insertRef{coc77}{mase} 
@@ -71,7 +71,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
     ps_num <- postStrat(
       y = y_num, 
       xsample = xsample,
-      xpo = xpop,
+      xpop = xpop,
       pi = pi,
       N = N,
       pi2 = pi2, 

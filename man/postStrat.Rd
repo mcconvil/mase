@@ -11,7 +11,7 @@ postStrat(
   pi = NULL,
   N = NULL,
   var_est = FALSE,
-  var_method = "HB",
+  var_method = "LinHB",
   pi2 = NULL,
   datatype = "raw",
   B = 1000,

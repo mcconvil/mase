@@ -54,9 +54,11 @@ Collate:
     'horvitzThompson.R'
     'logisticGregElasticNett.R'
     'logisticGregt.R'
+    'modified_greg.R'
     'postStratt.R'
     'postStrat.R'
+    'ratio.R'
     'ratioEstimatort.R'
     'ratioEstimator.R'
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 RdMacros: Rdpack
