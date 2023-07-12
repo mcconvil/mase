@@ -12,8 +12,10 @@
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
 #' @param var_est A logical value that specifies whether variance estimation should be performed.
 #' @param var_method A string that specifies the variance method to utilize. 
+#' @param modelselect A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
+#' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param domain_col_name A string that specifies the name of the column that contains the domain values in xpop.
-#' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will occur over all of the domains included in xpop.
+#' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
 #' 
 #' @export modifiedGreg
@@ -24,30 +26,20 @@
 #' @include varMase.R
 
 modifiedGreg <- function(y,
-                          xsample,
-                          xpop,
-                          domains,
-                          pi = NULL, 
-                          pi2 = NULL,
-                          datatype = "raw",
-                          model = "linear",
-                          var_est = F,
-                          var_method = "LinHB", 
-                          domain_col_name = NULL,
-                          estimation_domains = NULL,
-                          N = NULL) {
-  
-  if (datatype != "raw" && !("N" %in% names(xpop))) {
-    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
-  }
-  
-  if (!all(names(xsample) %in% names(xpop))) {
-    stop("All of the column names in `xsample` must exist in `xpop`.")
-  }
-
-  # if (is.null(N)) {
-  #   stop("Must supply total population size N")
-  # }
+                         xsample,
+                         xpop,
+                         domains,
+                         pi = NULL, 
+                         pi2 = NULL,
+                         datatype = "raw",
+                         model = "linear",
+                         var_est = F,
+                         var_method = "LinHB", 
+                         modelselect = FALSE,
+                         lambda = "lambda.min",
+                         domain_col_name = NULL,
+                         estimation_domains = NULL,
+                         N = NULL) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -74,14 +66,31 @@ modifiedGreg <- function(y,
     return(NULL)
   }
   
-  pop_unique_domains <- unique(xpop[[domain_col_name]])
-  samp_unique_domains <- unique(domains)
-  
-  if (!setequal(pop_unique_domains, samp_unique_domains)) {
-    stop("`domains` must contain all the same unique domain values as xpop  ")
+  if (is.null(N)) {
+    if (datatype == "raw") {
+      N <- nrow(xpop)
+    } else {
+      N <- sum(xpop$N)
+    }
   }
   
+  if (datatype != "raw" && !("N" %in% names(xpop))) {
+    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
+  }
   
+  if (!all(names(xsample) %in% names(xpop))) {
+    stop("All of the column names in `xsample` must exist in `xpop`.")
+  }
+  
+  # xpop should only have either one or two more columns than xsample
+  ncol_diff <- ncol(xpop) - ncol(xsample)
+  if (datatype == "raw" && (ncol_diff != 1)) {
+    stop("Incorrect number of columns in either xpop or xsample. When datatype = \"raw\" xpop should only contain columns with the same names as xsample and a column with the domains")
+  } else if (is.element(datatype, c("means", "totals")) && (ncol_diff != 2)) {
+    stop("Incorrect number of columns in either xpop or xsample. When datatype != \"raw\" xpop should only contain columns with the same names as xsample as well as column with the domains and a column with the population sizes.")
+  }
+  
+
   if (is.null(domain_col_name)) {
     
     if (datatype == "raw") {
@@ -92,6 +101,13 @@ modifiedGreg <- function(y,
     
     message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used."))
     
+  }
+  
+  pop_unique_domains <- unique(xpop[[domain_col_name]])
+  samp_unique_domains <- unique(domains)
+  
+  if (!setequal(pop_unique_domains, samp_unique_domains)) {
+    stop("`domains` must contain all the same unique domain values as xpop  ")
   }
 
   if (is.null(pi)) {
@@ -106,7 +122,6 @@ modifiedGreg <- function(y,
   
   y <- as.vector(y)
   
-  
   if (is.null(estimation_domains)) {
     estimation_domains <- pop_unique_domains
   }
@@ -119,6 +134,73 @@ modifiedGreg <- function(y,
   xsample <- cbind(data.frame(xsample_d[,-1, drop = FALSE]), domains)
   names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain_col_name)
   xsample_dt <- t(xsample_d) 
+  
+  # variable selection
+  
+  if (modelselect == TRUE) {
+    
+    if(model == "linear"){
+      
+      fam <- "gaussian"
+      
+    } else{
+      
+      fam <- "binomial"
+      
+    } 
+    
+    x <- xsample[ , -which(names(xsample) == domain_col_name)]
+    cv <- cv.glmnet(x = as.matrix(x), y = y, alpha = 1, weights = weight, nfolds = 10, family = fam, standardize = FALSE)
+    
+    if(lambda=="lambda.min"){
+      
+      lambda.opt <- cv$lambda.min
+      
+    }
+    if(lambda=="lambda.1se"){
+      
+      lambda.opt <- cv$lambda.1se
+      
+    }
+    
+    pred_mod <- glmnet(x = as.matrix(x), y = y, alpha = 1, family = fam, standardize = FALSE, weights = weight)
+    lasso_coef <- predict(pred_mod, type = "coefficients", s = lambda.opt)[1:dim(xsample_d)[2],]
+    coef_select <- names(lasso_coef[lasso_coef != 0])[-1]
+    
+    if(length(coef_select) == 0){
+      
+      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
+      
+      if(var_est == TRUE){
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+        
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    pop_total_var = HT$pop_total_var, 
+                    pop_mean_var = HT$pop_total_var/N^2, 
+                    weights = as.vector(pi^(-1))))
+      } else {
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
+        
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    weights = as.vector(pi^(-1))))
+        
+      }
+      
+    } else {
+      
+      xsample <- xsample[ , c(coef_select, domain_col_name), drop = FALSE]
+      xsample_d <- model.matrix(~., data = xsample[ , coef_select, drop = FALSE])
+      xsample_dt <- t(xsample_d) 
+      xsample <- cbind(data.frame(xsample_d[,-1, drop=FALSE]), domains)
+      
+    }  
+    
+  }
+  
   
   if (model == "linear") {
     
