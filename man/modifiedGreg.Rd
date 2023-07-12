@@ -15,6 +15,8 @@ modifiedGreg(
   model = "linear",
   var_est = F,
   var_method = "LinHB",
+  modelselect = FALSE,
+  lambda = "lambda.min",
   domain_col_name = NULL,
   estimation_domains = NULL,
   N = NULL
@@ -40,6 +42,10 @@ modifiedGreg(
 \item{var_est}{A logical value that specifies whether variance estimation should be performed.}
 
 \item{var_method}{A string that specifies the variance method to utilize.}
+
+\item{modelselect}{A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.}
+
+\item{lambda}{A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
 
 \item{domain_col_name}{A string that specifies the name of the column that contains the domain values in xpop.}
 

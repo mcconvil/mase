@@ -12,6 +12,8 @@
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
 #' @param var_est A logical value that specifies whether variance estimation should be performed.
 #' @param var_method A string that specifies the variance method to utilize. 
+#' @param modelselect A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
+#' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' @param domain_col_name A string that specifies the name of the column that contains the domain values in xpop.
 #' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
@@ -24,18 +26,20 @@
 #' @include varMase.R
 
 modifiedGreg <- function(y,
-                          xsample,
-                          xpop,
-                          domains,
-                          pi = NULL, 
-                          pi2 = NULL,
-                          datatype = "raw",
-                          model = "linear",
-                          var_est = F,
-                          var_method = "LinHB", 
-                          domain_col_name = NULL,
-                          estimation_domains = NULL,
-                          N = NULL) {
+                         xsample,
+                         xpop,
+                         domains,
+                         pi = NULL, 
+                         pi2 = NULL,
+                         datatype = "raw",
+                         model = "linear",
+                         var_est = F,
+                         var_method = "LinHB", 
+                         modelselect = FALSE,
+                         lambda = "lambda.min",
+                         domain_col_name = NULL,
+                         estimation_domains = NULL,
+                         N = NULL) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -130,6 +134,73 @@ modifiedGreg <- function(y,
   xsample <- cbind(data.frame(xsample_d[,-1, drop = FALSE]), domains)
   names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain_col_name)
   xsample_dt <- t(xsample_d) 
+  
+  # variable selection
+  
+  if (modelselect == TRUE) {
+    
+    if(model == "linear"){
+      
+      fam <- "gaussian"
+      
+    } else{
+      
+      fam <- "binomial"
+      
+    } 
+    
+    x <- xsample[ , -which(names(xsample) == domain_col_name)]
+    cv <- cv.glmnet(x = as.matrix(x), y = y, alpha = 1, weights = weight, nfolds = 10, family = fam, standardize = FALSE)
+    
+    if(lambda=="lambda.min"){
+      
+      lambda.opt <- cv$lambda.min
+      
+    }
+    if(lambda=="lambda.1se"){
+      
+      lambda.opt <- cv$lambda.1se
+      
+    }
+    
+    pred_mod <- glmnet(x = as.matrix(x), y = y, alpha = 1, family = fam, standardize = FALSE, weights = weight)
+    lasso_coef <- predict(pred_mod, type = "coefficients", s = lambda.opt)[1:dim(xsample_d)[2],]
+    coef_select <- names(lasso_coef[lasso_coef != 0])[-1]
+    
+    if(length(coef_select) == 0){
+      
+      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
+      
+      if(var_est == TRUE){
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+        
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    pop_total_var = HT$pop_total_var, 
+                    pop_mean_var = HT$pop_total_var/N^2, 
+                    weights = as.vector(pi^(-1))))
+      } else {
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
+        
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    weights = as.vector(pi^(-1))))
+        
+      }
+      
+    } else {
+      
+      xsample <- xsample[ , c(coef_select, domain_col_name), drop = FALSE]
+      xsample_d <- model.matrix(~., data = xsample[ , coef_select, drop = FALSE])
+      xsample_dt <- t(xsample_d) 
+      xsample <- cbind(data.frame(xsample_d[,-1, drop=FALSE]), domains)
+      
+    }  
+    
+  }
+  
   
   if (model == "linear") {
     
