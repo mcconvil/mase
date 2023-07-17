@@ -51,7 +51,8 @@ greg  <- function(
     N = NULL,
     modelselect = FALSE,
     lambda = "lambda.min",
-    B = 1000) {
+    B = 1000,
+    messages = T) {
   
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     
@@ -94,7 +95,12 @@ greg  <- function(
     }else{
       
       N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+      
+      if (messages) {
+       
+        message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+         
+      }
       
     }
   }
@@ -113,7 +119,11 @@ greg  <- function(
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if (is.null(pi)) {
     
-    message("Assuming simple random sampling")
+    if (messages) {
+     
+      message("Assuming simple random sampling")
+       
+    }
     
   }  
   
@@ -165,9 +175,13 @@ greg  <- function(
     #If select zero predictors, then fit a HT
     if (length(coef_select) == 0) {
       
-      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
+      if (messages) {
+        
+        message("No variables selected in the model selection stage.  Fitting a HT estimator.") 
+        
+      }
     
-    if (var_est==TRUE) {
+    if (var_est == TRUE) {
       
       HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
       
