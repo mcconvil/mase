@@ -39,67 +39,94 @@ modifiedGreg <- function(y,
                          lambda = "lambda.min",
                          domain_col_name = NULL,
                          estimation_domains = NULL,
-                         N = NULL) {
+                         N = NULL,
+                         message = T) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
+    
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+    
   }
 
   if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
+
   }
 
   if (!is.element(model, c("linear","logistic"))) {
-    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-    return(NULL)
+    
+    stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
+
   }
 
   if (model == "logistic" && datatype != "raw") {
-    message("Must supply the raw population data to fit the logistic regression estimator.")
-    return(NULL)
+    
+    stop("Must supply the raw population data to fit the logistic regression estimator.")
 
   }
 
   if (!is.element(datatype, c("raw","totals", "means"))) {
-    message("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
-    return(NULL)
+    
+    stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
+
   }
   
   if (is.null(N)) {
+    
     if (datatype == "raw") {
+      
       N <- nrow(xpop)
+      
     } else {
+      
       N <- sum(xpop$N)
+      
     }
+    
   }
   
   if (datatype != "raw" && !("N" %in% names(xpop))) {
+    
     stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
+    
   }
   
   if (!all(names(xsample) %in% names(xpop))) {
+    
     stop("All of the column names in `xsample` must exist in `xpop`.")
+    
   }
   
   # xpop should only have either one or two more columns than xsample
   ncol_diff <- ncol(xpop) - ncol(xsample)
   if (datatype == "raw" && (ncol_diff != 1)) {
+    
     stop("Incorrect number of columns in either xpop or xsample. When datatype = \"raw\" xpop should only contain columns with the same names as xsample and a column with the domains")
+    
   } else if (is.element(datatype, c("means", "totals")) && (ncol_diff != 2)) {
+    
     stop("Incorrect number of columns in either xpop or xsample. When datatype != \"raw\" xpop should only contain columns with the same names as xsample as well as column with the domains and a column with the population sizes.")
+    
   }
-  
 
   if (is.null(domain_col_name)) {
     
     if (datatype == "raw") {
+      
       domain_col_name <- setdiff(names(xpop), names(xsample))
+      
     } else {
+      
       domain_col_name <- setdiff(names(xpop), c(names(xsample), "N"))
+      
     }
     
-    message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used."))
+    if (messages) {
+      
+      message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used."))
+      
+    }
     
   }
   
@@ -107,15 +134,25 @@ modifiedGreg <- function(y,
   samp_unique_domains <- unique(domains)
   
   if (!setequal(pop_unique_domains, samp_unique_domains)) {
-    stop("`domains` must contain all the same unique domain values as xpop  ")
+    
+    stop("`domains` must contain all the same unique domain values as xpop")
+    
   }
 
   if (is.null(pi)) {
-    message("Assuming simple random sampling")
+    
+    if (messages) {
+      
+      message("Assuming simple random sampling") 
+      
+    }
+    
   } 
   
   if (is.null(pi)) {
+    
     pi <- rep(length(y)/N, length(y))
+    
   }
   
   weight <- as.vector(pi^(-1))
@@ -123,7 +160,9 @@ modifiedGreg <- function(y,
   y <- as.vector(y)
   
   if (is.null(estimation_domains)) {
+    
     estimation_domains <- pop_unique_domains
+    
   }
   
   # creating a vector of common auxiliary variable names
@@ -152,12 +191,13 @@ modifiedGreg <- function(y,
     x <- xsample[ , -which(names(xsample) == domain_col_name)]
     cv <- cv.glmnet(x = as.matrix(x), y = y, alpha = 1, weights = weight, nfolds = 10, family = fam, standardize = FALSE)
     
-    if(lambda=="lambda.min"){
+    if (lambda == "lambda.min") {
       
       lambda.opt <- cv$lambda.min
       
     }
-    if(lambda=="lambda.1se"){
+    
+    if (lambda == "lambda.1se") {
       
       lambda.opt <- cv$lambda.1se
       
@@ -167,11 +207,15 @@ modifiedGreg <- function(y,
     lasso_coef <- predict(pred_mod, type = "coefficients", s = lambda.opt)[1:dim(xsample_d)[2],]
     coef_select <- names(lasso_coef[lasso_coef != 0])[-1]
     
-    if(length(coef_select) == 0){
+    if (length(coef_select) == 0) {
       
-      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
+      if (messages) {
+        
+        message("No variables selected in the model selection stage.  Fitting a HT estimator.") 
+        
+      }
       
-      if(var_est == TRUE){
+      if (var_est == TRUE) {
         
         HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
         
@@ -180,6 +224,7 @@ modifiedGreg <- function(y,
                     pop_total_var = HT$pop_total_var, 
                     pop_mean_var = HT$pop_total_var/N^2, 
                     weights = as.vector(pi^(-1))))
+        
       } else {
         
         HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
@@ -220,6 +265,7 @@ modifiedGreg <- function(y,
       xpop_d <- xpop_d[, c(ncol(xpop_d), 1:(ncol(xpop_d) - 1))]
       
     }
+    
     if (datatype == "totals"){
       
       # need N for each specific domain
@@ -227,6 +273,7 @@ modifiedGreg <- function(y,
       xpop_d <- xpop[ ,c("N", common_pred_vars, domain_col_name)]
       
     }
+    
     if (datatype == "means"){
       
       # need N for each specific domain
@@ -265,8 +312,9 @@ modifiedGreg <- function(y,
       
       domain_N <- unlist(xpop_domain["N"])
     
-      if(var_est == TRUE) {
-        if(var_method != "bootstrapSRS") {
+      if (var_est == TRUE) {
+        
+        if (var_method != "bootstrapSRS") {
           
           y_hat <- xsample_d_domain %*% betas
           y_domain <- y[which(domain_indic_vec == 1)]
@@ -305,7 +353,9 @@ modifiedGreg <- function(y,
   } else if (model == "logistic") {
     
     if(length(levels(as.factor(y))) != 2){
+      
       stop("Function can only handle categorical response with two categories.")
+      
     }
     
     xpop_subset <- xpop[common_pred_vars]
@@ -340,6 +390,7 @@ modifiedGreg <- function(y,
       t <- t(y_domain - y_hats_s) %*% weights_domain + sum(y_hats_U)
       
       if (var_est == TRUE) {
+        
         if (var_method != "bootstrapSRS") {
           
           e <- y_domain - y_hats_s
