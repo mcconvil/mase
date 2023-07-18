@@ -9,6 +9,7 @@
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".
 #' @param pi2 A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.
 #' @param B The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
+#' @param messages Default to TRUE, logical for whether to display messages from internal function processes.
 #' 
 #' @examples 
 #' library(survey)

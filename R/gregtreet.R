@@ -18,7 +18,7 @@ gregTreet <- function(data, xpop, pval= pval, perm_reps = perm_reps, bin_size = 
   
   #create tree
   f <- as.formula(paste("y ~ ", paste(names(xsample), collapse= "+")))
-  treet <- rpms(rp_equ = f, data = d, weights = as.vector(pis^(-1)), pval= pval, perm_reps = perm_reps, bin_size = bin_size)
+  treet <- rpms(rp_equ = f, data = d, weights = as.vector(pis^(-1)), pval = pval, perm_reps = perm_reps, bin_size = bin_size)
   
   
   #Calculate weights
@@ -28,7 +28,9 @@ gregTreet <- function(data, xpop, pval= pval, perm_reps = perm_reps, bin_size = 
   xpop_treet <- box_ind(treet, xpop)
   #Design matrix for sample
   xsample_treet <- box_ind(treet, xsample)
-  w <- (1 + t(colSums(xpop_treet)- colSums(xsample_treet*pis^(-1)))%*%solve(t(xsample_treet)%*%diag(pis^(-1))%*%as.matrix(xsample_treet))%*%t(xsample_treet))%*%diag(pis^(-1)) 
+  w <- (1 + t(colSums(xpop_treet)- colSums(xsample_treet*pis^(-1))) %*%
+          solve(t(xsample_treet) %*% diag(pis^(-1)) %*% as.matrix(xsample_treet)) %*%
+          t(xsample_treet)) %*% diag(pis^(-1)) 
   
   #calculating the total estimate for y
   t <- w %*% y

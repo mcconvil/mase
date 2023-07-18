@@ -19,7 +19,8 @@ modifiedGreg(
   lambda = "lambda.min",
   domain_col_name = NULL,
   estimation_domains = NULL,
-  N = NULL
+  N = NULL,
+  messages = T
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ modifiedGreg(
 \item{estimation_domains}{A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.}
 
 \item{N}{The total population size.}
+
+\item{messages}{Default to TRUE, logical for whether to display messages from internal function processes.}
 }
 \description{
 Calculates a modified generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.

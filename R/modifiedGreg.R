@@ -17,6 +17,7 @@
 #' @param domain_col_name A string that specifies the name of the column that contains the domain values in xpop.
 #' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
+#' @param messages Default to TRUE, logical for whether to display messages from internal function processes.
 #' 
 #' @export modifiedGreg
 #' @import survey
@@ -40,7 +41,7 @@ modifiedGreg <- function(y,
                          domain_col_name = NULL,
                          estimation_domains = NULL,
                          N = NULL,
-                         message = T) {
+                         messages = T) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     

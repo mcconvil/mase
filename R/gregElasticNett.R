@@ -21,5 +21,6 @@ gregElasticNett <- function(data, xpopd, indices, alpha, lambda){
   beta_hat <- predict(pred.mod, s = lambda, type = "coefficients")[1:dim(xsample_d)[2],]
 
   return(beta_hat %*% (xpopd) + t(y - xsample_d %*% beta_hat) %*% pis^(-1))
+  
 }
 

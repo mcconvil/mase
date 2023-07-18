@@ -34,8 +34,6 @@
 #' \item{weights:}{Survey weights produced by PS}
 #' }
 
-#' @import dplyr
-#' @import magrittr
 #' @export postStrat
 #' @include postStratt.R
 #' @include varMase.R

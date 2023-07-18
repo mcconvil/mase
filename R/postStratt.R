@@ -3,10 +3,8 @@
 postStratt <- function(data, xpoptab, indices){
 
   # Define variables
-  x= N_h = N_h_hats = ps_h = poptotal_h = strat_pop_total = NULL  
+  x <- N_h <- N_h_hats <- ps_h <- poptotal_h <- strat_pop_total <- NULL  
   
-    # data: 4th column: y_den, 3rd column:y_num, 
-    # 2nd column:pis, 1st column: xsample
   d <- data[indices,]
   
   #y
@@ -20,12 +18,30 @@ postStratt <- function(data, xpoptab, indices){
   
   #Estimator
   #Compute estimator
-  dat <- data.frame(x=xsample, pi=pis,y=y)
-  tab <- dat %>%
-    group_by(x) %>%
-    summarize(poptotal_h = y%*%pi^(-1),N_h_hats = sum(pi^(-1)), var_h = var(y)) %>%
-    inner_join(xpoptab, by=c("x")) %>%
-    mutate(ps_h = N_h/N_h_hats, strat_pop_total = ps_h*poptotal_h, strat_pop_mean = strat_pop_total/N_h)
+  dat <- data.frame(x = xsample, pi = pis, y = y)
+  
+  t <- aggregate(
+    y ~ x,
+    data = dat,
+    FUN = function(t) data.frame(
+      poptotal_h = sum(t * pi[1:length(t)]^(-1)),
+      N_h_hats = sum(pi[1:length(t)]^(-1)),
+      var_h = var(t)
+    ),
+    simplify = F)
+  
+  tab <- cbind(x = t[, "x"], do.call(rbind, t$y)) |> 
+    merge(xpoptab, by = "x")
+  
+  tab$ps_h <- tab$N_h/tab$N_h_hats
+  tab$strat_pop_total <- tab$ps_h * tab$poptotal_h
+  tab$strat_pop_mean <- tab$strat_pop_total/tab$N_h
+  
+  # tab <- dat %>%
+  #   group_by(x) %>%
+  #   summarize(poptotal_h = y%*%pi^(-1),N_h_hats = sum(pi^(-1)), var_h = var(y)) %>%
+  #   inner_join(xpoptab, by=c("x")) %>%
+  #   mutate(ps_h = N_h/N_h_hats, strat_pop_total = ps_h*poptotal_h, strat_pop_mean = strat_pop_total/N_h)
   
   
   #calculating the total estimate for y

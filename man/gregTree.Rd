@@ -15,7 +15,8 @@ gregTree(
   B = 1000,
   pval = 0.05,
   perm_reps = 500,
-  bin_size = NULL
+  bin_size = NULL,
+  messages = T
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gregTree(
 \item{perm_reps}{An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.}
 
 \item{bin_size}{A integer specifying the minimum number of observations in each node.}
+
+\item{messages}{Default to TRUE, logical for whether to display messages from internal function processes.}
 }
 \value{
 A list of output containing:

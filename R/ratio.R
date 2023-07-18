@@ -31,8 +31,6 @@
 #' \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
 #' \item{variance_est:}{Estimate of the variance of the ratio of two estimators}
 #' }
-#' @import dplyr
-#' @import magrittr
 #' @export ratio
 #' @include varMase.R
 
@@ -76,7 +74,7 @@ ratio <- function(y_num,
       pi2 = pi2, 
       fpc = F,
       var_est = F,
-      var_method = "HB",
+      var_method = "LinHB",
       datatype = "raw",
       ...
     )
@@ -89,7 +87,7 @@ ratio <- function(y_num,
       N = N,
       pi2 = pi2,
       var_est = F,
-      var_method = "HB",
+      var_method = "LinHB",
       datatype = "raw",
       ...
     )

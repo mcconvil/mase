@@ -15,7 +15,8 @@ postStrat(
   pi2 = NULL,
   datatype = "raw",
   B = 1000,
-  fpc = TRUE
+  fpc = TRUE,
+  messages = F
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ postStrat(
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
 
 \item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional" or the "SRSbootstrap" variance estimator.}
+
+\item{messages}{Default to TRUE, logical for whether to display messages from internal function processes.}
 }
 \value{
 A list of output containing:

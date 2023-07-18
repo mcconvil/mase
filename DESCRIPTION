@@ -30,8 +30,6 @@ Description: A set of model-assisted survey estimators and corresponding
 License: GPL-2
 Imports: glmnet,
     survey,
-    dplyr,
-    magrittr,
     rpms,
     boot,
     stats,
