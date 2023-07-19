@@ -248,9 +248,10 @@ modifiedGreg <- function(y,
       xsample <- xsample[ , c(coef_select, domain_col_name), drop = FALSE]
       xsample_d <- model.matrix(~., data = xsample[ , coef_select, drop = FALSE])
       xsample_dt <- t(xsample_d) 
-      xsample <- cbind(data.frame(xsample_d[,-1, drop=FALSE]), domains)
+      xsample <- cbind(data.frame(xsample_d[,-1, drop = FALSE]), domains)
+      names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain_col_name)
       
-    }  
+    } 
     
   }
   
