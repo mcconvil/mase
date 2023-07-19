@@ -42,35 +42,41 @@ modifiedGreg <- function(y,
                          estimation_domains = NULL,
                          N = NULL,
                          messages = T) {
-
+  
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
     
   }
-
+  
   if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-
+    
   }
-
+  
   if (!is.element(model, c("linear","logistic"))) {
     
     stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-
+    
   }
-
+  
   if (model == "logistic" && datatype != "raw") {
     
     stop("Must supply the raw population data to fit the logistic regression estimator.")
-
+    
   }
-
+  
   if (!is.element(datatype, c("raw","totals", "means"))) {
     
     stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
-
+    
+  }
+  
+  if (!is.null(N) && datatype != "raw"  && sum(xpop$N) != N) {
+    
+    stop("User inputted N does not equal the sum of the domain level population sizes in xpop.")
+    
   }
   
   if (is.null(N)) {
@@ -82,6 +88,7 @@ modifiedGreg <- function(y,
     } else {
       
       N <- sum(xpop$N)
+      
       
     }
     
@@ -110,7 +117,7 @@ modifiedGreg <- function(y,
     stop("Incorrect number of columns in either xpop or xsample. When datatype != \"raw\" xpop should only contain columns with the same names as xsample as well as column with the domains and a column with the population sizes.")
     
   }
-
+  
   if (is.null(domain_col_name)) {
     
     if (datatype == "raw") {
@@ -139,7 +146,7 @@ modifiedGreg <- function(y,
     stop("`domains` must contain all the same unique domain values as xpop")
     
   }
-
+  
   if (is.null(pi)) {
     
     if (messages) {
@@ -291,28 +298,28 @@ modifiedGreg <- function(y,
     
     # internal function to compute estimates by domain
     by_domain_linear <- function(domain_id) {
-
+      
       domain_indic_vec <- as.integer(xsample[domain_col_name] == domain_id)
-
+      
       xpop_domain <- xpop_d[xpop_d[domain_col_name] == domain_id, , drop = FALSE]
       xpop_d_domain <- unlist(xpop_domain[-which(names(xpop_domain) == domain_col_name)])
       xsample_domain <- xsample[xsample[domain_col_name] == domain_id, , drop = FALSE]
       xsample_d_domain <- model.matrix(~., data = data.frame(xsample_domain[common_pred_vars]))
       xsample_dt_domain <- t(xsample_d_domain)
       weights_domain <- weight[which(domain_indic_vec == 1)]
-
+      
       w <- as.matrix(
         weight*domain_indic_vec + (
-        t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
-          constant_component1
+          t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
+            constant_component1
         ) %*%
-        constant_component2
-        )
+          constant_component2
+      )
       
       t <- w %*% y
       
       domain_N <- unlist(xpop_domain["N"])
-    
+      
       if (var_est == TRUE) {
         
         if (var_method != "bootstrapSRS") {
@@ -330,27 +337,27 @@ modifiedGreg <- function(y,
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
       
     }
-
+    
     # run by_domain function over domain_labels argument
     res <- lapply(estimation_domains, FUN = by_domain_linear)
-
+    
   } else if (model == "logistic") {
     
     if(length(levels(as.factor(y))) != 2){
@@ -405,18 +412,18 @@ modifiedGreg <- function(y,
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
@@ -427,10 +434,20 @@ modifiedGreg <- function(y,
     
   }
   
-  return(res)
+  pop_res <- do.call(
+    rbind, lapply(
+      res, FUN = function(x) data.frame(
+        pop_total = x$domain_total,
+        pop_totalvar = x$domain_total_var
+      )
+    )
+  ) |>
+    colSums()
+  
+  return(list(res, pop_res))
   
 }
 
 
 
-  
+
