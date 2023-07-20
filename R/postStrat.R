@@ -10,6 +10,7 @@
 #' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata.
 #' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional" or the "SRSbootstrap" variance estimator.
+#' @param messages Default to TRUE, logical for whether to display messages from internal function processes.
 
 #' @examples 
 #' library(survey)
@@ -33,81 +34,112 @@
 #' \item{weights:}{Survey weights produced by PS}
 #' }
 
-#' @import dplyr
-#' @import magrittr
 #' @export postStrat
 #' @include postStratt.R
 #' @include varMase.R
 
 
-postStrat <- function(
-  y, xsample, xpop, pi = NULL, N = NULL, var_est = FALSE, var_method = "LinHB", pi2 = NULL, datatype= "raw", B = 1000, fpc = TRUE){
+postStrat <- function(y,
+                      xsample,
+                      xpop,
+                      pi = NULL,
+                      N = NULL,
+                      var_est = FALSE,
+                      var_method = "LinHB",
+                      pi2 = NULL,
+                      datatype = "raw",
+                      B = 1000,
+                      fpc = TRUE,
+                      messages = F) {
 
-  
   #Define variables
-  x = N_h = N_h_hats = ps_h = poptotal_h = strat_pop_total = NULL  
-  
-  
-  ### INPUT VALIDATION ###
+  x <- N_h <- N_h_hats <- ps_h <- poptotal_h <- strat_pop_total <- NULL  
   
   #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+  if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
+    
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
+    
   }
   
-  
-  #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS", "SRSunconditional"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")
-    return(NULL)
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS", "SRSunconditional"))) {
+    
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
+    
   }
-  
   
   #Need to provide either datatype="raw", N, or pi.  Give warning if not
-  if(datatype=="means" & is.null(N) & is.null(pi)){
-    message("Must supply N, pi, raw population data or population totals so that we can estimate N.")
-    return(NULL)
+  if (datatype=="means" && is.null(N) && is.null(pi)) {
+    
+    stop("Must supply N, pi, raw population data or population totals so that we can estimate N.")
+    
   }
-  
   
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    
+    if (messages) {
+      
+      message("Assuming simple random sampling")
+      
+    }
+  
   }
   
   #Need to get N if not provided
-  if(is.null(N)){
-    if(datatype=="raw"){
+  if (is.null(N)) {
+    
+    if (datatype == "raw") {
+      
       N <- dim(as.matrix(xpop))[1]
+      
     }
-    if(datatype=="totals"){
-      N <- sum(xpop[,2])#apply(xpop,2,sum)[2]
+    
+    if (datatype == "totals") {
+      
+      N <- sum(xpop[, 2])
+      
     }
-    if(datatype=="means"){
+    
+    if(datatype == "means"){
+      
       N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+      
+      if (messages) {
+        
+        message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+        
+      }
+
     }
   }
   
   # convert pi into vector
   if (is.null(pi)) {
+    
     pi <- rep(length(y)/N, length(y))
+    
   }
-  
-
   
   #Need to get N_h (stratum pop sizes)
   #population design matrix, check whether its population totals, means or raw data
   
-  if (datatype=="raw"){
+  if (datatype == "raw") {
+    
     xpop_tab <- data.frame(table(xpop))
     colnames(xpop_tab) <- c("x","N_h")
+    
   }
-  if (datatype=="totals"){
+  
+  if (datatype == "totals") {
+    
     xpop_tab <- xpop
-    colnames(xpop_tab) <- c("x","N_h")    
+    colnames(xpop_tab) <- c("x","N_h")   
+    
   }
-  if (datatype=="means"){
+  
+  if (datatype == "means") {
+    
     xpop_tab <- xpop
     colnames(xpop_tab) <- c("x","N_h")
     xpop_tab$N_h <-  xpop_tab$N_h*N
@@ -115,8 +147,10 @@ postStrat <- function(
   }
   
   #Make sure that x_pop_tab$x is a factor
-  if(!is.factor(xpop_tab$x)){
+  if (!is.factor(xpop_tab$x)) {
+    
     xpop_tab$x <- as.factor(xpop_tab$x)
+    
   }
   
   #Make xsample have same column name as xpop_tab
@@ -124,46 +158,64 @@ postStrat <- function(
   colnames(xsample) <- "x"
   
   #Make sure that xsample$x is a factor
-  if(!is.factor(xsample$x)){
+  if (!is.factor(xsample$x)) {
+    
     xsample$x <- as.factor(xsample$x)
+    
   }
   
   #Compute estimator
   xsample_pi_y <- data.frame(xsample, pi,y)
-  tab <- xsample_pi_y %>%
-    group_by(x) %>%
-    summarize(poptotal_h = y%*%pi^(-1),N_h_hats = sum(pi^(-1)), var_h = var(y)) %>%
-    inner_join(xpop_tab, by=c("x")) %>%
-    mutate(ps_h = N_h/N_h_hats, strat_pop_total = ps_h*poptotal_h, strat_pop_mean = strat_pop_total/N_h)
+  
+  t <- aggregate(
+    y ~ x,
+    data = xsample_pi_y,
+    FUN = function(t) data.frame(
+      poptotal_h = sum(t * pi[1:length(t)]^(-1)),
+      N_h_hats = sum(pi[1:length(t)]^(-1)),
+      var_h = var(t)
+    ),
+    simplify = F)
+  
+  tab <- cbind(x = t[, "x"], do.call(rbind, t$y)) |> 
+    merge(xpop_tab, by = "x")
+  
+  tab$ps_h <- tab$N_h/tab$N_h_hats
+  tab$strat_pop_total <- tab$ps_h * tab$poptotal_h
+  tab$strat_pop_mean <- tab$strat_pop_total/tab$N_h
   
   #Estimates by strata  
-  strat_ests <- tab[,c("x", "strat_pop_total", "strat_pop_mean")]
+  strat_ests <- tab[, c("x", "strat_pop_total", "strat_pop_mean")]
   #Estimate of population total
   pop_total <- sum(tab$strat_pop_total)
   
   #Create dataset with strata info
-  dat_s <- left_join(xsample_pi_y, tab, by="x") 
-  
+  dat_s <- merge(xsample_pi_y, tab, by = "x", all.x = T)
+
   #Survey weights  
   wts <- dat_s$pi*dat_s$ps_h
   
   #Compute variance estimator
-  if(var_est==TRUE){
+  if (var_est == TRUE) {
+    
     n <- length(y)
-    if(var_method=="SRSunconditional"){
+    if (var_method == "SRSunconditional") {
       
       if(fpc == TRUE){
+        
         var_est <- N^2*(1-n/N)/n*t(tab$N_h/N)%*%tab$var_h + N^2*(1-n/N)/n^2*t(1-tab$N_h/N)%*%tab$var_h
+        
       }
       
       if(fpc == FALSE){
+        
         var_est <- N^2/n*t(tab$N_h/N)%*%tab$var_h + N^2/n^2*t(1-tab$N_h/N)%*%tab$var_h
+        
       }
             
     }
     
-    if(var_method=="bootstrapSRS"){
-          #Find bootstrap variance
+    if (var_method == "bootstrapSRS") {
 
       #Bootstrap total estimates
       t_boot <- boot(data = xsample_pi_y, statistic = postStratt, R = B, xpoptab = xpop_tab)
@@ -181,16 +233,19 @@ postStrat <- function(
     if(is.element(var_method, c("LinHB", "LinHH", "LinHT", "LinHTSRS"))){
       
       y_hat <- dat_s$strat_pop_mean
-      var_est <- varMase(y = (y-y_hat), pi = pi, pi2 = pi2, method = var_method, N = N)
+      var_est <- varMase(y = (y - y_hat), pi = pi, pi2 = pi2, method = var_method, N = N)
       
     }
+    
     return(list( pop_total = pop_total, 
                  pop_mean = pop_total/N,
                  pop_total_var = var_est, 
                  pop_mean_var = var_est/N^2, 
                  strat_ests = strat_ests,
                  weights = wts))
-  }else{
+    
+  } else {
+    
     return(list( pop_total = pop_total, 
                  pop_mean = pop_total/N,
                  strat_ests = strat_ests,

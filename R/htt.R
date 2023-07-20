@@ -10,6 +10,6 @@ htt <- function(data,  indices){
   #pis 
   pis <- d[,2]
   
-  return(pis^{-1} %*% as.vector(y))
+  return(pis^(-1) %*% as.vector(y))
 }
 

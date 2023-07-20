@@ -31,23 +31,23 @@
 #' \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
 #' \item{variance_est:}{Estimate of the variance of the ratio of two estimators}
 #' }
-#' @import dplyr
-#' @import magrittr
 #' @export ratio
 #' @include varMase.R
 
 
 
-ratio <- function(y_num, y_den, xsample, xpop,
-                  pi = NULL, pi2 = NULL, N = NULL, estimator = NULL,
-                  var_est = F, var_method = "LinHB", datatype = "raw", ...){
-  
-  # I don't think we need to add any argument checks here, because the mase 
-  # functions that the arguments are fed into will output the correct errors
-  # for us. things like pi and N are needed for later variance calculations
-  # but they will always be called as arguments to a mase:: function before
-  # those steps so if they are in the wrong format those functions should
-  # output the correct errors for us
+ratio <- function(y_num,
+                  y_den,
+                  xsample,
+                  xpop,
+                  pi = NULL,
+                  pi2 = NULL,
+                  N = NULL,
+                  estimator = NULL,
+                  var_est = F,
+                  var_method = "LinHB",
+                  datatype = "raw",
+                  ...){
   
   weight <- as.vector(pi^(-1))
   
@@ -74,7 +74,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       pi2 = pi2, 
       fpc = F,
       var_est = F,
-      var_method = "HB",
+      var_method = "LinHB",
       datatype = "raw",
       ...
     )
@@ -87,7 +87,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       N = N,
       pi2 = pi2,
       var_est = F,
-      var_method = "HB",
+      var_method = "LinHB",
       datatype = "raw",
       ...
     )
@@ -179,7 +179,8 @@ ratio <- function(y_num, y_den, xsample, xpop,
       N = N
     )
     
-    return(list(ratio_est = rat, variance_est = (1/est_den^2)*var_est))
+    return(list(ratio_est = rat,
+                variance_est = (1/est_den^2)*var_est))
     
   } else {
     
