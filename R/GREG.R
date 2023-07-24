@@ -246,8 +246,8 @@ greg  <- function(y,
       }
       return(list( pop_total = as.numeric(t),
                    pop_mean = as.numeric(t)/N,
-                   pop_total_var=varEst, 
-                   pop_mean_var=varEst/N^2,
+                   pop_total_var = as.numeric(varEst), 
+                   pop_mean_var = as.numeric(varEst)/N^2,
                    coefficients =  coefs))
     }else{
       return(list( pop_total = as.numeric(t), 
