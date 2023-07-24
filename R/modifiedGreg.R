@@ -281,20 +281,20 @@ modifiedGreg <- function(y,
           
         } else if (var_method == "bootstrapSRS"){
           
-          dat <- cbind(y, pi, xsample_d)
-          print(dat)
+          dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
+          names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
+          print(str(dat))
           t_boot <- boot(data = dat,
                          statistic = modifiedGregt,
                          R = B,
-                         strata = as.factor(xsample[[domain_col_name]]),
+                         strata = as.factor(dat[ , ncol(dat)]),
                          xpopd = xpop_d_domain,
                          weight = weight,
                          domain = domain_id,
-                         domain_labels = xsample[[domain_col_name]],
                          domain_col_name = domain_col_name,
                          parallel = "multicore",
                          ncpus = 2)
-          
+
           varEst <- var(t_boot$t)
           
         }
@@ -367,7 +367,7 @@ modifiedGreg <- function(y,
           
         } else if (var_method == "bootstrapSRS") {
           
-          # need to implement
+          # xpop_sums, xpop_domain
           
         }
         

@@ -1,4 +1,9 @@
-modifiedGregt <- function(data, xpopd, weight, domain, domain_labels, domain_col_name, indices) {
+modifiedGregt <- function(data,
+                          xpopd,
+                          weight,
+                          domain,
+                          domain_col_name,
+                          indices) {
   
   # y, pi, xsample, domain
   d <- data[indices, ]
@@ -9,10 +14,8 @@ modifiedGregt <- function(data, xpopd, weight, domain, domain_labels, domain_col
   
   # last column contains domain labels
   xsamp <- d[, 3:(dim(d)[2])]
-  xsample <- cbind(data.frame(xsamp[,-1, drop = FALSE]), domain_labels)
-  names(xsample) <- c(colnames(xsamp[,-1, drop = FALSE]), domain_col_name)
-  xsample_d <- as.matrix(xsamp)
-  print(xsample_d)
+  xsample <- data.frame(xsamp[,-1, drop = FALSE])
+  xsample_d <- as.matrix(xsamp[ , 1:(ncol(xsamp) - 1)])
   xsample_dt <- t(xsample_d)
   
   constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
