@@ -39,7 +39,8 @@ modifiedGreg <- function(y,
                          lambda = "lambda.min",
                          domain_col_name = NULL,
                          estimation_domains = NULL,
-                         N = NULL) {
+                         N = NULL,
+                         B = 1000) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -72,6 +73,10 @@ modifiedGreg <- function(y,
     } else {
       N <- sum(xpop$N)
     }
+  }
+  
+  if (!is.null(N) && datatype != "raw"  && sum(xpop$N) != N) {
+    stop("User inputted N does not equal the sum of the domain level population sizes in xpop.")
   }
   
   if (datatype != "raw" && !("N" %in% names(xpop))) {
@@ -119,8 +124,6 @@ modifiedGreg <- function(y,
   }
   
   weight <- as.vector(pi^(-1))
-  
-  y <- as.vector(y)
   
   if (is.null(estimation_domains)) {
     estimation_domains <- pop_unique_domains
@@ -196,6 +199,8 @@ modifiedGreg <- function(y,
       xsample_d <- model.matrix(~., data = xsample[ , coef_select, drop = FALSE])
       xsample_dt <- t(xsample_d) 
       xsample <- cbind(data.frame(xsample_d[,-1, drop=FALSE]), domains)
+      names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain_col_name)
+      
       
     }  
     
@@ -266,6 +271,7 @@ modifiedGreg <- function(y,
       domain_N <- unlist(xpop_domain["N"])
     
       if(var_est == TRUE) {
+        
         if(var_method != "bootstrapSRS") {
           
           y_hat <- xsample_d_domain %*% betas
@@ -273,26 +279,40 @@ modifiedGreg <- function(y,
           e <- y_domain - y_hat
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
           
-        } else if (var_method == "boostrapSRS"){
+        } else if (var_method == "bootstrapSRS"){
           
-          # need to implement
+          dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
+          names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
+          print(str(dat))
+          t_boot <- boot(data = dat,
+                         statistic = modifiedGregt,
+                         R = B,
+                         strata = as.factor(dat[ , ncol(dat)]),
+                         xpopd = xpop_d_domain,
+                         weight = weight,
+                         domain = domain_id,
+                         domain_col_name = domain_col_name,
+                         parallel = "multicore",
+                         ncpus = 2)
+
+          varEst <- var(t_boot$t)
           
         }
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
@@ -347,24 +367,41 @@ modifiedGreg <- function(y,
           
         } else if (var_method == "bootstrapSRS") {
           
-          # need to implement
+          # xpop_sums, xpop_domain
+          
+          dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
+          names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
+          
+          t_boot <- boot(dat,
+               modifiedLogisticGregt,
+               R = B,
+               strata = as.factor(dat[ , ncol(dat)]),
+               xpopd = xpop_domain,
+               weight = weight,
+               domain = domain_id,
+               domain_col_name = domain_col_name,
+               lab = names(xpop)[1],
+               parallel = "multicore",
+               ncpus = 2)
+          
+          varEst <- var(t_boot$t)
           
         }
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
@@ -375,7 +412,17 @@ modifiedGreg <- function(y,
     
   }
   
-  return(res)
+  pop_res <- do.call(
+    rbind, lapply(
+      res, FUN = function(x) data.frame(
+        pop_total = x$domain_total,
+        pop_totalvar = x$domain_total_var
+      )
+    )
+  ) |>
+    colSums()
+  
+  return(list(res, pop_res))
   
 }
 

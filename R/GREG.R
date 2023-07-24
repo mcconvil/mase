@@ -295,7 +295,7 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N,
                  pop_total_var=varEst, 
-                 pop_mean_var=varEst/N^2, 
+                 pop_mean_var = varEst/N^2, 
                  weights = as.vector(w),
                  coefficients =  coefs))
   }else{
