@@ -74,6 +74,10 @@ modifiedGreg <- function(y,
     }
   }
   
+  if (!is.null(N) && datatype != "raw"  && sum(xpop$N) != N) {
+    stop("User inputted N does not equal the sum of the domain level population sizes in xpop.")
+  }
+  
   if (datatype != "raw" && !("N" %in% names(xpop))) {
     stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
   }
@@ -196,6 +200,8 @@ modifiedGreg <- function(y,
       xsample_d <- model.matrix(~., data = xsample[ , coef_select, drop = FALSE])
       xsample_dt <- t(xsample_d) 
       xsample <- cbind(data.frame(xsample_d[,-1, drop=FALSE]), domains)
+      names(xsample) <- c(colnames(xsample_d[,-1, drop = FALSE]), domain_col_name)
+      
       
     }  
     
@@ -281,18 +287,18 @@ modifiedGreg <- function(y,
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
@@ -353,18 +359,18 @@ modifiedGreg <- function(y,
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N),
-          pop_total_var = as.numeric(varEst),
-          pop_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N),
+          domain_total_var = as.numeric(varEst),
+          domain_mean_var = as.numeric(varEst)/as.numeric(domain_N^2) 
         ))
         
       } else {
         
         return(list(
           domain = domain_id,
-          pop_total = as.numeric(t),
-          pop_mean = as.numeric(t)/as.numeric(domain_N)
+          domain_total = as.numeric(t),
+          domain_mean = as.numeric(t)/as.numeric(domain_N)
         ))
         
       }
@@ -375,7 +381,17 @@ modifiedGreg <- function(y,
     
   }
   
-  return(res)
+  pop_res <- do.call(
+    rbind, lapply(
+      res, FUN = function(x) data.frame(
+        pop_total = x$domain_total,
+        pop_totalvar = x$domain_total_var
+      )
+    )
+  ) |>
+    colSums()
+  
+  return(list(res, pop_res))
   
 }
 
