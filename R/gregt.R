@@ -1,8 +1,9 @@
 #Helper function to compute linear GREG total for bootstrapping
 
-gregt <- function(data, xpopd, indices){
+gregt <- function(data, xpopd, domain_id, indices){
+  
   #data: 1st column:y, 2nd column:pis, rest: xsample_d
-  d <- data[indices,]
+  d <- data[indices, ]
   
   #y
   y <- d[,1]
@@ -14,6 +15,8 @@ gregt <- function(data, xpopd, indices){
   p <- dim(d)[2] - 2
   #xsample_d
   xsample_d <- d[, 3:(p+2)]
+  
+  
   
   #Survey weight
   w <- as.matrix(1 + t(as.matrix(xpopd) - t(xsample_d) %*% pis^{-1} ) %*% solve(t(xsample_d) %*% diag(pis^{-1}) %*% xsample_d) %*% t(xsample_d)) %*% diag(pis^{-1})

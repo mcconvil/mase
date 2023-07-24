@@ -39,7 +39,8 @@ modifiedGreg <- function(y,
                          lambda = "lambda.min",
                          domain_col_name = NULL,
                          estimation_domains = NULL,
-                         N = NULL) {
+                         N = NULL,
+                         B = 1000) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -123,8 +124,6 @@ modifiedGreg <- function(y,
   }
   
   weight <- as.vector(pi^(-1))
-  
-  y <- as.vector(y)
   
   if (is.null(estimation_domains)) {
     estimation_domains <- pop_unique_domains
@@ -272,6 +271,7 @@ modifiedGreg <- function(y,
       domain_N <- unlist(xpop_domain["N"])
     
       if(var_est == TRUE) {
+        
         if(var_method != "bootstrapSRS") {
           
           y_hat <- xsample_d_domain %*% betas
@@ -279,9 +279,23 @@ modifiedGreg <- function(y,
           e <- y_domain - y_hat
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
           
-        } else if (var_method == "boostrapSRS"){
+        } else if (var_method == "bootstrapSRS"){
           
-          # need to implement
+          dat <- cbind(y, pi, xsample_d)
+          print(dat)
+          t_boot <- boot(data = dat,
+                         statistic = modifiedGregt,
+                         R = B,
+                         strata = as.factor(xsample[[domain_col_name]]),
+                         xpopd = xpop_d_domain,
+                         weight = weight,
+                         domain = domain_id,
+                         domain_labels = xsample[[domain_col_name]],
+                         domain_col_name = domain_col_name,
+                         parallel = "multicore",
+                         ncpus = 2)
+          
+          varEst <- var(t_boot$t)
           
         }
         
