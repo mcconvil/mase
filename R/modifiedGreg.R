@@ -286,13 +286,12 @@ modifiedGreg <- function(y,
           
           dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
           names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
-          print(str(dat))
           t_boot <- boot(data = dat,
                          statistic = modifiedGregt,
                          R = B,
                          strata = as.factor(dat[ , ncol(dat)]),
                          xpopd = xpop_d_domain,
-                         weight = weight,
+                         ws = weight,
                          domain = domain_id,
                          domain_col_name = domain_col_name,
                          parallel = "multicore",
@@ -381,7 +380,7 @@ modifiedGreg <- function(y,
                strata = as.factor(dat[ , ncol(dat)]),
                xpopd = xpop_domain,
                xpop_sums = xpop_sums,
-               weight = weight,
+               ws = weight,
                domain = domain_id,
                domain_col_name = domain_col_name,
                lab = names(xpop)[1],

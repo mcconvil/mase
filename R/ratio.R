@@ -1,6 +1,6 @@
 #' Compute a ratio of two estimators
 #' 
-#' 
+#' @inheritParams horvitzThompson
 #' @param y_num A vector containing the response value for each sampled unit in the numerator
 #' @param y_den A vector containing the response value for each sampled unit in the denominator
 #' @param xsample A vector containing the appropriate form of xsample for the estimator of choice. For example see ?mase::greg() to see the appropriate input for xsample when computing a ratio of two greg estimators
@@ -83,10 +83,10 @@ ratio <- function(y_num,
       N = N,
       pi2 = pi2, 
       fpc = F,
-      var_est = F,
-      var_method = "HB",
-      datatype = "raw",
-      messages = messages
+      var_est = var_est,
+      var_method = var_method,
+      datatype = datatype,
+      messages = messages,
       ...
     )
     
@@ -97,10 +97,10 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
-      var_est = F,
-      var_method = "HB",
-      datatype = "raw",
-      messages = messages
+      var_est = var_est,
+      var_method = var_method,
+      datatype = datatype,
+      messages = messages,
       ...
     )
     

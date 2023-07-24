@@ -19,7 +19,9 @@ modifiedGreg(
   lambda = "lambda.min",
   domain_col_name = NULL,
   estimation_domains = NULL,
-  N = NULL
+  N = NULL,
+  B = 1000,
+  messages = T
 )
 }
 \arguments{
@@ -52,6 +54,10 @@ modifiedGreg(
 \item{estimation_domains}{A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.}
 
 \item{N}{The total population size.}
+
+\item{B}{The number of bootstrap iterations to perform when var_method = "bootstrapSRS"}
+
+\item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }
 \description{
 Calculates a modified generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.

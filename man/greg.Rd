@@ -17,7 +17,8 @@ greg(
   N = NULL,
   modelselect = FALSE,
   lambda = "lambda.min",
-  B = 1000
+  B = 1000,
+  messages = T
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ greg(
 \item{lambda}{A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+
+\item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }
 \value{
 A list of output containing:

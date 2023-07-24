@@ -1,7 +1,7 @@
-modifiedLogisticGreg <- function(data,
+modifiedLogisticGregt <- function(data,
                                  xpopd,
                                  xpop_sums,
-                                 weight,
+                                 ws,
                                  domain,
                                  domain_col_name,
                                  lab,
@@ -16,7 +16,7 @@ modifiedLogisticGreg <- function(data,
   xsample_dt <- t(xsample_d)
   
   xsample_preds <- xsample[ , !(names(xsample) %in% domain_col_name)]
-  dat <- data.frame(y, weight, xsample_preds)
+  dat <- data.frame(y, ws, xsample_preds)
   colnames(dat) <- c("y", "weight", names(xsample_preds))
   f <- paste(names(dat)[1], "~", paste(names(dat)[-c(1,2)], collapse = " + "))
   s_design <- survey::svydesign(ids = ~1, weights = ~weight, data = dat)
@@ -35,7 +35,7 @@ modifiedLogisticGreg <- function(data,
   y_hats_s <- as.matrix(predict(mod, newdata = xsample_domain, type = "response", family = quasibinomial()))
   
   y_domain <- y[which(domain_indic_vec == 1)]
-  weights_domain <- weight[which(domain_indic_vec == 1)]
+  weights_domain <- ws[which(domain_indic_vec == 1)]
   
   t <- t(y_domain - y_hats_s) %*% weights_domain + sum(y_hats_U)
   

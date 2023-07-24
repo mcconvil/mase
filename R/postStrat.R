@@ -67,10 +67,9 @@ postStrat <- function(y,
   
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS", "SRSunconditional"))){
-    stop("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
-  
   
   #Need to provide either datatype="raw", N, or pi.  Give warning if not
   if(datatype=="means" & is.null(N) & is.null(pi)){
