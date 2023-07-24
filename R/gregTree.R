@@ -35,16 +35,24 @@
 #' @include varMase.R
 #' @include gregt.R
 
-gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE, var_method="LinHB", B = 1000, pval = 0.05, perm_reps = 500, bin_size = NULL){
-
-  
+gregTree  <- function(y,
+                      xsample,
+                      xpop,
+                      pi = NULL,
+                      pi2 = NULL,
+                      var_est = FALSE, 
+                      var_method="LinHB",
+                      B = 1000,
+                      pval = 0.05,
+                      perm_reps = 500,
+                      bin_size = NULL,
+                      messages = T){
 
 ### INPUT VALIDATION ###
 
   #Make sure the var_method is valid
   if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
   #Check that y is numeric
@@ -63,7 +71,9 @@ gregTree  <- function(y, xsample, xpop, pi = NULL,  pi2 = NULL, var_est = FALSE,
 
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }
 
   # convert pi into diagonal matrix format

@@ -40,8 +40,18 @@
 #' @include varMase.R
 
 
-postStrat <- function(
-  y, xsample, xpop, pi = NULL, N = NULL, var_est = FALSE, var_method = "LinHB", pi2 = NULL, datatype= "raw", B = 1000, fpc = TRUE){
+postStrat <- function(y,
+                      xsample,
+                      xpop,
+                      pi = NULL,
+                      N = NULL, 
+                      var_est = FALSE, 
+                      var_method = "LinHB", 
+                      pi2 = NULL, 
+                      datatype = "raw",
+                      B = 1000,
+                      fpc = TRUE,
+                      messages = T){
 
   
   #Define variables
@@ -58,21 +68,21 @@ postStrat <- function(
   
   #Make sure the var_method is valid
   if(!is.element(var_method, c("HB", "HH", "HTSRS", "HT", "bootstrapSRS", "SRSunconditional"))){
-    message("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"HB\", \"HH\", \"HT\", \"HTSRS\", \"SRSunconditional\" or \"bootstrapSRS\".")
   }
   
   
   #Need to provide either datatype="raw", N, or pi.  Give warning if not
   if(datatype=="means" & is.null(N) & is.null(pi)){
-    message("Must supply N, pi, raw population data or population totals so that we can estimate N.")
-    return(NULL)
+    stop("Must supply N, pi, raw population data or population totals so that we can estimate N.")
   }
   
   
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }
   
   #Need to get N if not provided
@@ -85,7 +95,9 @@ postStrat <- function(
     }
     if(datatype=="means"){
       N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+      if (messages) {
+        message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.") 
+      }
     }
   }
   
@@ -93,8 +105,6 @@ postStrat <- function(
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
   }
-  
-
   
   #Need to get N_h (stratum pop sizes)
   #population design matrix, check whether its population totals, means or raw data

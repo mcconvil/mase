@@ -9,6 +9,7 @@
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".
 #' @param pi2 A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.
 #' @param B The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.
+#' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
 #' @examples 
 #' library(survey)
@@ -33,14 +34,20 @@
 #' @include varMase.R
 #' @include htt.R
 #'
-horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, var_method="LinHB", B = 1000) {
+horvitzThompson <- function(y,
+                            pi = NULL,
+                            N = NULL,
+                            pi2 = NULL,
+                            var_est = FALSE,
+                            var_method = "LinHB",
+                            B = 1000,
+                            messages = T) {
 
   ### INPUT VALIDATION ###
   
   #Make sure the var_method is valid
   if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
 
   #Check that y is numeric
@@ -56,7 +63,9 @@ horvitzThompson <- function(y, pi = NULL, N = NULL, pi2 = NULL, var_est =FALSE, 
   }
   
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }  
   
     

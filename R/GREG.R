@@ -39,7 +39,20 @@
 #' @include varMase.R
 #' @include gregt.R
 
-greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, var_est = FALSE, var_method = "LinHB", datatype = "raw", N = NULL, modelselect = FALSE, lambda="lambda.min", B = 1000){
+greg  <- function(y,
+                  xsample,
+                  xpop,
+                  pi = NULL,
+                  model = "linear",
+                  pi2 = NULL, 
+                  var_est = FALSE,
+                  var_method = "LinHB",
+                  datatype = "raw",
+                  N = NULL,
+                  modelselect = FALSE,
+                  lambda = "lambda.min",
+                  B = 1000,
+                  messages = T){
 
   
   
@@ -53,25 +66,20 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
   #Make sure the var_method is valid
   if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
   
   if(!is.element(model, c("linear","logistic"))){
-    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-    return(NULL)
+    stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
   }
   
   if(model == "logistic" & datatype != "raw"){
-    message("Must supply the raw population data to fit the logistic regression estimator.")
-    return(NULL)
-    
+    stop("Must supply the raw population data to fit the logistic regression estimator.")
   }
   
   if(!is.element(datatype, c("raw","totals", "means"))){
-    message("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
-    return(NULL)
+    stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
   }
   
   
@@ -81,7 +89,9 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
       N <- dim(as.matrix(xpop))[1]
     }else{
       N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+      if (messages) {
+        message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.") 
+      }
     }
   }
   
@@ -99,7 +109,9 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }  
   
   
@@ -141,28 +153,31 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
     coef_select <- names(lasso_coef[lasso_coef != 0])[-1]
     
     #If select zero predictors, then fit a HT
-    if(length(coef_select)==0){
-      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
-    
-    if(var_est==TRUE){
+    if(length(coef_select) == 0){
       
-      HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+      if (messages) {
+        message("No variables selected in the model selection stage.  Fitting a HT estimator.")  
+      }
       
-      return(list( pop_total = HT$pop_total, 
-                   pop_mean = HT$pop_total/N,
-                   pop_total_var = HT$pop_total_var, 
-                   pop_mean_var = HT$pop_total_var/N^2, 
-                   weights = as.vector(pi^{-1})))
-    }else {
-      
-      HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
-      
-      return(list( pop_total = HT$pop_total, 
-                   pop_mean = HT$pop_total/N,
-                   weights = as.vector(pi^{-1})))
-     
-      
-    }
+      if(var_est == TRUE){
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+        
+        return(list( pop_total = HT$pop_total, 
+                     pop_mean = HT$pop_total/N,
+                     pop_total_var = HT$pop_total_var, 
+                     pop_mean_var = HT$pop_total_var/N^2, 
+                     weights = as.vector(pi^{-1})))
+      } else {
+        
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
+        
+        return(list( pop_total = HT$pop_total, 
+                     pop_mean = HT$pop_total/N,
+                     weights = as.vector(pi^{-1})))
+       
+        
+      }
     }  
      
     
@@ -179,9 +194,8 @@ greg  <- function(y, xsample, xpop, pi = NULL, model = "linear",  pi2 = NULL, va
   if (model == "logistic"){
     
     #Error if y has more than two categories (can only handle two right now)
-    if(length(levels(as.factor(y)))!=2){
-      message("Function can only handle categorical response with two categories.")
-      return(NULL)
+    if(length(levels(as.factor(y))) != 2){
+      stop("Function can only handle categorical response with two categories.")
     }
     
     if (datatype=="raw"){

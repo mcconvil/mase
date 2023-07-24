@@ -22,9 +22,8 @@ modifiedGregt <- function(data,
   constant_component2 <- t(weight * xsample_d)
   
   
-  domain_indic_vec <- as.integer(xsample[ , ncol(xsample)] == domain)
+  domain_indic_vec <- as.integer(xsample[domain_col_name] == domain)
   
-  # xpop_domain <- xpop_d[xpop_d[domain_col_name] == domain_id, , drop = FALSE]
   xpop_d_domain <- xpopd
   xsample_domain <- xsample[xsample[ , ncol(xsample)] == domain, , drop = FALSE]
   xsample_d_domain <- model.matrix(~., data = data.frame(xsample_domain[ , 1:(ncol(xsample) - 1)]))

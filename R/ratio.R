@@ -38,9 +38,19 @@
 
 
 
-ratio <- function(y_num, y_den, xsample, xpop,
-                  pi = NULL, pi2 = NULL, N = NULL, estimator = NULL,
-                  var_est = F, var_method = "LinHB", datatype = "raw", ...){
+ratio <- function(y_num,
+                  y_den,
+                  xsample,
+                  xpop,
+                  pi = NULL,
+                  pi2 = NULL,
+                  N = NULL,
+                  estimator = NULL,
+                  var_est = F, 
+                  var_method = "LinHB",
+                  datatype = "raw",
+                  messages = T,
+                  ...){
   
   # I don't think we need to add any argument checks here, because the mase 
   # functions that the arguments are fed into will output the correct errors
@@ -54,8 +64,8 @@ ratio <- function(y_num, y_den, xsample, xpop,
   
   if (estimator == "horvitzThompson") {
     
-    ht_num <- horvitzThompson(y_num, pi, N, pi2, ...)
-    ht_den <- horvitzThompson(y_den, pi, N, pi2, ...)
+    ht_num <- horvitzThompson(y_num, pi, N, pi2, messages, ...)
+    ht_den <- horvitzThompson(y_den, pi, N, pi2, messages, ...)
     rat <- ht_num$pop_total/ht_den$pop_total
     
     e_ratio <- y_num - as.vector(rat)*y_den
@@ -76,6 +86,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       var_est = F,
       var_method = "HB",
       datatype = "raw",
+      messages = messages
       ...
     )
     
@@ -89,6 +100,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       var_est = F,
       var_method = "HB",
       datatype = "raw",
+      messages = messages
       ...
     )
     
@@ -137,6 +149,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       xpop = xpop,
       pi = pi,
       N = N,
+      messages = messages,
       ...
     )
     
@@ -146,6 +159,7 @@ ratio <- function(y_num, y_den, xsample, xpop,
       xpop = xpop,
       pi = pi,
       N = N,
+      messages = messages,
       ...
     )
     
