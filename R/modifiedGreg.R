@@ -17,6 +17,8 @@
 #' @param domain_col_name A string that specifies the name of the column that contains the domain values in xpop.
 #' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
+#' @param B The number of bootstrap iterations to perform when var_method = "bootstrapSRS"
+#' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
 #' @export modifiedGreg
 #' @import survey
@@ -40,31 +42,27 @@ modifiedGreg <- function(y,
                          domain_col_name = NULL,
                          estimation_domains = NULL,
                          N = NULL,
-                         B = 1000) {
+                         B = 1000,
+                         messages = T) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
 
   if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
 
   if (!is.element(model, c("linear","logistic"))) {
-    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-    return(NULL)
+    stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
   }
 
   if (model == "logistic" && datatype != "raw") {
-    message("Must supply the raw population data to fit the logistic regression estimator.")
-    return(NULL)
-
+    stop("Must supply the raw population data to fit the logistic regression estimator.")
   }
 
   if (!is.element(datatype, c("raw","totals", "means"))) {
-    message("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
-    return(NULL)
+    stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
   }
   
   if (is.null(N)) {
@@ -104,7 +102,9 @@ modifiedGreg <- function(y,
       domain_col_name <- setdiff(names(xpop), c(names(xsample), "N"))
     }
     
-    message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used."))
+    if (messages) {
+      message(paste0("domain_col_name is not directly specified. ", domain_col_name, " is being used.")) 
+    }
     
   }
   
@@ -116,7 +116,9 @@ modifiedGreg <- function(y,
   }
 
   if (is.null(pi)) {
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling")
+    }
   } 
   
   if (is.null(pi)) {
@@ -172,8 +174,9 @@ modifiedGreg <- function(y,
     
     if(length(coef_select) == 0){
       
-      message("No variables selected in the model selection stage.  Fitting a HT estimator.")
-      
+      if (messages) {
+        message("No variables selected in the model selection stage.  Fitting a HT estimator.")
+      }
       if(var_est == TRUE){
         
         HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
@@ -283,13 +286,12 @@ modifiedGreg <- function(y,
           
           dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
           names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
-          print(str(dat))
           t_boot <- boot(data = dat,
                          statistic = modifiedGregt,
                          R = B,
                          strata = as.factor(dat[ , ncol(dat)]),
                          xpopd = xpop_d_domain,
-                         weight = weight,
+                         ws = weight,
                          domain = domain_id,
                          domain_col_name = domain_col_name,
                          parallel = "multicore",
@@ -367,7 +369,7 @@ modifiedGreg <- function(y,
           
         } else if (var_method == "bootstrapSRS") {
           
-          # xpop_sums, xpop_domain
+
           
           dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
           names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
@@ -377,7 +379,8 @@ modifiedGreg <- function(y,
                R = B,
                strata = as.factor(dat[ , ncol(dat)]),
                xpopd = xpop_domain,
-               weight = weight,
+               xpop_sums = xpop_sums,
+               ws = weight,
                domain = domain_id,
                domain_col_name = domain_col_name,
                lab = names(xpop)[1],

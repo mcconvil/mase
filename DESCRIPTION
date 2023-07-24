@@ -56,6 +56,8 @@ Collate:
     'logisticGregElasticNett.R'
     'logisticGregt.R'
     'modifiedGreg.R'
+    'modifiedGregt.R'
+    'modifiedLogisticGregt.R'
     'postStratt.R'
     'postStrat.R'
     'ratio.R'

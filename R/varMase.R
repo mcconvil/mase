@@ -11,8 +11,7 @@ varMase <- function(y, pi, pi2 = NULL, method = "LinHB", N = NULL){ #, fpc = fpc
 
   #Make sure include pi2 if method is LinHT
   if(method=="LinHT" & is.null(pi2)){
-    message("For LinHT variance estimator, need to provide second order inclusion probabilities matrix.")
-    return(NULL)
+    stop("For LinHT variance estimator, need to provide second order inclusion probabilities matrix.")
   }
   
   #Need to add warning messages for if pi2 is not given for LinHT or is wrong dim!

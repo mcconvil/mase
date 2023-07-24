@@ -38,8 +38,23 @@
 #' @include varMase.R
 #' @include gregElasticNett.R
 
-gregElasticNet  <- function(
-  y, xsample, xpop, pi = NULL, alpha=1, model="linear", pi2 = NULL, var_est =FALSE, var_method="LinHB", datatype = "raw", N = NULL, lambda = "lambda.min", B = 1000, cvfolds = 10, weights_method = "ridge", eta = 0.0001){
+gregElasticNet  <- function(y,
+                            xsample,
+                            xpop,
+                            pi = NULL,
+                            alpha = 1,
+                            model = "linear",
+                            pi2 = NULL,
+                            var_est = FALSE,
+                            var_method="LinHB",
+                            datatype = "raw",
+                            N = NULL,
+                            lambda = "lambda.min",
+                            B = 1000,
+                            cvfolds = 10,
+                            weights_method = "ridge",
+                            eta = 0.0001,
+                            messages = T){
   
   
   ### INPUT VALIDATION ###
@@ -50,13 +65,11 @@ gregElasticNet  <- function(
   
   #Make sure the var_method is valid
   if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
   if(!is.element(model, c("linear","logistic"))){
-    message("Method input incorrect, has to be either \"linear\" or \"logistic\"")
-    return(NULL)
+    stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
   }
   
 
@@ -66,7 +79,9 @@ gregElasticNet  <- function(
       N <- dim(as.matrix(xpop))[1]
     }else{
       N <- sum(pi^(-1))
-      message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.")
+      if (messages) {
+        message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.") 
+      }
     }
   }
   
@@ -82,7 +97,9 @@ gregElasticNet  <- function(
   
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
   if(is.null(pi)){
-    message("Assuming simple random sampling")
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }  
   
   
@@ -120,8 +137,7 @@ gregElasticNet  <- function(
 
 if (model == "logistic") {
   if (datatype != "raw"){
-    message("For the Logistic Elastic Net Estimator, user must supply all x values for population.  Populations totals or means for x are not enough.")
-    return(NULL)
+    stop("For the Logistic Elastic Net Estimator, user must supply all x values for population.  Populations totals or means for x are not enough.")
   }
   
   #Population matrix
@@ -215,7 +231,7 @@ if (model == "linear") {
   
 }   
   
-  if(var_est==TRUE){
+  if(var_est == TRUE){
 
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N, 

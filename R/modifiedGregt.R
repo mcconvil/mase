@@ -1,6 +1,6 @@
 modifiedGregt <- function(data,
                           xpopd,
-                          weight,
+                          ws,
                           domain,
                           domain_col_name,
                           indices) {
@@ -18,21 +18,20 @@ modifiedGregt <- function(data,
   xsample_d <- as.matrix(xsamp[ , 1:(ncol(xsamp) - 1)])
   xsample_dt <- t(xsample_d)
   
-  constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
-  constant_component2 <- t(weight * xsample_d)
+  constant_component1 <- solve(xsample_dt %*% diag(ws) %*% xsample_d)
+  constant_component2 <- t(ws * xsample_d)
   
   
-  domain_indic_vec <- as.integer(xsample[ , ncol(xsample)] == domain)
+  domain_indic_vec <- as.integer(xsample[domain_col_name] == domain)
   
-  # xpop_domain <- xpop_d[xpop_d[domain_col_name] == domain_id, , drop = FALSE]
   xpop_d_domain <- xpopd
   xsample_domain <- xsample[xsample[ , ncol(xsample)] == domain, , drop = FALSE]
   xsample_d_domain <- model.matrix(~., data = data.frame(xsample_domain[ , 1:(ncol(xsample) - 1)]))
   xsample_dt_domain <- t(xsample_d_domain)
-  weights_domain <- weight[which(domain_indic_vec == 1)]
+  weights_domain <- ws[which(domain_indic_vec == 1)]
   
   w <- as.matrix(
-    weight*domain_indic_vec + (
+    ws*domain_indic_vec + (
       t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
         constant_component1
     ) %*%
