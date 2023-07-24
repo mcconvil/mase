@@ -369,6 +369,23 @@ modifiedGreg <- function(y,
           
           # xpop_sums, xpop_domain
           
+          dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
+          names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
+          
+          t_boot <- boot(dat,
+               modifiedLogisticGregt,
+               R = B,
+               strata = as.factor(dat[ , ncol(dat)]),
+               xpopd = xpop_domain,
+               weight = weight,
+               domain = domain_id,
+               domain_col_name = domain_col_name,
+               lab = names(xpop)[1],
+               parallel = "multicore",
+               ncpus = 2)
+          
+          varEst <- var(t_boot$t)
+          
         }
         
         return(list(
