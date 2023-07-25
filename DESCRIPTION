@@ -38,7 +38,7 @@ Imports: glmnet,
     Rdpack
 Suggests:
     roxygen2,
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown
 Depends:
@@ -46,7 +46,7 @@ Depends:
 Collate:
     'gregt.R'
     'varMase.R'
-    'GREG.R'
+    'greg.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregTree.R'
@@ -65,3 +65,4 @@ Collate:
     'ratioEstimator.R'
 RoxygenNote: 7.2.3
 RdMacros: Rdpack
+Config/testthat/edition: 3
