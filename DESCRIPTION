@@ -46,7 +46,7 @@ Depends:
 Collate:
     'gregt.R'
     'varMase.R'
-    'greg.R'
+    'GREG.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregTree.R'
