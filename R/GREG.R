@@ -52,6 +52,7 @@ greg  <- function(y,
                   modelselect = FALSE,
                   lambda = "lambda.min",
                   B = 1000,
+                  fpc = T,
                   messages = T){
 
   
@@ -161,7 +162,7 @@ greg  <- function(y,
       
       if(var_est == TRUE){
         
-        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method, fpc = fpc)
         
         return(list( pop_total = HT$pop_total, 
                      pop_mean = HT$pop_total/N,
@@ -226,7 +227,7 @@ greg  <- function(y,
     if(var_est==TRUE){
       if(var_method!="bootstrapSRS"){
         e <- y-y.hats.s
-        varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
+        varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
       
       }else if(var_method=="bootstrapSRS"){
   
@@ -240,9 +241,13 @@ greg  <- function(y,
         
         t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
     
-       
-        #Adjust for bias and without replacement sampling
-        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+        if (fpc == T) {
+          varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1) 
+        }
+        if (fpc == F) {
+          varEst <- var(t_boot$t)*n/(n-1)
+        }
+        
       }
       return(list( pop_total = as.numeric(t),
                    pop_mean = as.numeric(t)/N,
@@ -295,16 +300,21 @@ greg  <- function(y,
     if(var_method!="bootstrapSRS"){
     y.hat <- xsample.d %*% (solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y)
     e <- y-y.hat
-    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N)
+    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, fpc = fpc)
     
-    }else if(var_method=="bootstrapSRS"){
+    } else if (var_method=="bootstrapSRS"){
       #Find bootstrap variance
       dat <- cbind(y,pi, xsample.d)
       #Bootstrap total estimates
       t_boot <- boot(data = dat, statistic = gregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
       
-      #Adjust for bias and without replacement sampling
-      varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      if (fpc == T) {
+        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      }
+      if (fpc == F) {
+        varEst <- var(t_boot$t)*n/(n-1)
+      }
+
     }
     return(list( pop_total = as.numeric(t), 
                  pop_mean = as.numeric(t)/N,

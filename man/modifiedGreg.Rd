@@ -21,6 +21,7 @@ modifiedGreg(
   estimation_domains = NULL,
   N = NULL,
   B = 1000,
+  fpc = T,
   messages = T
 )
 }
@@ -56,6 +57,8 @@ modifiedGreg(
 \item{N}{The total population size.}
 
 \item{B}{The number of bootstrap iterations to perform when var_method = "bootstrapSRS"}
+
+\item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }

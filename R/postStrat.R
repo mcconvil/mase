@@ -9,7 +9,7 @@
 #' @param datatype Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.
 #' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
 #' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement, "SRSunconditional" = simple random sampling variance estimator which accounts for random strata.
-#' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional" or the "SRSbootstrap" variance estimator.
+#' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional", or the "SRSbootstrap" variance estimator.
 
 #' @examples 
 #' library(survey)
@@ -67,8 +67,8 @@ postStrat <- function(y,
   
   
   #Make sure the var_method is valid
-  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
-    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS", "SRSunconditional"))) {
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", \"SRSunconditional\", or \"bootstrapSRS\".")
   }
   
   #Need to provide either datatype="raw", N, or pi.  Give warning if not
@@ -177,20 +177,19 @@ postStrat <- function(y,
       #Bootstrap total estimates
       t_boot <- boot(data = xsample_pi_y, statistic = postStratt, R = B, xpoptab = xpop_tab)
       
-      #Adjust for bias and without replacement sampling
-      # if(fpc == TRUE){
-      #   var_est <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
-      # }
-      # if(fpc == FALSE){
-      #   var_est <- var(t_boot$t)*n/(n-1)
-      # }
+      if(fpc == TRUE){
+        var_est <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      }
+      if(fpc == FALSE){
+        var_est <- var(t_boot$t)*n/(n-1)
+      }
         
     }
     
     if(is.element(var_method, c("LinHB", "LinHH", "LinHT", "LinHTSRS"))){
       
       y_hat <- dat_s$strat_pop_mean
-      var_est <- varMase(y = (y-y_hat), pi = pi, pi2 = pi2, method = var_method, N = N)
+      var_est <- varMase(y = (y - y_hat), pi = pi, pi2 = pi2, method = var_method, N = N, fpc = fpc)
       
     }
     return(list( pop_total = pop_total, 

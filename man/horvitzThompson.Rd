@@ -12,6 +12,7 @@ horvitzThompson(
   var_est = FALSE,
   var_method = "LinHB",
   B = 1000,
+  fpc = T,
   messages = T
 )
 }
@@ -29,6 +30,8 @@ horvitzThompson(
 \item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+
+\item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }

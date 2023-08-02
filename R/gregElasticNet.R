@@ -54,6 +54,7 @@ gregElasticNet  <- function(y,
                             cvfolds = 10,
                             weights_method = "ridge",
                             eta = 0.0001,
+                            fpc = T,
                             messages = T){
   
   
@@ -152,8 +153,7 @@ if (model == "logistic") {
   
   if ( var_est == TRUE){
     if (var_method != "bootstrapSRS") {
-      varEst <- varMase(y = (y - y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N)
-      
+      varEst <- varMase(y = (y - y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
     }
     
     if(var_method == "bootstrapSRS"){
@@ -165,7 +165,12 @@ if (model == "logistic") {
       t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt, parallel = "multicore", ncpus = 2)
       
       #Adjust for bias and without replacement sampling
-      varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      if (fpc == T) {
+        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1) 
+      }
+      if (fpc == F) {
+        varEst <- var(t_boot$t)*n/(n-1)
+      }
     } 
     
   }
@@ -211,7 +216,8 @@ if (model == "linear") {
   
   if ( var_est == TRUE ) {
     if ( var_method != "bootstrapSRS") {
-      varEst <- varMase(y = (y-y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N)
+      
+      varEst <- varMase(y = (y-y.hats.s),pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
       
     }
     
@@ -224,7 +230,12 @@ if (model == "linear") {
         t_boot <- boot(data = dat, statistic = gregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt, parallel = "multicore", ncpus = 2)
         
         #Adjust for bias and without replacement sampling
-        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+        if (fpc == T) {
+          varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+        }
+        if (fpc == F) {
+          vvarEst <- var(t_boot$t)*n/(n-1)
+        }
       }
 
   }
