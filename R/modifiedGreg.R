@@ -370,15 +370,14 @@ modifiedGreg <- function(y,
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
           
         } else if (var_method == "bootstrapSRS") {
-          
-
-          
+        
           dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
           names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
           
           t_boot <- boot(dat,
                modifiedLogisticGregt,
                R = B,
+               # domains are the last column in dat
                strata = as.factor(dat[ , ncol(dat)]),
                xpopd = xpop_domain,
                xpop_sums = xpop_sums,
@@ -389,6 +388,7 @@ modifiedGreg <- function(y,
                parallel = "multicore",
                ncpus = 2)
           
+          # need bias correction and fpc terms here, but not sure what they should be in this case
           varEst <- var(t_boot$t)
           
         }

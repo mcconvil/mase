@@ -168,14 +168,16 @@ greg  <- function(y,
                      pop_mean = HT$pop_total/N,
                      pop_total_var = HT$pop_total_var, 
                      pop_mean_var = HT$pop_total_var/N^2, 
-                     weights = as.vector(pi^{-1})))
+                     weights = as.vector(pi^{-1}),
+                     estimator_used = "HT"))
       } else {
         
         HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
         
         return(list( pop_total = HT$pop_total, 
                      pop_mean = HT$pop_total/N,
-                     weights = as.vector(pi^{-1})))
+                     weights = as.vector(pi^{-1}),
+                     estimator_used = "HT"))
        
         
       }
@@ -226,6 +228,7 @@ greg  <- function(y,
     
     if(var_est==TRUE){
       if(var_method!="bootstrapSRS"){
+        
         e <- y-y.hats.s
         varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
       
@@ -236,8 +239,6 @@ greg  <- function(y,
         #Bootstrap total estimates
         dat <- data.frame(y, weight, xsample)
         colnames(dat) <- c("y", "weight", colnames(xsample))
-        
-       # system.time(t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, xpopd = xpop_d, weights = pi^{-1}, parallel = "snow", cl=cluster))
         
         t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
     
