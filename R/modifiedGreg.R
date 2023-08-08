@@ -18,6 +18,7 @@
 #' @param estimation_domains A vector of domain values over which to produce estimates. If NULL, estimation will be performed over all of the domains included in xpop.
 #' @param N The total population size.
 #' @param B The number of bootstrap iterations to perform when var_method = "bootstrapSRS"
+#' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.
 #' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
 #' @export modifiedGreg
@@ -43,6 +44,7 @@ modifiedGreg <- function(y,
                          estimation_domains = NULL,
                          N = NULL,
                          B = 1000,
+                         fpc = T,
                          messages = T) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
@@ -179,7 +181,7 @@ modifiedGreg <- function(y,
       }
       if(var_est == TRUE){
         
-        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method)
+        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method, fpc = fpc)
         
         return(list(pop_total = HT$pop_total, 
                     pop_mean = HT$pop_total/N,
@@ -280,7 +282,7 @@ modifiedGreg <- function(y,
           y_hat <- xsample_d_domain %*% betas
           y_domain <- y[which(domain_indic_vec == 1)]
           e <- y_domain - y_hat
-          varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
+          varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N, fpc = fpc)
           
         } else if (var_method == "bootstrapSRS"){
           
@@ -368,15 +370,14 @@ modifiedGreg <- function(y,
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
           
         } else if (var_method == "bootstrapSRS") {
-          
-
-          
+        
           dat <- cbind(as.data.frame(cbind(y, pi, xsample_d)), xsample[[domain_col_name]])
           names(dat) <- c("y", "pi", colnames(xsample_d), domain_col_name)
           
           t_boot <- boot(dat,
                modifiedLogisticGregt,
                R = B,
+               # domains are the last column in dat
                strata = as.factor(dat[ , ncol(dat)]),
                xpopd = xpop_domain,
                xpop_sums = xpop_sums,
@@ -387,6 +388,7 @@ modifiedGreg <- function(y,
                parallel = "multicore",
                ncpus = 2)
           
+          # need bias correction and fpc terms here, but not sure what they should be in this case
           varEst <- var(t_boot$t)
           
         }

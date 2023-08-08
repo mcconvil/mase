@@ -46,6 +46,7 @@ gregTree  <- function(y,
                       pval = 0.05,
                       perm_reps = 500,
                       bin_size = NULL,
+                      fpc = T,
                       messages = T){
 
 ### INPUT VALIDATION ###
@@ -110,19 +111,25 @@ gregTree  <- function(y,
   
 
   if(var_est==TRUE){
-    if(var_method!="bootstrapSRS"){
-    y.hat <- predict(object = tree, newdata = xsample)
-    e <- y-y.hat
-    varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N)
+    
+    if (var_method!="bootstrapSRS") { 
+      y.hat <- predict(object = tree, newdata = xsample)
+      e <- y-y.hat
+      varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
 
-    }else if(var_method=="bootstrapSRS"){
+    } else if(var_method=="bootstrapSRS") {
       #Find bootstrap variance
       dat <- cbind(y, pi, xsample)
       #Bootstrap total estimates
       t_boot <- boot(data = dat, statistic = gregTreet, R = B, xpop = xpop, pval= pval, perm_reps = perm_reps, bin_size = bin_size, parallel = "multicore", ncpus = 2)
 
-      #Adjust for bias and without replacement sampling
-      varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      if (fpc == T) {
+        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)        
+      }
+      if (fpc == F) {
+        varEst <- var(t_boot$t)*n/(n-1)
+      }
+
     }
     
     return(list( pop_total = as.numeric(t),
@@ -131,7 +138,8 @@ gregTree  <- function(y,
                  pop_mean_var=varEst/N^2,
                  weights = as.vector(w),
                  tree = tree))
-  }else{
+  } else {
+    
     return(list( pop_total = as.numeric(t),
                  pop_mean = as.numeric(t)/N,
                  weights = as.vector(w), 
@@ -139,7 +147,7 @@ gregTree  <- function(y,
 
   }
 
-  }
+}
 
 
 

@@ -18,6 +18,7 @@ greg(
   modelselect = FALSE,
   lambda = "lambda.min",
   B = 1000,
+  fpc = T,
   messages = T
 )
 }
@@ -47,6 +48,8 @@ greg(
 \item{lambda}{A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.}
 
 \item{B}{The number of bootstrap samples if computing the bootstrap variance estimator.  Default is 1000.}
+
+\item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }

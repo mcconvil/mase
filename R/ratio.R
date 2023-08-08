@@ -49,6 +49,7 @@ ratio <- function(y_num,
                   var_est = F, 
                   var_method = "LinHB",
                   datatype = "raw",
+                  fpc = T,
                   messages = T,
                   ...){
   
@@ -64,8 +65,8 @@ ratio <- function(y_num,
   
   if (estimator == "horvitzThompson") {
     
-    ht_num <- horvitzThompson(y_num, pi, N, pi2, messages, ...)
-    ht_den <- horvitzThompson(y_den, pi, N, pi2, messages, ...)
+    ht_num <- horvitzThompson(y = y_num, pi = pi, N = N, pi2 = pi2, messages = messages, fpc = fpc, ...)
+    ht_den <- horvitzThompson(y = y_den, pi = pi, N = N, pi2 = pi2, messages = messages, fpc = fpc, ...)
     rat <- ht_num$pop_total/ht_den$pop_total
     
     e_ratio <- y_num - as.vector(rat)*y_den
@@ -82,7 +83,7 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2, 
-      fpc = F,
+      fpc = fpc,
       var_est = var_est,
       var_method = var_method,
       datatype = datatype,
@@ -97,6 +98,7 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
+      fpc = fpc,
       var_est = var_est,
       var_method = var_method,
       datatype = datatype,
@@ -150,6 +152,7 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       messages = messages,
+      fpc = fpc,
       ...
     )
     
@@ -160,6 +163,7 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       messages = messages,
+      fpc = fpc,
       ...
     )
     
@@ -190,7 +194,8 @@ ratio <- function(y_num,
       pi = pi,
       pi2 = pi2,
       method = var_method,
-      N = N
+      N = N,
+      fpc = fpc
     )
     
     return(list(ratio_est = rat, variance_est = (1/est_den^2)*var_est))

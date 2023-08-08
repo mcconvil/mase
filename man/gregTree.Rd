@@ -16,6 +16,7 @@ gregTree(
   pval = 0.05,
   perm_reps = 500,
   bin_size = NULL,
+  fpc = T,
   messages = T
 )
 }
@@ -41,6 +42,8 @@ gregTree(
 \item{perm_reps}{An integer specifying the number of permutations for each permutation test run to fit the regression tree. Default value is 500.}
 
 \item{bin_size}{A integer specifying the minimum number of observations in each node.}
+
+\item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
 }
