@@ -54,41 +54,31 @@ greg  <- function(y,
                   B = 1000,
                   fpc = T,
                   messages = T){
-
   
-  
-### INPUT VALIDATION ###
-  
-  #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+  if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
   
-  
-  #Make sure the var_method is valid
-  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
-  
-  if(!is.element(model, c("linear","logistic"))){
+  if (!is.element(model, c("linear","logistic"))) {
     stop("Method input incorrect, has to be either \"linear\" or \"logistic\"")
   }
   
-  if(model == "logistic" & datatype != "raw"){
+  if (model == "logistic" & datatype != "raw") {
     stop("Must supply the raw population data to fit the logistic regression estimator.")
   }
   
-  if(!is.element(datatype, c("raw","totals", "means"))){
+  if (!is.element(datatype, c("raw","totals", "means"))) {
     stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
   }
   
-  
-  #Need to get N if not provided
-  if(is.null(N)){
-    if(datatype=="raw"){
+  if (is.null(N)) {
+    if (datatype=="raw") {
       N <- dim(as.matrix(xpop))[1]
-    }else{
+    } else {
       N <- sum(pi^(-1))
       if (messages) {
         message("Assuming N can be approximated by the sum of the inverse inclusion probabilities.") 
@@ -107,24 +97,19 @@ greg  <- function(y,
   xsample <- data.frame(xsample.d[,-1, drop = FALSE])
   xsample.dt <- t(xsample.d) 
  
-  
-  #Check on inclusion probabilities and create weight=inverse inclusion probabilities
-  if(is.null(pi)){
+  if (is.null(pi)) {
     if (messages) {
       message("Assuming simple random sampling") 
     }
   }  
   
-  
-  # convert pi into diagonal matrix format
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
   }
   
-  #weight: inverse first order inclusion probabilities
   weight <- as.vector(pi^(-1))
   
-  if(modelselect == TRUE){
+  if (modelselect == TRUE) {
     
     #Cross-validation to find lambdas
     if(model == "linear"){
@@ -137,17 +122,14 @@ greg  <- function(y,
     cv <- cv.glmnet(x = as.matrix(xsample), y = y, alpha = 1, weights = weight, nfolds = 10, family = fam, standardize = FALSE)
     
     #Pick lambda
-    if(lambda=="lambda.min"){
+    if (lambda=="lambda.min") {
       lambda.opt <- cv$lambda.min
     }
-    if(lambda=="lambda.1se"){
+    if (lambda=="lambda.1se") {
       lambda.opt <- cv$lambda.1se
     }
-    
-
-    
-    
-    ## MODEL SELECTION COEFFICIENTS ##
+  
+    # model selection coefficients
     pred.mod <- glmnet(x = as.matrix(xsample), y = y, alpha = 1, family = fam, standardize = FALSE, weights=weight)
     lasso_coef <- predict(pred.mod,type = "coefficients",s = lambda.opt)[1:dim(xsample.d)[2],]
     #Collect the names of the variables with non-zero coefficients
@@ -160,50 +142,55 @@ greg  <- function(y,
         message("No variables selected in the model selection stage.  Fitting a HT estimator.")  
       }
       
-      if(var_est == TRUE){
+      if (var_est == TRUE) {
         
-        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = TRUE, var_method = var_method, fpc = fpc)
+        HT <- horvitzThompson(y = y,
+                              pi = pi,
+                              N = N,
+                              pi2 = pi2,
+                              var_est = TRUE,
+                              var_method = var_method,
+                              fpc = fpc)
         
-        return(list( pop_total = HT$pop_total, 
-                     pop_mean = HT$pop_total/N,
-                     pop_total_var = HT$pop_total_var, 
-                     pop_mean_var = HT$pop_total_var/N^2, 
-                     weights = as.vector(pi^{-1}),
-                     estimator_used = "HT"))
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    pop_total_var = HT$pop_total_var, 
+                    pop_mean_var = HT$pop_total_var/N^2, 
+                    weights = as.vector(pi^{-1}),
+                    estimator_used = "HT"))
       } else {
         
-        HT <- horvitzThompson(y = y, pi = pi, N = N, pi2 = pi2, var_est = FALSE)
+        HT <- horvitzThompson(y = y,
+                              pi = pi,
+                              N = N,
+                              pi2 = pi2,
+                              var_est = FALSE)
         
-        return(list( pop_total = HT$pop_total, 
-                     pop_mean = HT$pop_total/N,
-                     weights = as.vector(pi^{-1}),
-                     estimator_used = "HT"))
-       
+        return(list(pop_total = HT$pop_total, 
+                    pop_mean = HT$pop_total/N,
+                    weights = as.vector(pi^{-1}),
+                    estimator_used = "HT"))
         
       }
     }  
      
-    
-    
     #Create a new xsample with only the columns in coef_select
-    xsample <- xsample[,coef_select, drop = FALSE]#dplyr::select_(xsample, .dots=coef_select)
+    xsample <- xsample[ ,coef_select, drop = FALSE]
     xsample.d <- model.matrix(~., data = xsample)
     xsample.dt <- t(xsample.d) 
-    xsample <- data.frame(xsample.d[,-1, drop=FALSE])
+    xsample <- data.frame(xsample.d[ ,-1, drop = FALSE])
     
   }
   
-### LOGISTIC REGRESSION ###
   if (model == "logistic"){
     
     #Error if y has more than two categories (can only handle two right now)
-    if(length(levels(as.factor(y))) != 2){
+    if (length(levels(as.factor(y))) != 2) {
       stop("Function can only handle categorical response with two categories.")
     }
     
-    if (datatype=="raw"){
+    if (datatype == "raw") {
       xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
-      #Make sure to only take the columns which are also in xsample
       xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
     }
@@ -217,7 +204,7 @@ greg  <- function(y,
 
     y.hats.U <- as.matrix(predict(mod,newdata=data.frame(xpop_d[,-1]),type="response",family=quasibinomial()))
     y.hats.s <- as.matrix(predict(mod,type="response",family=quasibinomial()))
-    #Estimator of total
+    
     t <- t(y-y.hats.s)%*%pi^(-1) + sum(y.hats.U)
     
     #Coefficients
@@ -226,21 +213,27 @@ greg  <- function(y,
     #No weights
     w <- NULL
     
-    if(var_est==TRUE){
-      if(var_method!="bootstrapSRS"){
-        
-        e <- y-y.hats.s
-        varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
+    if (var_est==TRUE) {
       
-      }else if(var_method=="bootstrapSRS"){
+      if (var_method!="bootstrapSRS") {
+        e <- y - y.hats.s
+        varEst <- varMase(y = e,
+                          pi = pi,
+                          pi2 = pi2,
+                          method = var_method,
+                          N = N,
+                          fpc = fpc)
+      } else if (var_method == "bootstrapSRS") {
   
-        #Find bootstrap variance
- 
         #Bootstrap total estimates
         dat <- data.frame(y, weight, xsample)
         colnames(dat) <- c("y", "weight", colnames(xsample))
-        
-        t_boot <-  boot(data = dat, statistic = logisticGregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
+        t_boot <-  boot(data = dat,
+                        statistic = logisticGregt,
+                        R = B, 
+                        xpopd = xpop_d,
+                        parallel = "multicore",
+                        ncpus = 2)
     
         if (fpc == T) {
           varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1) 
@@ -250,64 +243,67 @@ greg  <- function(y,
         }
         
       }
-      return(list( pop_total = as.numeric(t),
-                   pop_mean = as.numeric(t)/N,
-                   pop_total_var = as.numeric(varEst), 
-                   pop_mean_var = as.numeric(varEst)/N^2,
-                   coefficients =  coefs))
-    }else{
-      return(list( pop_total = as.numeric(t), 
-                   pop_mean = as.numeric(t)/N,
-                   coefficients =  coefs))     
+      return(list(pop_total = as.numeric(t),
+                  pop_mean = as.numeric(t)/N,
+                  pop_total_var = as.numeric(varEst), 
+                  pop_mean_var = as.numeric(varEst)/N^2,
+                  coefficients =  coefs))
+    } else {
+      return(list(pop_total = as.numeric(t), 
+                  pop_mean = as.numeric(t)/N,
+                  coefficients =  coefs))     
       
     }
   }
-### LINEAR REGRESSION ###
+
   else if (model == "linear"){
     
-    #population design matrix, check whether its population totals, means or raw data
-    
-    if (datatype=="raw"){
+    if (datatype == "raw") {
       xpop <- data.frame(model.matrix(~.-1, data = data.frame(xpop)))
-      #Make sure to only take the columns which are also in xsample
       xpop <- dplyr::select(xpop, one_of(colnames(xsample)))
       xpop_d <- model.matrix(~., data = xpop)
-      xpop_d <- apply(xpop_d,2,sum)
+      xpop_d <- apply(xpop_d, 2, sum)
     }
-    if (datatype=="totals"){
-      #Make sure to only take the values which are also in xsample
-      xpop_d <- unlist(c(N,xpop[names(xsample)]))
+    if (datatype == "totals") {
+      xpop_d <- unlist(c(N, xpop[names(xsample)]))
     }
-    if (datatype=="means"){
-      #Make sure to only take the values which are also in xsample
-      xpop_d <- unlist(c(N,xpop[names(xsample)]*N))
+    if (datatype == "means") {
+      xpop_d <- unlist(c(N, xpop[names(xsample)]*N))
     }
     
-    
-    w <- as.matrix(1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt)) %*% diag(weight)
-  
-  
+    w <- as.matrix(
+      1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% 
+        solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% 
+        (xsample.dt)) %*% 
+      diag(weight)
+
   #calculating the total estimate for y
   t <- w %*% y
-  
 
-  #NOTE: check that weights times x's should equal total of x's to check for correct weight values
-  
   #Coefficients
   coefs <- solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight) %*% y
   
-  
-  if(var_est==TRUE){
-    if(var_method!="bootstrapSRS"){
-    y.hat <- xsample.d %*% (solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y)
-    e <- y-y.hat
-    varEst <- varMase(y = e,pi = pi, pi2 = pi2, method = var_method, N = N, fpc = fpc)
+  if (var_est == TRUE) {
     
-    } else if (var_method=="bootstrapSRS"){
+    if (var_method!="bootstrapSRS") {
+      y.hat <- xsample.d %*% (solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y)
+      e <- y - y.hat
+      varEst <- varMase(y = e,
+                        pi = pi,
+                        pi2 = pi2,
+                        method = var_method,
+                        N = N,
+                        fpc = fpc)
+    } else if (var_method == "bootstrapSRS") {
       #Find bootstrap variance
       dat <- cbind(y,pi, xsample.d)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregt, R = B, xpopd = xpop_d, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat,
+                     statistic = gregt,
+                     R = B,
+                     xpopd = xpop_d,
+                     parallel = "multicore",
+                     ncpus = 2)
       
       if (fpc == T) {
         varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
@@ -317,17 +313,17 @@ greg  <- function(y,
       }
 
     }
-    return(list( pop_total = as.numeric(t), 
-                 pop_mean = as.numeric(t)/N,
-                 pop_total_var=varEst, 
-                 pop_mean_var = varEst/N^2, 
-                 weights = as.vector(w),
-                 coefficients =  coefs))
-  }else{
-    return(list( pop_total = as.numeric(t), 
-                 pop_mean = as.numeric(t)/N,           
-                 weights = as.vector(w),
-                 coefficients =  coefs))      
+    return(list(pop_total = as.numeric(t), 
+                pop_mean = as.numeric(t)/N,
+                pop_total_var=varEst, 
+                pop_mean_var = varEst/N^2, 
+                weights = as.vector(w),
+                coefficients =  coefs))
+  } else {
+    return(list(pop_total = as.numeric(t), 
+                pop_mean = as.numeric(t)/N,           
+                weights = as.vector(w),
+                coefficients =  coefs))      
     
   }
   
