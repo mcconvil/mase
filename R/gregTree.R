@@ -49,15 +49,11 @@ gregTree  <- function(y,
                       fpc = T,
                       messages = T){
 
-### INPUT VALIDATION ###
-
-  #Make sure the var_method is valid
-  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
-  #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+  if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
   
@@ -71,7 +67,7 @@ gregTree  <- function(y,
   N <- dim(xpop)[1]
 
   #Check on inclusion probabilities and create weight=inverse inclusion probabilities
-  if(is.null(pi)){
+  if (is.null(pi)) {
     if (messages) {
       message("Assuming simple random sampling") 
     }
@@ -91,8 +87,6 @@ gregTree  <- function(y,
   f <- as.formula(paste("y ~ ", paste(names(xsample), collapse= "+")))
   tree <- rpms(rp_equ = f, data = dat, weights = weights, pval = pval, perm_reps = perm_reps, bin_size = bin_size)
   
-  
-  #Calculate weights
   #Make sure xpop and xsample have the same columns (in same order)
   xpop <- xpop[names(xsample)]
   #Design matrix for population
@@ -104,24 +98,25 @@ gregTree  <- function(y,
   #calculating the total estimate for y
   t <- w %*% y
 
-
-  #NOTE: check that weights times x's should equal total of x's to check for correct weight values
-  # w %*% xsample_tree[,4]
-  # colSums(xpop_tree)
-  
-
-  if(var_est==TRUE){
+  if (var_est == TRUE) {
     
-    if (var_method!="bootstrapSRS") { 
+    if (var_method != "bootstrapSRS") { 
       y.hat <- predict(object = tree, newdata = xsample)
       e <- y-y.hat
       varEst <- varMase(y = e,pi = pi,pi2 = pi2,method = var_method, N = N, fpc = fpc)
-
-    } else if(var_method=="bootstrapSRS") {
+    } else if (var_method == "bootstrapSRS") {
       #Find bootstrap variance
       dat <- cbind(y, pi, xsample)
       #Bootstrap total estimates
-      t_boot <- boot(data = dat, statistic = gregTreet, R = B, xpop = xpop, pval= pval, perm_reps = perm_reps, bin_size = bin_size, parallel = "multicore", ncpus = 2)
+      t_boot <- boot(data = dat,
+                     statistic = gregTreet, 
+                     R = B,
+                     xpop = xpop,
+                     pval= pval,
+                     perm_reps = perm_reps, 
+                     bin_size = bin_size,
+                     parallel = "multicore",
+                     ncpus = 2)
 
       if (fpc == T) {
         varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)        
@@ -132,18 +127,18 @@ gregTree  <- function(y,
 
     }
     
-    return(list( pop_total = as.numeric(t),
-                 pop_mean = as.numeric(t)/N,
-                 pop_total_var=varEst,
-                 pop_mean_var=varEst/N^2,
-                 weights = as.vector(w),
-                 tree = tree))
+    return(list(pop_total = as.numeric(t),
+                pop_mean = as.numeric(t)/N,
+                pop_total_var=varEst,
+                pop_mean_var=varEst/N^2,
+                weights = as.vector(w),
+                tree = tree))
   } else {
     
-    return(list( pop_total = as.numeric(t),
-                 pop_mean = as.numeric(t)/N,
-                 weights = as.vector(w), 
-                 tree = tree))
+    return(list(pop_total = as.numeric(t),
+                pop_mean = as.numeric(t)/N,
+                weights = as.vector(w), 
+                tree = tree))
 
   }
 
