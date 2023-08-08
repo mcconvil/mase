@@ -62,15 +62,30 @@ ratio <- function(y_num,
   
   weight <- as.vector(pi^(-1))
   
-  
   if (estimator == "horvitzThompson") {
     
-    ht_num <- horvitzThompson(y = y_num, pi = pi, N = N, pi2 = pi2, messages = messages, fpc = fpc, ...)
-    ht_den <- horvitzThompson(y = y_den, pi = pi, N = N, pi2 = pi2, messages = messages, fpc = fpc, ...)
+    ht_num <- horvitzThompson(
+      y = y_num,
+      pi = pi,
+      N = N,
+      pi2 = pi2,
+      messages = messages,
+      fpc = fpc,
+      ...
+    )
+    
+    ht_den <- horvitzThompson(
+      y = y_den,
+      pi = pi,
+      N = N,
+      pi2 = pi2,
+      messages = messages,
+      fpc = fpc,
+      ...
+    )
+    
     rat <- ht_num$pop_total/ht_den$pop_total
-    
     e_ratio <- y_num - as.vector(rat)*y_den
-    
     est_den <- ht_den$pop_total
     
     
@@ -198,7 +213,8 @@ ratio <- function(y_num,
       fpc = fpc
     )
     
-    return(list(ratio_est = rat, variance_est = (1/est_den^2)*var_est))
+    return(list(ratio_est = rat,
+                variance_est = (1/est_den^2)*var_est))
     
   } else {
     
