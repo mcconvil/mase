@@ -32,36 +32,43 @@
 #' @include varMase.R
 
 
-ratioEstimator <- function(
-  y, xsample, xpop, datatype = "raw", pi = NULL, N = NULL, pi2 = NULL, var_est = FALSE, var_method = "LinHB", B = 1000) {
+ratioEstimator <- function(y,
+                           xsample,
+                           xpop,
+                           datatype = "raw",
+                           pi = NULL, 
+                           N = NULL,
+                           pi2 = NULL,
+                           var_est = FALSE,
+                           var_method = "LinHB",
+                           B = 1000,
+                           fpc = T,
+                           messages = T) {
 
-
-    ### INPUT VALIDATION ###
-  
-  #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+  if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
   
   #Make sure the var_method is valid
-  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
-    message("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
-    return(NULL)
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
+    stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
   
-  
-  #Check on inclusion probabilities and create weight=inverse inclusion probabilities
-  if(is.null(pi)){
-    message("Assuming simple random sampling")
+  if (is.null(pi)) {
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
   }  
   
   #Determine N if not provided
   if (is.null(N)) {
-    if( datatype == "raw") {
+    if (datatype == "raw") {
       N <- dim(data.frame(xpop))[1]
     }else {
       N <- sum(pi^(-1))
-      warning("Assume N can be approximated by the sum of the inverse inclusion probabilities.")
+      if (messages) {
+        message("Assume N can be approximated by the sum of the inverse inclusion probabilities.") 
+      }
     }
   }
   
@@ -71,42 +78,43 @@ ratioEstimator <- function(
     pi <- rep(length(y)/N, length(y))
   }
   
-  
   #calculate Horvitz-Thompson estimator for y and x
   tyHT <- horvitzThompson(y=y,pi=pi)$pop_total
   txHT <- horvitzThompson(y=xsample,pi=pi)$pop_total
   r <- as.vector(tyHT/txHT)
   
-
-  #Find population total of x
-  if (datatype == "raw"){
+  if (datatype == "raw") {
     tau_x <- sum(xpop)
   }
-  if (datatype %in% c("total", "totals")){
+  if (datatype %in% c("total", "totals")) {
     tau_x <- xpop
   }
-  if (datatype %in% c("mean", "means")){
+  if (datatype %in% c("mean", "means")) {
     tau_x <- xpop*N
   }
   
- #Mean of x
+  # Mean of x
   mu_x <- tau_x/N
   
-  
-  #calculate estimates
+  # calculate estimates
   mu_r <- r * mu_x
   tau_r <- r * tau_x
   
-  #Estimate the variance
-  if(var_est==TRUE){
+  # Estimate the variance
+  if (var_est == TRUE) {
     
-    if(var_method!="bootstrapSRS"){
-    y.hat <- r*as.vector(xsample)
-    varEst <- varMase(y = (y-y.hat),pi = pi,pi2 = pi2,method = var_method, N = N)
-    varEstMu <- varEst*N^(-2)
+    if (var_method != "bootstrapSRS") {
+      y.hat <- r*as.vector(xsample)
+      varEst <- varMase(y = (y-y.hat),
+                        pi = pi,
+                        pi2 = pi2,
+                        method = var_method,
+                        N = N,
+                        fpc = fpc)
+      varEstMu <- varEst*N^(-2)
     }
     
-    if(var_method ==  "bootstrapSRS") {
+    if(var_method =="bootstrapSRS") {
 
       #Find bootstrap variance
       dat <- cbind(y,pi, xsample)
@@ -115,15 +123,25 @@ ratioEstimator <- function(
       
       #Adjust for bias and without replacement sampling
       n <- length(y)
-      varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      
+      if (fpc == T) {
+        varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)
+      }
+      if (fpc == F) {
+        varEst <- var(t_boot$t)*n/(n-1)
+      }
+      
       varEstMu <- varEst*N^(-2)
     }
     
-    return(list(pop_total = tau_r, pop_mean = mu_r, pop_total_var=varEst, pop_mean_var = varEstMu))
+    return(list(pop_total = tau_r,
+                pop_mean = mu_r,
+                pop_total_var = varEst,
+                pop_mean_var = varEstMu))
     
-  }else{
-    
-    return(list(pop_total = tau_r, pop_mean = mu_r))
+  } else {
+    return(list(pop_total = tau_r,
+                pop_mean = mu_r))
   }
   
 }
