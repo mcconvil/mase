@@ -45,51 +45,37 @@ horvitzThompson <- function(y,
                             fpc = T,
                             messages = T) {
 
-  ### INPUT VALIDATION ###
-  
-  #Make sure the var_method is valid
-  if(!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))){
+  if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
   }
 
-  #Check that y is numeric
-  if(!(typeof(y) %in% c("numeric", "integer", "double"))){
+  if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
   }
   
-  
-  
-  if(is.null(pi) && is.null(N)){
+  if (is.null(pi) && is.null(N)) {
     stop("Must supply either ", sQuote("pi")," or ", sQuote("N"))
     
   }
   
-  if(is.null(pi)){
+  if (is.null(pi)) {
     if (messages) {
       message("Assuming simple random sampling") 
     }
   }  
   
-    
-  # convert pi into diagonal matrix format
   if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
   }
   
-  #weight: inverse first order inclusion probabilities
   weight <- pi^(-1)
   
   #Sample size
   n <- length(y)
   
-  
-##########################
-  
   # total population
   total <- as.vector(t(y) %*% weight)
   
-  # defining estimate for population size if N is unknown, otherwise use
-  # known N.
   if (is.null(N)) {
     N <- sum(weight)
     mu <- as.vector(total * (1/N))
@@ -97,11 +83,11 @@ horvitzThompson <- function(y,
     mu <- as.vector((total/N))
   }
   
-  if(var_est==TRUE){
-    if(var_method!="bootstrapSRS"){
-    varEst <- varMase(y = y,pi = pi,pi2 = pi2,method = var_method, N = N)
-
-    }else{
+  if (var_est == TRUE) {
+    
+    if (var_method != "bootstrapSRS") {
+      varEst <- varMase(y = y, pi = pi,pi2 = pi2,method = var_method, N = N)
+    } else {
       #Find bootstrap variance
       dat <- cbind(y,pi)
       #Bootstrap total estimates
@@ -116,13 +102,15 @@ horvitzThompson <- function(y,
       
     }
     
-    #return estimates and variance estimates
     varEstMu <- varEst*N^(-2)
-    return(list(pop_total = total, pop_mean = mu, pop_total_var=varEst, pop_mean_var = varEstMu))
     
-  }else{
-  
-  # return estimates
-  return(list(pop_total = total, pop_mean = mu))
+    return(list(pop_total = total,
+                pop_mean = mu, 
+                pop_total_var = varEst,
+                pop_mean_var = varEstMu))
+    
+  } else {
+    return(list(pop_total = total,
+                pop_mean = mu))
   }
 }
