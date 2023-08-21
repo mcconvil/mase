@@ -34,7 +34,6 @@
 #' }
 
 #' @import dplyr
-#' @import magrittr
 #' @export postStrat
 #' @include postStratt.R
 #' @include varMase.R
@@ -129,10 +128,10 @@ postStrat <- function(y,
   
   #Compute estimator
   xsample_pi_y <- data.frame(xsample, pi,y)
-  tab <- xsample_pi_y %>%
-    group_by(x) %>%
-    summarize(poptotal_h = sum(y * pi^(-1)), N_h_hats = sum(pi^(-1)), var_h = var(y)) %>%
-    inner_join(xpop_tab, by=c("x")) %>%
+  tab <- xsample_pi_y |>
+    group_by(x) |>
+    summarize(poptotal_h = sum(y * pi^(-1)), N_h_hats = sum(pi^(-1)), var_h = var(y)) |>
+    inner_join(xpop_tab, by=c("x")) |>
     mutate(ps_h = N_h/N_h_hats, strat_pop_total = ps_h*poptotal_h, strat_pop_mean = strat_pop_total/N_h)
   
   #Estimates by strata  
