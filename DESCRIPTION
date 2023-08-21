@@ -5,15 +5,15 @@ Version: 0.1.3
 Date: 2021-07-06
 Encoding: UTF-8
 Authors@R: c(person("Kelly", "McConville", role = c("aut", "cre", "cph"),
-                    email = "mcconville@reed.edu"),
+                    email = "kmcconville@fas.harvard.edu"),
+            person("Josh", "Yamamoto", role = "aut"),
             person("Becky", "Tang", role = "aut"),
             person("George", "Zhu", role = "aut"),
             person("Sida", "Li", role = "ctb"),
             person("Shirley", "Chueng", role = "ctb"),
-            person("Daniell", "Toth", role = "ctb"),
-            person("Josh", "Yamamoto", role = "ctb")
+            person("Daniell", "Toth", role = "ctb")
             )
-Maintainer: Kelly McConville <mcconville@reed.edu>
+Maintainer: Kelly McConville <kmcconville@fas.harvard.edu>
 Description: A set of model-assisted survey estimators and corresponding
     variance estimators for single stage, unequal probability, without replacement
     sampling designs.  All of the estimators can be written as a generalized 
