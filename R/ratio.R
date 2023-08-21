@@ -32,7 +32,6 @@
 #' \item{variance_est:}{Estimate of the variance of the ratio of two estimators}
 #' }
 #' @import dplyr
-#' @import magrittr
 #' @export ratio
 #' @include varMase.R
 

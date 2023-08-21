@@ -31,7 +31,6 @@ License: GPL-2
 Imports: glmnet,
     survey,
     dplyr,
-    magrittr,
     rpms,
     boot,
     stats,
@@ -42,7 +41,7 @@ Suggests:
     knitr,
     rmarkdown
 Depends:
-    R (>= 3.5)
+    R (>= 4.1.0)
 Collate:
     'gregt.R'
     'varMase.R'
