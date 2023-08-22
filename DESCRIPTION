@@ -6,7 +6,8 @@ Date: 2023-08-21
 Encoding: UTF-8
 Authors@R: c(person("Kelly", "McConville", role = c("aut", "cph"),
                     email = "kmcconville@fas.harvard.edu"),
-            person("Josh", "Yamamoto", role = c("cre","aut")),
+            person("Josh", "Yamamoto", role = c("cre","aut"),
+                   email = "joshuayamamoto5@gmail.com"),
             person("Becky", "Tang", role = "aut"),
             person("George", "Zhu", role = "aut"),
             person("Sida", "Li", role = "ctb"),
