@@ -8,13 +8,16 @@
 # mase
 
 `mase` contains a collection of model-assisted generalized regression
-estimators (the post-stratification estimator, the ratio estimator, the
-linear and logistic regression estimator, the modified linear and
-logistic regression estimator, the elastic net regression estimator, and
-the regression tree estimator) for finite population estimation of a
-total or mean from a single stage, unequal probability without
-replacement design. It also contains the Horvitz-Thompson estimator and
-several variance estimators.
+estimators for finite population estimation of a total or mean from a
+single stage, unequal probability without replacement design. It also
+contains several variance estimators.
+
+The available estimators are currently: - generalized regression:
+`greg()` - hotvitz-thompson: `horvitzThompson()` - post-stratification:
+`postStrat()` - elastic net generalized regression: `gregElasticNet()` -
+regression tree: `gregTree()` - modified generalized regression:
+`modifiedGreg()` - ratio estimator: `ratioEstimator()` - estimate of a
+ratio estimator: `ratio()`
 
 ## Installation
 
@@ -26,6 +29,8 @@ devtools::install_github("mcconvil/mase")
 ```
 
 ## Example
+
+### Horvitz-Thompson
 
 Here’s an example of fitting the Horvitz-Thompson estimator using
 Forestry data in Idaho. The data comes from the Forestry Inventory &
@@ -57,6 +62,8 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 #> $pop_mean_var
 #> [1] 46.63093
 ```
+
+### Linear Regression Estimator
 
 We can also fit a linear regression estimator using that same data:
 
@@ -96,7 +103,7 @@ greg_est[1:4]
 But with this estimator we also get the weights
 
 ``` r
-greg_est[5] |> head(7)
+greg_est[5]
 #> $weights
 #>   [1] 8060.960 6489.037 6929.206 3145.983 8041.396 3737.945 5687.480 3577.979
 #>   [9] 3020.678 1690.956 2427.990 6469.919 3123.403 4879.079 2639.280 2624.305

@@ -18,7 +18,18 @@ knitr::opts_chunk$set(
 
 # mase
 
-`mase` contains a collection of model-assisted generalized regression estimators (the post-stratification estimator, the ratio estimator, the linear and logistic regression estimator, the modified linear and logistic regression estimator, the elastic net regression estimator, and the regression tree estimator) for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains the Horvitz-Thompson estimator and several variance estimators.
+`mase` contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
+
+The available estimators are currently:
+- generalized regression: `greg()`
+- hotvitz-thompson: `horvitzThompson()`
+- post-stratification: `postStrat()`
+- elastic net generalized regression: `gregElasticNet()`
+- regression tree: `gregTree()`
+- modified generalized regression: `modifiedGreg()`
+- ratio estimator: `ratioEstimator()`
+- estimate of a ratio estimator: `ratio()`
+
 
 ## Installation
 
@@ -30,6 +41,8 @@ devtools::install_github("mcconvil/mase")
 ```
 
 ## Example
+
+### Horvitz-Thompson
 
 Here's an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory & Analysis department (FIA). 
 
@@ -49,6 +62,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
                 var_method = "LinHTSRS")
 ```
 
+### Linear Regression Estimator
 
 We can also fit a linear regression estimator using that same data:
 
