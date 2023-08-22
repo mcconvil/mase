@@ -12,12 +12,20 @@
 #' @param eta A small positive number. Defaults to 0.0001. See McConville et al (2017), section 3.2 for details. 
 #' 
 #' @examples 
-#' library(survey)
-#' data(api)
-#' gregElasticNet(y = apisrs$api00, 
-#' xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-#' xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-#' pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
+#' library(dplyr)
+#' data(IdahoPop)
+#' data(IdahoSamp)
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
+#' gregElasticNet(y = xsample$BA_TPA_ADJ,
+#'                N = xpop$npixels,
+#'                xsample = xsample[c("tcc", "elev", "ppt", "tmean")],
+#'                xpop = xpop[c("tcc", "elev", "ppt", "tmean")],
+#'                var_est = TRUE,
+#'                var_method = "LinHB",
+#'                datatype = "means",
+#'                alpha = 0.5)
+
 #' 
 #' @references 
 #'\insertRef{mcc17}{mase}

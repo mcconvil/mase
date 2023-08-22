@@ -6,6 +6,8 @@
 #'   \item{COUNTYFIPS}{Unique identifier of the county to which a plot belongs}
 #'   \item{tcc}{Tree Canopy Cover}
 #'   \item{elev}{Elevation}
+#'   \item{ppt}{Precipitation}
+#'   \item{tmean}{Mean Temperature}
 #'   \item{tnt.1}{Proportion of pixels in a county that are classified as Non-Tree}
 #'   \item{tnt.2}{Proportion of pixels in a county that are classified as Tree}
 #'   \item{npixels}{Number of pixels in a county}
