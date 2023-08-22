@@ -33,6 +33,8 @@
 #'              datatype = "means",
 #'              N = sum(IdahoPop$npixels),
 #'              var_est = TRUE)
+#' @references 
+#' \insertRef{raomolina15}{mase}
 #' 
 #' @export modifiedGreg
 #' @import survey
