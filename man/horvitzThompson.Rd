@@ -48,10 +48,15 @@ List of output containing:
 Calculate the Horvitz-Thompson Estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design.
 }
 \examples{
-library(survey)
-data(api)
-horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
-horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "LinHTSRS")
+data(IdahoSamp)
+data(IdahoPop)
+xsample <- filter(IdahoSamp, COUNTYFIPS == 16055)
+xpop <- filter(IdahoPop, COUNTYFIPS == 16055) 
+
+horvitzThompson(y = xsample$BA_TPA_ADJ,
+                N = xpop$npixels,
+                var_est = TRUE,
+                var_method = "LinHTSRS")
 
 }
 \references{

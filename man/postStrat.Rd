@@ -59,12 +59,27 @@ A list of output containing:
 Calculates a post-stratified estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and a single, categorical auxiliary population variable.
 }
 \examples{
-library(survey)
-data(api) 
-postStrat(y = apisrs$api00, xsample = apisrs$awards, 
-xpop = data.frame(table(apipop$awards)), datatype = "totals", 
-pi = apisrs$pw^(-1))
+library(tidyr)
+library(stringr)
 
+data(IdahoPop)
+data(IdahoSamp)
+
+xsample <- select(IdahoSamp, tcc, elev) \%>\% as.data.frame()
+xpop <- select(IdahoPop, names(xsample))
+
+xpop <- xpop[c("tnt.1", "tnt.2")] |> 
+    pivot_longer(everything(), names_to = "tnt", values_to = "prop") |>
+    mutate(tnt = as.numeric(str_extract(tnt, "\\\\d")))
+    
+postStrat(y = xsample$BA_TPA_ADJ,
+          N = xpop$npixels,
+          xsample = xsample$tnt,
+          xpop = xpop,
+          datatype = "means",
+          var_est = TRUE,
+          var_method = "SRSunconditional")
+          
 }
 \references{
 \insertRef{coc77}{mase} 

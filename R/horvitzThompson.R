@@ -13,10 +13,15 @@
 #' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
 #' @examples 
-#' library(survey)
-#' data(api)
-#' horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1))
-#' horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "LinHTSRS")
+#' data(IdahoSamp)
+#' data(IdahoPop)
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == 16055)
+#' xpop <- filter(IdahoPop, COUNTYFIPS == 16055) 
+#' 
+#' horvitzThompson(y = xsample$BA_TPA_ADJ,
+#'                 N = xpop$npixels,
+#'                 var_est = TRUE,
+#'                 var_method = "LinHTSRS")
 #'
 #'@references{
 #'\insertRef{hor52}{mase}
