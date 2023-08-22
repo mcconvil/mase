@@ -77,5 +77,7 @@ modifiedGreg(y = IdahoSamp$BA_TPA_ADJ,
              datatype = "means",
              N = sum(IdahoPop$npixels),
              var_est = TRUE)
-
+}
+\references{
+\insertRef{raomolina15}{mase}
 }
