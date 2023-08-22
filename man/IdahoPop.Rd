@@ -12,7 +12,7 @@ A data frame with 44 rows and 6 columns:
   \item{elev}{Elevation}
   \item{tnt.1}{Proportion of pixels in a county that are classified as Non-Tree}
   \item{tnt.2}{Proportion of pixels in a county that are classified as Tree}
-  \item{npixles}{Number of pixels in a county}
+  \item{npixels}{Number of pixels in a county}
 }
 }
 \source{

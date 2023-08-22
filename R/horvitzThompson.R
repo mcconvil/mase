@@ -13,10 +13,11 @@
 #' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
 #' @examples 
+#' library(dplyr)
 #' data(IdahoSamp)
 #' data(IdahoPop)
-#' xsample <- filter(IdahoSamp, COUNTYFIPS == 16055)
-#' xpop <- filter(IdahoPop, COUNTYFIPS == 16055) 
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' xpop <- filter(IdahoPop, COUNTYFIPS == "16055") 
 #' 
 #' horvitzThompson(y = xsample$BA_TPA_ADJ,
 #'                 N = xpop$npixels,

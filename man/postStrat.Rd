@@ -60,22 +60,22 @@ Calculates a post-stratified estimator for a finite population mean/proportion o
 }
 \examples{
 library(tidyr)
-library(stringr)
+library(dplyr)
 
 data(IdahoPop)
 data(IdahoSamp)
 
-xsample <- select(IdahoSamp, tcc, elev) \%>\% as.data.frame()
-xpop <- select(IdahoPop, names(xsample))
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
 
-xpop <- xpop[c("tnt.1", "tnt.2")] |> 
+pop <- xpop[c("tnt.1", "tnt.2")] |> 
     pivot_longer(everything(), names_to = "tnt", values_to = "prop") |>
-    mutate(tnt = as.numeric(str_extract(tnt, "\\\\d")))
+    mutate(tnt = as.numeric(gsub("\\\\D", "", tnt)))
     
 postStrat(y = xsample$BA_TPA_ADJ,
           N = xpop$npixels,
           xsample = xsample$tnt,
-          xpop = xpop,
+          xpop = pop,
           datatype = "means",
           var_est = TRUE,
           var_method = "SRSunconditional")

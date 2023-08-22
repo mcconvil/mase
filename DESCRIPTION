@@ -31,6 +31,7 @@ License: GPL-2
 Imports: glmnet,
     survey,
     dplyr,
+    tidyr,
     rpms,
     boot,
     stats,

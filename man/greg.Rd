@@ -67,16 +67,17 @@ A list of output containing:
 Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
 \examples{
+library(dplyr)
 data(IdahoPop)
 data(IdahoSamp)
 
-xsample <- select(IdahoSamp, tcc, elev) \%>\% as.data.frame()
-xpop <- select(IdahoPop, names(xsample))
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
 
 greg(y = xsample$BA_TPA_ADJ,
      N = xpop$npixels,
-     xsample = xsample,
-     xpop = xpop,
+     xsample = xsample[c("tcc", "elev")],
+     xpop = xpop[c("tcc", "elev")],
      var_est = TRUE,
      var_method = "LinHB",
      datatype = "means")

@@ -9,18 +9,17 @@
 #' @param bin_size A integer specifying the minimum number of observations in each node.
 #' 
 #' @examples
+#' library(dplyr)
 #' data(IdahoPop)
 #' data(IdahoSamp)
 #' 
-#' xsample <- select(IdahoSamp, tcc, elev) %>% as.data.frame()
-#' xpop <- select(IdahoPop, names(xsample))
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055") 
+#' xpop <- filter(IdahoSamp, COUNTYFIPS == "16055")
 #' 
 #' gregTree(y = xsample$BA_TPA_ADJ,
-#'      N = xpop$npixels,
-#'      xsample = xsample,
-#'      xpop = xpop,
-#'      var_est = TRUE,
-#'      datatype = "means")
+#'          xsample = xsample[c("tcc", "elev")],
+#'          xpop = xpop[c("tcc", "elev")],
+#'          var_est = TRUE)
 #' 
 #'@references 
 #'\insertRef{mcc17b}{mase}

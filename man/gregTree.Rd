@@ -61,18 +61,17 @@ A list of output containing:
 Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
 \examples{
+library(dplyr)
 data(IdahoPop)
 data(IdahoSamp)
 
-xsample <- select(IdahoSamp, tcc, elev) \%>\% as.data.frame()
-xpop <- select(IdahoPop, names(xsample))
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055") 
+xpop <- filter(IdahoSamp, COUNTYFIPS == "16055")
 
 gregTree(y = xsample$BA_TPA_ADJ,
-     N = xpop$npixels,
-     xsample = xsample,
-     xpop = xpop,
-     var_est = TRUE,
-     datatype = "means")
+         xsample = xsample[c("tcc", "elev")],
+         xpop = xpop[c("tcc", "elev")],
+         var_est = TRUE)
 
 }
 \references{

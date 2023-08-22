@@ -48,10 +48,11 @@ List of output containing:
 Calculate the Horvitz-Thompson Estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design.
 }
 \examples{
+library(dplyr)
 data(IdahoSamp)
 data(IdahoPop)
-xsample <- filter(IdahoSamp, COUNTYFIPS == 16055)
-xpop <- filter(IdahoPop, COUNTYFIPS == 16055) 
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+xpop <- filter(IdahoPop, COUNTYFIPS == "16055") 
 
 horvitzThompson(y = xsample$BA_TPA_ADJ,
                 N = xpop$npixels,

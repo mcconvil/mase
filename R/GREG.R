@@ -11,16 +11,17 @@
 #' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
 #' 
 #' @examples 
+#' library(dplyr)
 #' data(IdahoPop)
 #' data(IdahoSamp)
 #' 
-#' xsample <- select(IdahoSamp, tcc, elev) %>% as.data.frame()
-#' xpop <- select(IdahoPop, names(xsample))
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
 #' 
 #' greg(y = xsample$BA_TPA_ADJ,
 #'      N = xpop$npixels,
-#'      xsample = xsample,
-#'      xpop = xpop,
+#'      xsample = xsample[c("tcc", "elev")],
+#'      xpop = xpop[c("tcc", "elev")],
 #'      var_est = TRUE,
 #'      var_method = "LinHB",
 #'      datatype = "means")
