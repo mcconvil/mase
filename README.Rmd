@@ -14,21 +14,22 @@ knitr::opts_chunk$set(
 
 # Development Mode
 
-`mase` is still under development.  Please use at your own risk!  
+mase is still under development.  Please use at your own risk!  
 
 # mase
 
-`mase` contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
+mase contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
 
 The available estimators are currently:
-- generalized regression: `greg()`
-- hotvitz-thompson: `horvitzThompson()`
-- post-stratification: `postStrat()`
-- elastic net generalized regression: `gregElasticNet()`
-- regression tree: `gregTree()`
-- modified generalized regression: `modifiedGreg()`
-- ratio estimator: `ratioEstimator()`
-- estimate of a ratio estimator: `ratio()`
+
+  - generalized regression: `greg()`
+  - hotvitz-thompson: `horvitzThompson()`
+  - post-stratification: `postStrat()`
+  - elastic net generalized regression: `gregElasticNet()`
+  - regression tree: `gregTree()`
+  - modified generalized regression: `modifiedGreg()`
+  - ratio estimator: `ratioEstimator()`
+  - estimate of a ratio estimator: `ratio()`
 
 
 ## Installation
