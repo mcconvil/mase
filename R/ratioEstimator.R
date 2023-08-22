@@ -8,11 +8,18 @@
 #' @param datatype A string that specifies the form of population auxiliary data. The possible values are "raw", "total" or "mean".  If datatype = "raw", then xpop must contain a numeric vector of the auxiliary variable for each unit in the population. If datatype = "total" or "mean", then contains either the population total or population mean for the auxiliary variable.
 #' 
 #' @examples 
-#' library(survey)
-#' data(api)
-#'ratioEstimator(y = apisrs$api00, xsample = apisrs$meals, 
-#'xpop = sum(apipop$meals), datatype = "total", pi = apisrs$pw^(-1), 
-#'N = dim(apipop)[1])
+#' library(dplyr)
+#' data(IdahoPop)
+#' data(IdahoSamp)
+#' 
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
+#' 
+#' ratioEstimator(y = xsample$BA_TPA_ADJ,
+#'                xsample = xsample$tcc,
+#'                xpop = xpop$tcc,
+#'                datatype = "means",
+#'                N = xpop$npixels)
 #' 
 #'@references 
 #'\insertRef{coc77}{mase} 
