@@ -46,6 +46,8 @@ Collate:
     'gregt.R'
     'varMase.R'
     'GREG.R'
+    'IdahoPop.R'
+    'IdahoSamp.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregTree.R'
@@ -65,3 +67,4 @@ Collate:
 RoxygenNote: 7.2.3
 RdMacros: Rdpack
 Config/testthat/edition: 3
+LazyData: true
