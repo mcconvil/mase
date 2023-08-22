@@ -60,6 +60,21 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 
 We can also fit a linear regression estimator using that same data:
 
+``` r
+xsample <- select(samp, tcc, elev) %>%
+  as.data.frame()
+
+xpop <- select(pop, names(xsample))
+
+greg_est <- greg(y = samp$BA_TPA_ADJ,
+     N = pop$npixels,
+     xsample = xsample,
+     xpop = xpop,
+     var_est = TRUE,
+     var_method = "LinHB",
+     datatype = "means")
+```
+
 We still get the population total and mean estimates along with their
 variance estimates:
 

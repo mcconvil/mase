@@ -52,7 +52,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 
 We can also fit a linear regression estimator using that same data:
 
-```{r example2, message = F, echo = F}
+```{r example2, message = F}
 xsample <- select(samp, tcc, elev) %>%
   as.data.frame()
 
@@ -76,7 +76,7 @@ greg_est[1:4]
 But with this estimator we also get the weights
 
 ```{r}
-greg_est[5] |> head(7)
+greg_est[5]
 ```
 
 and the coefficients for the model
