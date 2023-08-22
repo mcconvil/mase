@@ -9,11 +9,17 @@
 #' @param bin_size A integer specifying the minimum number of observations in each node.
 #' 
 #' @examples
-#' library(survey)
-#' data(api)
-#' gregTree(y = apisrs$api00, 
-#' xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-#' xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")])
+#' library(dplyr)
+#' data(IdahoPop)
+#' data(IdahoSamp)
+#' 
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055") 
+#' xpop <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' 
+#' gregTree(y = xsample$BA_TPA_ADJ,
+#'          xsample = xsample[c("tcc", "elev")],
+#'          xpop = xpop[c("tcc", "elev")],
+#'          var_est = TRUE)
 #' 
 #'@references 
 #'\insertRef{mcc17b}{mase}

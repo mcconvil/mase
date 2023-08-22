@@ -18,11 +18,23 @@ mase is still under development.  Please use at your own risk!
 
 # mase
 
-mase contains a collection of model-assisted generalized regression estimators (the post-stratification estimator, the ratio estimator, the linear and logistic regression estimator, the elastic net regression estimator, and the regression tree estimator) for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains the Horvitz-Thompson estimator and several variance estimators.
+mase contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
+
+The available estimators are currently:
+
+  - generalized regression: `greg()`
+  - hotvitz-thompson: `horvitzThompson()`
+  - post-stratification: `postStrat()`
+  - elastic net generalized regression: `gregElasticNet()`
+  - regression tree: `gregTree()`
+  - modified generalized regression: `modifiedGreg()`
+  - ratio estimator: `ratioEstimator()`
+  - estimate of a ratio estimator: `ratio()`
+
 
 ## Installation
 
-You can install mase from github with:
+You can install `mase` from github with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
@@ -31,15 +43,60 @@ devtools::install_github("mcconvil/mase")
 
 ## Example
 
-Here's an example of fitting the Horvitz-Thompson estimator:
+### Horvitz-Thompson
 
-```{r example}
+Here's an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory & Analysis department (FIA). 
 
+```{r example1, message=F}
 library(mase)
+library(dplyr)
 
-## Estimates the mean and total of the api00 variable using the apisrs dataset in the survey package
-library(survey)
-data(api)
-horvitzThompson(y = apisrs$api00, pi = apisrs$pw^(-1), var_est = TRUE, var_method = "lin_HTSRS")
+data(IdahoSamp)
+data(IdahoPop)
+
+samp <- filter(IdahoSamp, COUNTYFIPS == 16055) 
+pop <- filter(IdahoPop, COUNTYFIPS == 16055) 
+
+horvitzThompson(y = samp$BA_TPA_ADJ,
+                N = pop$npixels,
+                var_est = TRUE,
+                var_method = "LinHTSRS")
+```
+
+### Linear Regression Estimator
+
+We can also fit a linear regression estimator using that same data:
+
+```{r example2, message = F}
+xsample <- select(samp, tcc, elev) %>%
+  as.data.frame()
+
+xpop <- select(pop, names(xsample))
+
+greg_est <- greg(y = samp$BA_TPA_ADJ,
+     N = pop$npixels,
+     xsample = xsample,
+     xpop = xpop,
+     var_est = TRUE,
+     var_method = "LinHB",
+     datatype = "means")
+```
+
+We still get the population total and mean estimates along with their variance estimates:
+
+```{r}
+greg_est[1:4]
+```
+
+But with this estimator we also get the weights
+
+```{r}
+greg_est[5]
+```
+
+and the coefficients for the model
+
+```{r}
+greg_est[6]
 ```
 

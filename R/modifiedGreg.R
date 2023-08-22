@@ -21,6 +21,19 @@
 #' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.
 #' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
 #' 
+#' @examples
+#' library(dplyr)
+#' data(IdahoPop)
+#' data(IdahoSamp)
+#' 
+#' modifiedGreg(y = IdahoSamp$BA_TPA_ADJ,
+#'              xsample = IdahoSamp[c("tcc", "elev")],
+#'              xpop = IdahoPop[c("COUNTYFIPS","tcc", "elev", "npixels")] |> rename(N = npixels),
+#'              domains = IdahoSamp$COUNTYFIPS,
+#'              datatype = "means",
+#'              N = sum(IdahoPop$npixels),
+#'              var_est = TRUE)
+#' 
 #' @export modifiedGreg
 #' @import survey
 #' @import glmnet

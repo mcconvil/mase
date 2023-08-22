@@ -76,12 +76,19 @@ A list of output containing:
 Calculates a lasso, ridge or elastic net generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
 \examples{
-library(survey)
-data(api)
-gregElasticNet(y = apisrs$api00, 
-xsample = apisrs[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-xpop = apipop[c("col.grad", "awards", "snum", "dnum", "cnum", "pcttest", "meals", "sch.wide")], 
-pi = apisrs$pw^(-1), var_est = TRUE, alpha = .5)
+library(dplyr)
+data(IdahoPop)
+data(IdahoSamp)
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
+gregElasticNet(y = xsample$BA_TPA_ADJ,
+               N = xpop$npixels,
+               xsample = xsample[c("tcc", "elev", "ppt", "tmean")],
+               xpop = xpop[c("tcc", "elev", "ppt", "tmean")],
+               var_est = TRUE,
+               var_method = "LinHB",
+               datatype = "means",
+               alpha = 0.5)
 
 }
 \references{

@@ -67,11 +67,20 @@ A list of output containing:
 Calculates a generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
 \examples{
-library(survey)
-data(api)
-greg(y = apisrs$api00, xsample = apisrs[c("col.grad", "awards")], 
-xpop = apipop[c("col.grad", "awards")], pi = apisrs$pw^(-1), 
-var_est = TRUE)
+library(dplyr)
+data(IdahoPop)
+data(IdahoSamp)
+
+xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
+
+greg(y = xsample$BA_TPA_ADJ,
+     N = xpop$npixels,
+     xsample = xsample[c("tcc", "elev")],
+     xpop = xpop[c("tcc", "elev")],
+     var_est = TRUE,
+     var_method = "LinHB",
+     datatype = "means")
 
 }
 \references{

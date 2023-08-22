@@ -65,3 +65,17 @@ modifiedGreg(
 \description{
 Calculates a modified generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.
 }
+\examples{
+library(dplyr)
+data(IdahoPop)
+data(IdahoSamp)
+
+modifiedGreg(y = IdahoSamp$BA_TPA_ADJ,
+             xsample = IdahoSamp[c("tcc", "elev")],
+             xpop = IdahoPop[c("COUNTYFIPS","tcc", "elev", "npixels")] |> rename(N = npixels),
+             domains = IdahoSamp$COUNTYFIPS,
+             datatype = "means",
+             N = sum(IdahoPop$npixels),
+             var_est = TRUE)
+
+}

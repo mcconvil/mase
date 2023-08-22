@@ -12,12 +12,27 @@
 #' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS", "SRSunconditional", or the "SRSbootstrap" variance estimator.
 
 #' @examples 
-#' library(survey)
-#' data(api) 
-#' postStrat(y = apisrs$api00, xsample = apisrs$awards, 
-#' xpop = data.frame(table(apipop$awards)), datatype = "totals", 
-#' pi = apisrs$pw^(-1))
+#' library(tidyr)
+#' library(dplyr)
 #' 
+#' data(IdahoPop)
+#' data(IdahoSamp)
+#' 
+#' xsample <- filter(IdahoSamp, COUNTYFIPS == "16055")
+#' xpop <- filter(IdahoPop, COUNTYFIPS == "16055")
+#' 
+#' pop <- xpop[c("tnt.1", "tnt.2")] |> 
+#'     pivot_longer(everything(), names_to = "tnt", values_to = "prop") |>
+#'     mutate(tnt = as.numeric(gsub("\\D", "", tnt)))
+#'     
+#' postStrat(y = xsample$BA_TPA_ADJ,
+#'           N = xpop$npixels,
+#'           xsample = xsample$tnt,
+#'           xpop = pop,
+#'           datatype = "means",
+#'           var_est = TRUE,
+#'           var_method = "SRSunconditional")
+#'           
 #'@references 
 #'\insertRef{coc77}{mase} 
 #' 
@@ -34,6 +49,7 @@
 #' }
 
 #' @import dplyr
+#' @import tidyr
 #' @export postStrat
 #' @include postStratt.R
 #' @include varMase.R
