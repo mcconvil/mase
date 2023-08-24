@@ -1,5 +1,15 @@
 # Resubmission
 
+This is an update to mase 0.1.3. The new version is mase 0.1.4.
+
+Notably, the primary author and maintainer, Kelly McConville, has moved from Reed College to Harvard University and so her email has been changed from mcconville@reed.edu to kmcconville@fas.harvard.edu. Kelly's profile at Harvard can be found at the following link: https://statistics.fas.harvard.edu/people/kelly-mcconville.
+
+R CMD check results
+
+0 errors | 0 warnings | 1 note
+
+# Resubmission
+
 This is an update to mase 0.1.2.  The new version is mase 0.1.3.
 
 Received the following message from CRAN:
