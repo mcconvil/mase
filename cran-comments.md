@@ -2,11 +2,18 @@
 
 This is an update to mase 0.1.3. The new version is mase 0.1.4.
 
-Notably, the primary author and maintainer, Kelly McConville, has moved from Reed College to Harvard University and so her email has been changed from mcconville@reed.edu to kmcconville@fas.harvard.edu. Kelly's profile at Harvard can be found at the following link: https://statistics.fas.harvard.edu/people/kelly-mcconville.
+Notably, the primary author and maintainer, Kelly McConville, has moved from Reed College to Harvard University and so her email has been changed from mcconville@reed.edu to kmcconville@fas.harvard.edu. Kelly's profile at Harvard can be found at the following link: https://statistics.fas.harvard.edu/people/kelly-mcconville and here biography that details this move can be found in the biography section of here personal website: https://mcconville.rbind.io/.
 
-R CMD check results
+The package was tested on the following systems
+
+* local MacOS Ventura (13.4.1), R 4.3.1
+* win builder, R Under development (unstable) (2023-08-23 r85001 ucrt)
+
+And got
 
 0 errors | 0 warnings | 1 note
+
+Where the note regarded the change in maintainer email.
 
 # Resubmission
 
