@@ -12,3 +12,4 @@ ratioGreg.R
 postStratRatiot.R
 store_PS_ratio.2020_08_17.Rda
 ^data-raw$
+^\.github$
