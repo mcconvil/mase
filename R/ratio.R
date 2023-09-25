@@ -52,12 +52,14 @@ ratio <- function(y_num,
                   messages = T,
                   ...){
   
-  # I don't think we need to add any argument checks here, because the mase 
-  # functions that the arguments are fed into will output the correct errors
-  # for us. things like pi and N are needed for later variance calculations
-  # but they will always be called as arguments to a mase:: function before
-  # those steps so if they are in the wrong format those functions should
-  # output the correct errors for us
+  dots <- list(...)
+  dots_names <- names(dots)
+  
+  if (length(dots) != 0){
+    if (is.null(dots_names) || any("" %in% dots_names)) {
+      stop("All arguments passed through `...` must be named")
+    } 
+  }
   
   weight <- as.vector(pi^(-1))
   
@@ -68,8 +70,10 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
+      datatype = datatype,
       messages = messages,
       fpc = fpc,
+      var_est = F,
       ...
     )
     
@@ -78,8 +82,10 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
+      datatype = datatype,
       messages = messages,
       fpc = fpc,
+      var_est = F,
       ...
     )
     
@@ -97,11 +103,10 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2, 
-      fpc = fpc,
-      var_est = var_est,
-      var_method = var_method,
       datatype = datatype,
       messages = messages,
+      fpc = fpc,
+      var_est = FALSE,
       ...
     )
     
@@ -112,11 +117,10 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
-      fpc = fpc,
-      var_est = var_est,
-      var_method = var_method,
       datatype = datatype,
       messages = messages,
+      fpc = fpc,
+      var_est = FALSE,
       ...
     )
     
@@ -167,6 +171,7 @@ ratio <- function(y_num,
       N = N,
       messages = messages,
       fpc = fpc,
+      var_est = FALSE,
       ...
     )
     
@@ -178,6 +183,7 @@ ratio <- function(y_num,
       N = N,
       messages = messages,
       fpc = fpc,
+      var_est = FALSE,
       ...
     )
     
