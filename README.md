@@ -1,6 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # Development Mode
 
 mase is still under development. Please use at your own risk!
