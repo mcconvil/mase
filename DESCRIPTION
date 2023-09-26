@@ -36,7 +36,8 @@ Imports: glmnet,
     rpms,
     boot,
     stats,
-    Rdpack
+    Rdpack,
+    ellipsis
 Suggests:
     roxygen2,
     testthat (>= 3.0.0),

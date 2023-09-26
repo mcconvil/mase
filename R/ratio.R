@@ -31,7 +31,7 @@
 #' \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
 #' \item{variance_est:}{Estimate of the variance of the ratio of two estimators}
 #' }
-#' @import dplyr
+#' @importFrom ellipsis check_dots_used
 #' @export ratio
 #' @include varMase.R
 
@@ -52,15 +52,8 @@ ratio <- function(y_num,
                   messages = T,
                   ...){
   
-  dots <- list(...)
-  dots_names <- names(dots)
-  
-  if (length(dots) != 0){
-    if (is.null(dots_names) || any("" %in% dots_names)) {
-      stop("All arguments passed through `...` must be named")
-    } 
-  }
-  
+  check_dots_used()
+
   weight <- as.vector(pi^(-1))
   
   if (estimator == "horvitzThompson") {
@@ -70,10 +63,9 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
-      datatype = datatype,
       messages = messages,
       fpc = fpc,
-      var_est = F,
+      var_est = FALSE,
       ...
     )
     
@@ -82,10 +74,9 @@ ratio <- function(y_num,
       pi = pi,
       N = N,
       pi2 = pi2,
-      datatype = datatype,
       messages = messages,
       fpc = fpc,
-      var_est = F,
+      var_est = FALSE,
       ...
     )
     
