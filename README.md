@@ -7,7 +7,7 @@
 status](https://www.r-pkg.org/badges/version/mase)](https://CRAN.R-project.org/package=mase)
 <!-- badges: end -->
 
-# Development Mode
+## Development Mode
 
 mase is still under development. Please use at your own risk!
 
