@@ -53,7 +53,14 @@ ratio <- function(y_num,
                   ...){
   
   check_dots_used()
-
+  
+  if (is.null(pi)) {
+    if (messages) {
+      message("Assuming simple random sampling") 
+    }
+    pi <- rep(length(y_num)/N, length(y_num))
+  }
+  
   weight <- as.vector(pi^(-1))
   
   if (estimator == "horvitzThompson") {
@@ -214,7 +221,7 @@ ratio <- function(y_num,
     
   } else {
     
-    return(list(ratio_est = e_ratio))
+    return(list(ratio_est = rat))
     
   }
   
