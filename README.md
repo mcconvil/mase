@@ -31,7 +31,15 @@ The available estimators are currently:
 
 ## Installation
 
-You can install `mase` from github with:
+Install the latest CRAN release with:
+
+``` r
+install.packages("mase")
+library(mase)
+```
+
+You can also install the developmental version of `mase` from GitHub
+with:
 
 ``` r
 # install.packages("devtools")
