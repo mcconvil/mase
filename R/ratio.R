@@ -1,6 +1,6 @@
 #' Compute a ratio of two estimators
 #' 
-#' @inheritParams horvitzThompson
+#' @inheritParams greg
 #' @param y_num A vector containing the response value for each sampled unit in the numerator
 #' @param y_den A vector containing the response value for each sampled unit in the denominator
 #' @param estimator A string containing the name of the estimators of which you are taking a ratio of. The names follow the same format as the functions independently do in mase. Options are "horvitzThompson", "postStrat", and "greg".

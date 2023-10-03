@@ -26,6 +26,10 @@ ratio(
 
 \item{y_den}{A vector containing the response value for each sampled unit in the denominator}
 
+\item{xsample}{A data frame of the auxiliary data in the sample.}
+
+\item{xpop}{A data frame of population level auxiliary information.  It must contain the same names as xsample.  If datatype = "raw", must contain unit level data.  If datatype = "totals" or "means", then contains one row of aggregated, population totals or means for the auxiliary data. Default is "raw".}
+
 \item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
 \item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
@@ -50,7 +54,7 @@ ratio(
 A list of output containing:
 \itemize{
 \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
-\item{variance_est:}{Estimate of the variance of the ratio of two estimators}
+\item{ratio_var_est:}{Estimate of the variance of the ratio of two estimators}
 }
 }
 \description{
@@ -66,6 +70,5 @@ var_est = TRUE, var_method = "LinHB", datatype = "raw")
 }
 \references{
 \insertRef{coc77}{mase} 
-
 \insertRef{sar92}{mase}
 }
