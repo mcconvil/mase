@@ -193,10 +193,12 @@ ratio <- function(y_num,
     xsample_var <- data.frame(xsample_d_var[,-1, drop = FALSE])
     xsample_dt_var <- t(xsample_d_var) 
     
-    y_hat_num <- xsample_d_var %*% solve(xsample_dt_var %*% diag(weight) %*% xsample_d_var) %*% 
-      (xsample_dt_var) %*% diag(weight)%*%y_num
-    y_hat_den <- xsample_d_var %*% solve(xsample_dt_var %*% diag(weight) %*% xsample_d_var) %*%
-      (xsample_dt_var) %*% diag(weight) %*% y_den
+    y_hat_const <- xsample_d_var %*% solve(xsample_dt_var %*% diag(weight) %*% xsample_d_var) %*% 
+      (xsample_dt_var) %*% diag(weight) 
+    
+    y_hat_num <- y_hat_const %*% y_num
+    
+    y_hat_den <- y_hat_const %*% y_den
     
     e_num <- y_num - y_hat_num
     e_den <- y_den - y_hat_den
@@ -205,7 +207,7 @@ ratio <- function(y_num,
     
   }
   
-  if (var_est == T) {
+  if (var_est == TRUE) {
     
     var_est <- varMase(
       y = e_ratio,
@@ -217,7 +219,7 @@ ratio <- function(y_num,
     )
     
     return(list(ratio_est = rat,
-                variance_est = (1/est_den^2)*var_est))
+                ratio_var_est = (1/est_den^2)*var_est))
     
   } else {
     
