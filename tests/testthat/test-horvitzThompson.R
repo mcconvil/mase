@@ -11,9 +11,6 @@ out <- horvitzThompson(y = apisrs$api00,
 
 test_that("horvitzThompson.estimates", {
   
-  expect_equal(out$pop_total, 4066887)
-  expect_equal(out$pop_mean, 656.585)
-  expect_equal(out$pop_total_var, 3282462447)
-  expect_equal(out$pop_mean_var, 85.55736)
+  expect_snapshot(out)
   
 })

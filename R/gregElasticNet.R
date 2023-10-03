@@ -150,7 +150,7 @@ gregElasticNet  <- function(y,
     }
     
     xpop <- data.frame(model.matrix(~., data = xpop))[,-1]
-    xpop <- dplyr::select_(xpop, .dots=names(xsample))
+    xpop <- dplyr::select(xpop, names(xsample))
     xpop_d <- model.matrix(~., data = xpop)
     
     #Total estimate
@@ -187,7 +187,7 @@ gregElasticNet  <- function(y,
   
     if (datatype == "raw") {
       xpop <- data.frame(model.matrix(~., data = xpop))[, -1]
-      xpop <- dplyr::select_(xpop, .dots=names(xsample))
+      xpop <- dplyr::select(xpop, names(xsample))
       xpop_d <- model.matrix(~., data = xpop)
       xpop_d <- apply(xpop_d,2,sum)
     }

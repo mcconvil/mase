@@ -23,15 +23,8 @@ out_log <- greg(y = as.integer(apisrs$awards) - 1,
 
 test_that("greg.estimates", {
   
-  expect_equal(out_lin$pop_total, 4116418)
-  expect_equal(out_lin$pop_mean, 664.5815)
-  expect_equal(out_lin$pop_total_var, 1547721897)
-  expect_equal(out_lin$pop_mean_var, 40.34136)
-  
-  expect_equal(out_log$pop_total, 3834.216)
-  expect_equal(out_log$pop_mean, 0.619021)
-  expect_equal(as.numeric(out_log$pop_total_var), 43380.63)
-  expect_equal(as.numeric(out_log$pop_mean_var),  0.001130716)
+  expect_snapshot(out_lin)
+  expect_snapshot(out_log)
   
  
 })

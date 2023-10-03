@@ -16,9 +16,6 @@ out <- gregElasticNet(y = apisrs$api00,
 
 test_that("gregElasticNet.estimates", {
   
-  expect_equal(out$pop_total, 4096571)
-  expect_equal(out$pop_mean, 661.3774)
-  expect_equal(out$pop_total_var, 803234237)
-  expect_equal(out$pop_mean_var, 20.93629)
+  expect_snapshot(out)
   
 })

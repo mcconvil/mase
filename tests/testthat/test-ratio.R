@@ -14,7 +14,6 @@ out <- ratio(y_num = apisrs$api.stu,
 
 test_that("ratio.estimates", {
   
-  expect_equal(out$ratio_est, 0.8258652)
-  expect_equal(out$variance_est, 8.851525e-05)
+  expect_snapshot(out)
   
 })
