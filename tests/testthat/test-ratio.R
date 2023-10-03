@@ -2,7 +2,7 @@ library(survey)
 library(mase)
 data(api) 
 
-out <- ratio(y_num = apisrs$api.stu,
+res <- ratio(y_num = apisrs$api.stu,
              y_den = apisrs$enroll,
              xsample = apisrs$stype,
              xpop = apipop$stype,
@@ -14,6 +14,6 @@ out <- ratio(y_num = apisrs$api.stu,
 
 test_that("ratio.estimates", {
   
-  expect_snapshot(out)
+  expect_snapshot(res)
   
 })
