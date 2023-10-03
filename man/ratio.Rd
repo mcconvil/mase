@@ -26,21 +26,17 @@ ratio(
 
 \item{y_den}{A vector containing the response value for each sampled unit in the denominator}
 
-\item{xsample}{A vector containing the appropriate form of xsample for the estimator of choice. For example see ?mase::greg() to see the appropriate input for xsample when computing a ratio of two greg estimators}
+\item{pi}{A numeric vector of inclusion probabilities for each sampled unit in y.  If NULL, then simple random sampling without replacement is assumed.}
 
-\item{xpop}{A vector containing the appropriate form of xpop for the estimator of choice.}
+\item{pi2}{A square matrix of the joint inclusion probabilities.  Needed for the "LinHT" variance estimator.}
 
-\item{pi}{A vector containing the first order inclusion probabilities for the sample.}
-
-\item{pi2}{Defaults to NULL. A vector containing the second order inclusion probabilities for the sample.}
-
-\item{N}{The number of observations in the population.}
+\item{N}{A numeric value of the population size. If NULL, it is estimated with the sum of the inverse of the pis.}
 
 \item{estimator}{A string containing the name of the estimators of which you are taking a ratio of. The names follow the same format as the functions independently do in mase. Options are "horvitzThompson", "postStrat", and "greg".}
 
-\item{var_est}{Default to FALSE, logical for whether or not to compute estimate of variance}
+\item{var_est}{A logical indicating whether or not to compute a variance estimator.  Default is FALSE.}
 
-\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator.}
+\item{var_method}{The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator or a resampling technique: "bootstrapSRS" = bootstrap variance estimator under simple random sampling without replacement. The default is "LinHB".}
 
 \item{datatype}{Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.}
 

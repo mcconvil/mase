@@ -3,15 +3,8 @@
 #' @inheritParams horvitzThompson
 #' @param y_num A vector containing the response value for each sampled unit in the numerator
 #' @param y_den A vector containing the response value for each sampled unit in the denominator
-#' @param xsample A vector containing the appropriate form of xsample for the estimator of choice. For example see ?mase::greg() to see the appropriate input for xsample when computing a ratio of two greg estimators
-#' @param xpop A vector containing the appropriate form of xpop for the estimator of choice.
-#' @param pi A vector containing the first order inclusion probabilities for the sample.
-#' @param pi2 Defaults to NULL. A vector containing the second order inclusion probabilities for the sample.
-#' @param N The number of observations in the population.
 #' @param estimator A string containing the name of the estimators of which you are taking a ratio of. The names follow the same format as the functions independently do in mase. Options are "horvitzThompson", "postStrat", and "greg".
 #' @param datatype Default to "raw", takes values "raw", "totals" or "means" for whether the user is providing the raw population stratum memberships, the population totals of each stratum, or the population proportions of each stratum.
-#' @param var_est Default to FALSE, logical for whether or not to compute estimate of variance
-#' @param var_method The method to use when computing the variance estimator.  Options are a Taylor linearized technique: "LinHB"= Hajek-Berger estimator, "LinHH" = Hansen-Hurwitz estimator, "LinHTSRS" = Horvitz-Thompson estimator under simple random sampling without replacement, and "LinHT" = Horvitz-Thompson estimator.
 #' @param ... Any additional arguments that can be passed to mase::horvitzThompson, mase::greg, and mase::postStrat
 
 #' @examples 
@@ -23,19 +16,16 @@
 #' 
 #'@references 
 #'\insertRef{coc77}{mase} 
-#' 
 #'\insertRef{sar92}{mase}
 #'
 #' @return A list of output containing:
 #' \itemize{
 #' \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
-#' \item{variance_est:}{Estimate of the variance of the ratio of two estimators}
+#' \item{ratio_var_est:}{Estimate of the variance of the ratio of two estimators}
 #' }
 #' @importFrom ellipsis check_dots_used
 #' @export ratio
 #' @include varMase.R
-
-
 
 ratio <- function(y_num,
                   y_den,
@@ -53,6 +43,10 @@ ratio <- function(y_num,
                   ...){
   
   check_dots_used()
+  
+  if(is.null(estimator) || !(estimator %in% c("horvitzThompson", "postStrat", "greg"))) {
+    stop("Must supply a valid value for argument 'estimator' \n  Support currently only exists for the following estimators: \n \t - horvitzThompson \n \t - postStrat \n \t - greg")
+  }
   
   if (is.null(pi)) {
     if (messages) {
