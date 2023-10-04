@@ -6,9 +6,9 @@
       var_method = "LinHB", datatype = "raw")
     Output
       $ratio_est
-      [1] 0.82586520517999606472
+      [1] 0.8258652
       
       $ratio_var_est
-      [1] 8.8515247125631592393e-05
+      [1] 8.851525e-05
       
 
