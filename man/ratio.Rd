@@ -14,7 +14,7 @@ ratio(
   N = NULL,
   estimator = NULL,
   var_est = F,
-  var_method = "LinHB",
+  var_method = "LinHTSRS",
   datatype = "raw",
   fpc = T,
   messages = T,
