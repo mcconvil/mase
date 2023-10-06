@@ -295,7 +295,7 @@ greg  <- function(y,
   if (var_est == TRUE) {
     
     if (var_method!="bootstrapSRS") {
-      y.hat <- xsample.d %*% (solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight)%*%y)
+      y.hat <- xsample.d %*% coefs
       e <- y - y.hat
       varEst <- varMase(y = e,
                         pi = pi,
