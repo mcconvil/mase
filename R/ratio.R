@@ -204,7 +204,7 @@ ratio <- function(y_num,
   if (var_est == TRUE) {
     
     var_est <- varMase(
-      y = e_ratio,
+      y = as.numeric(e_ratio),
       pi = pi,
       pi2 = pi2,
       method = var_method,
