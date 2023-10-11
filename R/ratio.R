@@ -194,8 +194,8 @@ ratio <- function(y_num,
     
     y_hat_den <- y_hat_const %*% y_den
     
-    e_num <- y_num - y_hat_num
-    e_den <- y_den - y_hat_den
+    e_num <- y_num - as.vector(y_hat_num)
+    e_den <- y_den - as.vector(y_hat_den)
     
     e_ratio <- e_num - as.vector(rat)*e_den
     
