@@ -66,7 +66,7 @@ postStrat <- function(y,
                       datatype = "raw",
                       B = 1000,
                       fpc = TRUE,
-                      messages = T){
+                      messages = TRUE){
 
   
   #Define variables

@@ -15,8 +15,8 @@ ratioEstimator(
   var_est = FALSE,
   var_method = "LinHB",
   B = 1000,
-  fpc = T,
-  messages = T
+  fpc = TRUE,
+  messages = TRUE
 )
 }
 \arguments{

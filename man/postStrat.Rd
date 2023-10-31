@@ -16,7 +16,7 @@ postStrat(
   datatype = "raw",
   B = 1000,
   fpc = TRUE,
-  messages = T
+  messages = TRUE
 )
 }
 \arguments{

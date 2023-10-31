@@ -48,8 +48,8 @@ horvitzThompson <- function(y,
                             var_est = FALSE,
                             var_method = "LinHB",
                             B = 1000,
-                            fpc = T,
-                            messages = T) {
+                            fpc = TRUE,
+                            messages = TRUE) {
 
   if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")

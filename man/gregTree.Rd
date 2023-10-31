@@ -16,8 +16,8 @@ gregTree(
   pval = 0.05,
   perm_reps = 500,
   bin_size = NULL,
-  fpc = T,
-  messages = T
+  fpc = TRUE,
+  messages = TRUE
 )
 }
 \arguments{

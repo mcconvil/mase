@@ -62,8 +62,8 @@ gregElasticNet  <- function(y,
                             cvfolds = 10,
                             weights_method = "ridge",
                             eta = 0.0001,
-                            fpc = T,
-                            messages = T){
+                            fpc = TRUE,
+                            messages = TRUE){
   
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")

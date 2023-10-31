@@ -16,8 +16,8 @@ ratio(
   var_est = F,
   var_method = "LinHTSRS",
   datatype = "raw",
-  fpc = T,
-  messages = T,
+  fpc = TRUE,
+  messages = TRUE,
   ...
 )
 }

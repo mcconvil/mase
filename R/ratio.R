@@ -38,8 +38,8 @@ ratio <- function(y_num,
                   var_est = F, 
                   var_method = "LinHTSRS",
                   datatype = "raw",
-                  fpc = T,
-                  messages = T,
+                  fpc = TRUE,
+                  messages = TRUE,
                   ...){
   
   check_dots_used()

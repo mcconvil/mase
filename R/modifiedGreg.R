@@ -59,8 +59,8 @@ modifiedGreg <- function(y,
                          estimation_domains = NULL,
                          N = NULL,
                          B = 1000,
-                         fpc = T,
-                         messages = T) {
+                         fpc = TRUE,
+                         messages = TRUE) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")

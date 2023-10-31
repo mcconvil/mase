@@ -21,8 +21,8 @@ gregElasticNet(
   cvfolds = 10,
   weights_method = "ridge",
   eta = 1e-04,
-  fpc = T,
-  messages = T
+  fpc = TRUE,
+  messages = TRUE
 )
 }
 \arguments{

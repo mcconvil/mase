@@ -18,8 +18,8 @@ greg(
   modelselect = FALSE,
   lambda = "lambda.min",
   B = 1000,
-  fpc = T,
-  messages = T
+  fpc = TRUE,
+  messages = TRUE
 )
 }
 \arguments{
