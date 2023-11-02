@@ -95,8 +95,7 @@ greg  <- function(y,
     }
   }
   
-  #Convert y to a vector
-  y <- as.vector(y)
+  y <- as.numeric(y)
   
   #sample size
   n <- length(y)
@@ -280,17 +279,24 @@ greg  <- function(y,
       xpop_d <- unlist(c(N, xpop[names(xsample)]*N))
     }
     
-    w <- as.matrix(
-      1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% 
-        solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% 
-        (xsample.dt)) %*% 
-      diag(weight)
+    one_mat <- matrix(rep(1, times = nrow(xsample.d)), nrow = 1)
+    xpop_cpp <- as.matrix(xpop_d)
+    weight_mat <- diag(weight)
+    
+    w <- get_weights(xpop_cpp, xsample.d, weight_mat, one_mat)
+    
+    # w <- as.matrix(
+    #   1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% 
+    #     solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% 
+    #     (xsample.dt)) %*% 
+    #   diag(weight)
 
   #calculating the total estimate for y
   t <- w %*% y
 
   #Coefficients
-  coefs <- solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight) %*% y
+  coefs <- get_coefs(xsample.d, as.vector(y), weight_mat)
+  # coefs <- solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight) %*% y
   
   if (var_est == TRUE) {
     

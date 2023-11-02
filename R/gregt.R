@@ -10,6 +10,7 @@ gregt <- function(data, xpopd, domain_id, indices){
   
   #pis 
   pis <- d[,2]
+  weights <- as.vector(pis^(-1))
   
   #Length of xsample_d
   p <- dim(d)[2] - 2
