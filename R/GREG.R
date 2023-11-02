@@ -284,19 +284,12 @@ greg  <- function(y,
     weight_mat <- diag(weight)
     
     w <- get_weights(xpop_cpp, xsample.d, weight_mat, one_mat)
-    
-    # w <- as.matrix(
-    #   1 + t(as.matrix(xpop_d) - xsample.dt %*% weight) %*% 
-    #     solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% 
-    #     (xsample.dt)) %*% 
-    #   diag(weight)
 
   #calculating the total estimate for y
   t <- w %*% y
 
   #Coefficients
   coefs <- get_coefs(xsample.d, as.vector(y), weight_mat)
-  # coefs <- solve(xsample.dt %*% diag(weight) %*% xsample.d) %*% (xsample.dt) %*% diag(weight) %*% y
   
   if (var_est == TRUE) {
     
