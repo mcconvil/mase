@@ -1,5 +1,34 @@
 # Resubmission
 
+This is an update to mase 0.1.4. The new version is mase 0.1.5.
+
+The package as tested on the following systems
+
+* macos-latest (release)
+* windows-latest (release)
+
+And got 
+
+0 errors | 0 warnings | 0 notes
+
+As well as
+
+* ubuntu-latest (devel)
+* ububtu-latest (release)
+* ubuntu-latest (oldrel-1)
+
+And got 
+
+And got
+
+0 errors | 0 warnings | 1 note
+
+Where the note had to do with the size of the installed package.
+
+
+
+# Resubmission
+
 This is an update to mase 0.1.3. The new version is mase 0.1.4.
 
 Notably, the primary author and maintainer, Kelly McConville, has moved from Reed College to Harvard University and so her email has been changed from mcconville@reed.edu to kmcconville@fas.harvard.edu. Kelly's profile at Harvard can be found at the following link: https://statistics.fas.harvard.edu/people/kelly-mcconville and here biography that details this move can be found in the biography section of here personal website: https://mcconville.rbind.io/.
