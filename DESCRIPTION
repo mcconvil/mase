@@ -37,7 +37,8 @@ Imports: glmnet,
     boot,
     stats,
     Rdpack,
-    ellipsis
+    ellipsis,
+    Rcpp
 Suggests:
     roxygen2,
     testthat (>= 3.0.0),
@@ -51,6 +52,7 @@ Collate:
     'GREG.R'
     'IdahoPop.R'
     'IdahoSamp.R'
+    'RcppExports.R'
     'gregElasticNett.R'
     'gregElasticNet.R'
     'gregTree.R'
@@ -59,6 +61,7 @@ Collate:
     'horvitzThompson.R'
     'logisticGregElasticNett.R'
     'logisticGregt.R'
+    'mase-package.R'
     'modifiedGreg.R'
     'modifiedGregt.R'
     'modifiedLogisticGregt.R'
@@ -71,3 +74,6 @@ RoxygenNote: 7.2.3
 RdMacros: Rdpack
 Config/testthat/edition: 3
 LazyData: true
+LinkingTo: 
+    Rcpp,
+    RcppEigen
