@@ -46,14 +46,18 @@ postStrat(
 }
 \value{
 A list of output containing:
-\itemize{
-\item{pop_total:}{Estimate of population total}
-\item{pop_mean:}{Estimate of the population mean (or proportion)}
-\item{pop_total_var:}{Estimated variance of population total estimate}
-\item{pop_mean_var:}{Estimated variance of population mean estimate}
-\item{strat_ests:}{Table of total and mean estimates for each strata}
-\item{weights:}{Survey weights produced by PS}
-}
+
+* pop_total: Estimate of population total.
+
+* pop_mean: Estimate of the population mean (or proportion).
+
+* pop_total_var: Estimated variance of population total estimate.
+
+* pop_mean_var: Estimated variance of population mean estimate.
+
+* strat_ests: Table of total and mean estimates for each strata.
+
+* weights: Survey weights produced by PS.
 }
 \description{
 Calculates a post-stratified estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and a single, categorical auxiliary population variable.

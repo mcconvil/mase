@@ -52,10 +52,10 @@ ratio(
 }
 \value{
 A list of output containing:
-\itemize{
-\item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
-\item{ratio_var_est:}{Estimate of the variance of the ratio of two estimators}
-}
+
+* ratio_est: Estimate of the ratio of the population totals/means of the two estimators.
+
+* ratio_var_est: Estimate of the variance of the ratio of two estimators.
 }
 \description{
 Compute a ratio of two estimators

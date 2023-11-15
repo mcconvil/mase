@@ -46,12 +46,14 @@ ratioEstimator(
 }
 \value{
 List of output containing:
-\itemize{
-\item{pop_total:}{Estimate of population total}
-\item{pop_mean:}{Estimate of population mean}
-\item{pop_total_var:}{ Estimated variance of population total estimate}
-\item{pop_mean_var:}{ Estimated variance of population mean estimate}
-}
+
+* pop_total: Estimate of population total.
+
+* pop_mean: Estimate of population mean.
+
+* pop_total_var: Estimated variance of population total estimate.
+
+* pop_mean_var: Estimated variance of population mean estimate.
 }
 \description{
 Calculates a ratio estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.

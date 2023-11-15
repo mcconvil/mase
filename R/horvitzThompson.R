@@ -24,16 +24,20 @@
 #'                 var_est = TRUE,
 #'                 var_method = "LinHTSRS")
 #'
-#'@references{
-#'\insertRef{hor52}{mase}
-#'}
-#' @return List of output containing:
-#' \itemize{
-#' \item{pop_total:}{Estimate of population total}
-#' \item{pop_mean:}{Estimate of population mean}
-#' \item{pop_total_var:}{ Estimated variance of population total estimate}
-#' \item{pop_mean_var:}{ Estimated variance of population mean estimate}
-#' }
+#' @references
+#' \insertRef{hor52}{mase}
+#' 
+#' @return 
+#' List of output containing:
+#' 
+#' * pop_total: Estimate of population total.
+#' 
+#' * pop_mean: Estimate of population mean.
+#' 
+#' * pop_total_var: Estimated variance of population total estimate.
+#' 
+#' * pop_mean_var: Estimated variance of population mean estimate.
+#' 
 #'
 #' @export horvitzThompson
 #' @import boot

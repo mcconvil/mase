@@ -14,15 +14,17 @@
 #' xpop = apipop$stype, pi = apisrs$pw^(-1), estimator = "postStrat",
 #' var_est = TRUE, var_method = "LinHB", datatype = "raw")
 #' 
-#'@references 
-#'\insertRef{coc77}{mase} 
-#'\insertRef{sar92}{mase}
+#' @references 
+#' \insertRef{coc77}{mase} 
+#' \insertRef{sar92}{mase}
 #'
-#' @return A list of output containing:
-#' \itemize{
-#' \item{ratio_est:}{Estimate of the ratio of the population totals/means of the two estimators}
-#' \item{ratio_var_est:}{Estimate of the variance of the ratio of two estimators}
-#' }
+#' @return 
+#' A list of output containing:
+#'
+#' * ratio_est: Estimate of the ratio of the population totals/means of the two estimators.
+#' 
+#' * ratio_var_est: Estimate of the variance of the ratio of two estimators.
+#' 
 #' @importFrom ellipsis check_dots_used
 #' @export ratio
 #' @include varMase.R

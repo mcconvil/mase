@@ -49,13 +49,16 @@ gregTree(
 }
 \value{
 A list of output containing:
-\itemize{
-\item{pop_total:}{Estimate of population total}
-\item{pop_mean:}{Estimate of the population mean (or proportion)}
-\item{weights:}{Survey weights produced by gregTree}
-\item{pop_total_var:}{Estimated variance of population total estimate}
-\item{pop_mean_var:}{Estimated variance of population mean estimate}
-}
+
+* pop_total: Estimate of population total.
+
+* pop_mean: Estimate of the population mean (or proportion).
+
+* weights: Survey weights produced by gregTree.
+
+* pop_total_var: Estimated variance of population total estimate.
+
+* pop_mean_var: Estimated variance of population mean estimate.
 }
 \description{
 Calculates a regression tree estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.

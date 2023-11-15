@@ -26,19 +26,24 @@
 #'      var_method = "LinHB",
 #'      datatype = "means")
 #' 
-#'@references 
-#'\insertRef{cas76}{mase}
+#' @references 
+#' \insertRef{cas76}{mase}
 #'
-#'\insertRef{sar92}{mase}
+#' \insertRef{sar92}{mase}
 #' 
-#' @return A list of output containing:
-#' \itemize{
-#' \item{pop_total:}{Estimate of population total}
-#' \item{pop_mean:}{Estimate of the population mean (or proportion)}
-#' \item{weights:}{Survey weights produced by GREG (linear model only)}
-#' \item{pop_total_var:}{Estimated variance of population total estimate}
-#' \item{pop_mean_var:}{Estimated variance of population mean estimate}
-#' }
+#' @return 
+#' A list of output containing:
+#' 
+#' * pop_total: Estimate of population total.
+#' 
+#' * pop_mean: Estimate of the population mean (or proportion).
+#' 
+#' * weights: Survey weights produced by GREG (linear model only).
+#' 
+#' * pop_total_var: Estimated variance of population total estimate.
+#' 
+#' * pop_mean_var: Estimated variance of population mean estimate.
+#' 
 #' 
 #' @export greg
 #' @import survey
