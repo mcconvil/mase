@@ -1,5 +1,24 @@
 # Resubmission
 
+This fixes the issues found in the previous submission which updated mase from 0.1.4 to 0.1.5
+
+* I updated some of the formatting of the function documentation which had become outdated in Webian and Windows
+
+The package has been re-tested on the following systems
+
+* macos-latest (release)
+* windows-latest (release)
+* ubuntu-latest (devel)
+* ububtu-latest (release)
+* ubuntu-latest (oldrel-1)
+
+And got 
+
+0 errors | 0 warnings | 0 notes
+
+
+# Resubmission
+
 This is an update to mase 0.1.4. The new version is mase 0.1.5.
 
 The package as tested on the following systems
