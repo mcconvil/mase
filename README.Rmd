@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Development Mode
 
-mase is still under development.  Please use at your own risk!  
+`mase` is still under development.  Please use at your own risk!  
 
 # mase
 

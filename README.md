@@ -9,7 +9,7 @@ status](https://www.r-pkg.org/badges/version/mase)](https://CRAN.R-project.org/p
 
 ## Development Mode
 
-mase is still under development. Please use at your own risk!
+`mase` is still under development. Please use at your own risk!
 
 # mase
 
@@ -143,8 +143,5 @@ and the coefficients for the model
 ``` r
 greg_est[6]
 #> $coefficients
-#>                     [,1]
-#> (Intercept) -30.26159045
-#> tcc           0.79210774
-#> elev          0.09679431
+#> [1] -30.26159045   0.79210774   0.09679431
 ```
