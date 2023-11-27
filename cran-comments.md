@@ -1,5 +1,28 @@
 # Resubmission
 
+This is an update to mase 0.1.5. The new version is mase 0.1.5.1
+
+The package has been tested on the following systems
+
+* macos-latest (release)
+* windows-latest (release)
+* ubuntu-latest (devel)
+* ububtu-latest (release)
+* ubuntu-latest (oldrel-1)
+
+And got 
+
+0 errors | 0 warnings | 0 notes
+
+We checked the strong reverse dependency: FIESTAutils, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 0 packages
+
+
+
+# Resubmission
+
 This fixes the issues found in the previous submission which updated mase from 0.1.4 to 0.1.5
 
 * I updated some of the formatting of the function documentation which had become outdated in Webian and Windows

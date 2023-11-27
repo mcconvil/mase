@@ -1,8 +1,8 @@
 Package: mase
 Type: Package
 Title: Model-Assisted Survey Estimators
-Version: 0.1.5
-Date: 2023-11-15
+Version: 0.1.5.1
+Date: 2023-11-27
 Encoding: UTF-8
 Authors@R: c(person("Kelly", "McConville", role = c("cre", "aut", "cph"),
                     email = "kmcconville@fas.harvard.edu"),
