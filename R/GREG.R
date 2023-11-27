@@ -296,6 +296,7 @@ greg  <- function(y,
 
   #Coefficients
   coefs <- get_coefs(xsample.d, as.vector(y), weight_mat)
+  names(coefs) <- colnames(xsample.d)
   
   if (var_est == TRUE) {
     
