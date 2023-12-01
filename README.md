@@ -143,5 +143,6 @@ and the coefficients for the model
 ``` r
 greg_est[6]
 #> $coefficients
-#> [1] -30.26159045   0.79210774   0.09679431
+#>  (Intercept)          tcc         elev 
+#> -30.26159045   0.79210774   0.09679431
 ```
