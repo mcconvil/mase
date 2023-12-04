@@ -288,7 +288,7 @@ greg  <- function(y,
     xpop_cpp <- as.matrix(xpop_d)
     weight_mat <- diag(weight)
     
-    w <- get_weights(xpop_cpp, xsample.d, weight_mat, one_mat)
+    w <- get_weights_greg(xpop_cpp, xsample.d, weight_mat, one_mat)
 
   #calculating the total estimate for y
   t <- sum(as.numeric(w) * y)

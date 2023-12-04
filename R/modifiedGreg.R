@@ -261,43 +261,69 @@ modifiedGreg <- function(y,
       
     }
     
+
+    weight_mat <- diag(weight, nrow = length(weight))
+    
     # computing the pieces that remain the same across all domains
-    constant_component1 <- solve(xsample_dt %*% diag(weight) %*% xsample_d)
+    # outsource to cpp
+    constant_component1 <- const_comp1(xsample_d, weight_mat)
     constant_component2 <- t(weight * xsample_d)
-    betas <- solve(xsample_dt %*% diag(weight) %*% xsample_d) %*% (xsample_dt) %*% diag(weight) %*% y
+    betas <- get_coefs(xsample_d, as.vector(y), weight_mat)
+    names(betas) <- colnames(xsample_d)
     
     # internal function to compute estimates by domain
     by_domain_linear <- function(domain_id) {
 
       domain_indic_vec <- as.integer(xsample[domain_col_name] == domain_id)
-
+      
       xpop_domain <- xpop_d[xpop_d[domain_col_name] == domain_id, , drop = FALSE]
       xpop_d_domain <- unlist(xpop_domain[-which(names(xpop_domain) == domain_col_name)])
       xsample_domain <- xsample[xsample[domain_col_name] == domain_id, , drop = FALSE]
+      
       xsample_d_domain <- model.matrix(~., data = data.frame(xsample_domain[common_pred_vars]))
+      
       xsample_dt_domain <- t(xsample_d_domain)
       weights_domain <- weight[which(domain_indic_vec == 1)]
-
-      w <- as.matrix(
-        weight*domain_indic_vec + (
-        t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
-          constant_component1
-        ) %*%
-        constant_component2
-        )
       
-      t <- w %*% y
+      xpop_cpp_domain <- as.matrix(xpop_d_domain)
+      weight_mat_domain <- diag(weights_domain, nrow = length(weights_domain))
+      weighted_indic_mat <- matrix(weight * domain_indic_vec, nrow = 1)
+      
+      w_test <- get_weights_modGreg(xpop_cpp_domain,
+                                    xsample_d_domain,
+                                    weight_mat_domain,
+                                    constant_component1,
+                                    constant_component2,
+                                    weighted_indic_mat)
+      
+      # w <- as.matrix(
+      #   weight*domain_indic_vec + (
+      #   t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
+      #     constant_component1
+      #   ) %*%
+      #   constant_component2
+      #   )
+    
+      # t <- w %*% y
+      t <- sum(as.numeric(w_test) * y)
       
       domain_N <- unlist(xpop_domain["N"])
+      
     
       if(var_est == TRUE) {
         
-        if(var_method != "bootstrapSRS") {
-          
+        if(nrow(xsample_domain) < 2) {
+          if (messages) {
+            message(paste0("Domain ", domain_id, " does not contain enough points for variance estimation"))
+          }
+          varEst <- NA
+        } else if(var_method != "bootstrapSRS") {
+        
           y_hat <- xsample_d_domain %*% betas
           y_domain <- y[which(domain_indic_vec == 1)]
           e <- y_domain - y_hat
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N, fpc = fpc)
+        
           
         } else if (var_method == "bootstrapSRS"){
           
@@ -379,7 +405,13 @@ modifiedGreg <- function(y,
       t <- t(y_domain - y_hats_s) %*% weights_domain + sum(y_hats_U)
       
       if (var_est == TRUE) {
-        if (var_method != "bootstrapSRS") {
+        
+        if (nrow(xsample_domain) < 1) {
+          if (messages) {
+            message(paste0("Domain ", domain_id, " does not contain enought points for variance estimation"))
+          }
+          varEst <- NA
+        } else if (var_method != "bootstrapSRS") {
           
           e <- y_domain - y_hats_s
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N)
@@ -440,9 +472,9 @@ modifiedGreg <- function(y,
       )
     )
   ) |>
-    colSums()
+    colSums(na.rm = TRUE)
   
-  return(list(res, pop_res))
+  return(list(population_res = pop_res, raw_res = res))
   
 }
 
