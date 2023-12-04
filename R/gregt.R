@@ -21,7 +21,7 @@ gregt <- function(data, xpopd, domain_id, indices){
   xpop_cpp <- as.matrix(xpopd)
   weight_mat <- diag(weights)
   
-  w <- get_weights(xpop_cpp, xsample_d, weight_mat, one_mat)
+  w <- get_weights_greg(xpop_cpp, xsample_d, weight_mat, one_mat)
   
   # Survey weight
   # w <- as.matrix(1 + t(as.matrix(xpopd) - t(xsample_d) %*% pis^{-1} ) %*% solve(t(xsample_d) %*% diag(pis^{-1}) %*% xsample_d) %*% t(xsample_d)) %*% diag(pis^{-1})

@@ -109,7 +109,6 @@ modifiedGreg <- function(y,
   } else if (is.element(datatype, c("means", "totals")) && (ncol_diff != 2)) {
     stop("Incorrect number of columns in either xpop or xsample. When datatype != \"raw\" xpop should only contain columns with the same names as xsample as well as column with the domains and a column with the population sizes.")
   }
-  
 
   if (is.null(domain_col_name)) {
     
@@ -136,11 +135,8 @@ modifiedGreg <- function(y,
     if (messages) {
       message("Assuming simple random sampling")
     }
-  } 
-  
-  if (is.null(pi)) {
     pi <- rep(length(y)/N, length(y))
-  }
+  } 
   
   weight <- as.vector(pi^(-1))
   
@@ -289,7 +285,7 @@ modifiedGreg <- function(y,
       weight_mat_domain <- diag(weights_domain, nrow = length(weights_domain))
       weighted_indic_mat <- matrix(weight * domain_indic_vec, nrow = 1)
       
-      w_test <- get_weights_modGreg(xpop_cpp_domain,
+      w <- get_weights_modGreg(xpop_cpp_domain,
                                     xsample_d_domain,
                                     weight_mat_domain,
                                     constant_component1,
@@ -305,7 +301,7 @@ modifiedGreg <- function(y,
       #   )
     
       # t <- w %*% y
-      t <- sum(as.numeric(w_test) * y)
+      t <- sum(as.numeric(w) * y)
       
       domain_N <- unlist(xpop_domain["N"])
       
@@ -323,7 +319,6 @@ modifiedGreg <- function(y,
           y_domain <- y[which(domain_indic_vec == 1)]
           e <- y_domain - y_hat
           varEst <- varMase(y = e, pi = pi[which(domain_indic_vec == 1)], pi2 = pi2, method = var_method, N = domain_N, fpc = fpc)
-        
           
         } else if (var_method == "bootstrapSRS"){
           
