@@ -2,7 +2,12 @@
 #helper function to compute an approximate variance estimator
 #Make flexible enough to work with and without the joint inclusion probabilities
 
-varMase <- function(y, pi, pi2 = NULL, method = "LinHB", N = NULL, fpc = TRUE){
+varMase <- function(y,
+                    pi,
+                    pi2 = NULL,
+                    method,
+                    N = NULL,
+                    fpc = TRUE){
   
   #Need sample size
   n <- length(y)
