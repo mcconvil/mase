@@ -290,11 +290,9 @@ greg  <- function(y,
     
     w <- get_weights_greg(xpop_cpp, xsample.d, weight_mat, one_mat)
 
-  #calculating the total estimate for y
+  # calculating the total estimate for y
   t <- sum(as.numeric(w) * y)
-  # t <- w %*% y
 
-  #Coefficients
   coefs <- get_coefs(xsample.d, as.vector(y), weight_mat)
   names(coefs) <- colnames(xsample.d)
   

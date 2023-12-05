@@ -82,6 +82,10 @@ modifiedGreg <- function(y,
     stop("datatype input incorrect, has to be either \"raw\", \"totals\" or \"means\"")
   }
   
+  if (datatype != "raw" && !("N" %in% names(xpop))) {
+    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
+  }
+  
   if (is.null(N)) {
     if (datatype == "raw") {
       N <- nrow(xpop)
@@ -91,11 +95,7 @@ modifiedGreg <- function(y,
   }
   
   if (!is.null(N) && datatype != "raw"  && sum(xpop$N) != N) {
-    stop("User inputted N does not equal the sum of the domain level population sizes in xpop.")
-  }
-  
-  if (datatype != "raw" && !("N" %in% names(xpop))) {
-    stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
+    warning("User inputted N does not equal the sum of the domain level population sizes in xpop.")
   }
   
   if (!all(names(xsample) %in% names(xpop))) {
@@ -128,7 +128,7 @@ modifiedGreg <- function(y,
   samp_unique_domains <- unique(domains)
   
   if (!setequal(pop_unique_domains, samp_unique_domains)) {
-    stop("`domains` must contain all the same unique domain values as xpop  ")
+    stop("`domains` must contain all the same unique domain values as xpop")
   }
 
   if (is.null(pi)) {
@@ -145,7 +145,7 @@ modifiedGreg <- function(y,
   }
   
   # creating a vector of common auxiliary variable names
-  common_pred_vars <- intersect(names(xsample), names(xpop))
+  common_pred_vars <- base::intersect(names(xsample), names(xpop))
   
   # creating the design matrix for entire xsample
   xsample_d <- model.matrix(~., data = data.frame(xsample[common_pred_vars]))
@@ -243,21 +243,16 @@ modifiedGreg <- function(y,
     }
     if (datatype == "totals"){
       
-      # need N for each specific domain
-      # assume they are there?
       xpop_d <- xpop[ ,c("N", common_pred_vars, domain_col_name)]
       
     }
     if (datatype == "means"){
       
-      # need N for each specific domain
-      # assume they are there?
       xpop[common_pred_vars] <- lapply(xpop[common_pred_vars], function(x) x*(xpop$N))
       xpop_d <- cbind(N = xpop$N, xpop[ ,!(names(xpop) %in% "N")])
       
     }
     
-
     weight_mat <- diag(weight, nrow = length(weight))
     
     # computing the pieces that remain the same across all domains
@@ -286,34 +281,27 @@ modifiedGreg <- function(y,
       weighted_indic_mat <- matrix(weight * domain_indic_vec, nrow = 1)
       
       w <- get_weights_modGreg(xpop_cpp_domain,
-                                    xsample_d_domain,
-                                    weight_mat_domain,
-                                    constant_component1,
-                                    constant_component2,
-                                    weighted_indic_mat)
+                               xsample_d_domain,
+                               weight_mat_domain,
+                               constant_component1,
+                               constant_component2,
+                               weighted_indic_mat)
       
-      # w <- as.matrix(
-      #   weight*domain_indic_vec + (
-      #   t(as.matrix(xpop_d_domain) - xsample_dt_domain %*% weights_domain) %*%
-      #     constant_component1
-      #   ) %*%
-      #   constant_component2
-      #   )
-    
-      # t <- w %*% y
+
       t <- sum(as.numeric(w) * y)
       
       domain_N <- unlist(xpop_domain["N"])
       
-    
-      if(var_est == TRUE) {
+      if (var_est == TRUE) {
         
-        if(nrow(xsample_domain) < 2) {
+        if (nrow(xsample_domain) < 2) {
+          
           if (messages) {
             message(paste0("Domain ", domain_id, " does not contain enough points for variance estimation"))
           }
           varEst <- NA
-        } else if(var_method != "bootstrapSRS") {
+          
+        } else if (var_method != "bootstrapSRS") {
         
           y_hat <- xsample_d_domain %*% betas
           y_domain <- y[which(domain_indic_vec == 1)]
