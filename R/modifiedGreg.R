@@ -86,6 +86,10 @@ modifiedGreg <- function(y,
     stop("xpop must contain a column for population size by domain called 'N' when datatype != raw.")
   }
   
+  if (length(domains) != length(y)) {
+    stop("'y' must be the same length as 'domains'")
+  }
+  
   if (is.null(N)) {
     if (datatype == "raw") {
       N <- nrow(xpop)
