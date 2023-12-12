@@ -130,6 +130,7 @@ modifiedGreg <- function(y,
   
   pop_unique_domains <- unique(xpop[[domain_col_name]])
   samp_unique_domains <- unique(domains)
+  samp_unique_domains[!is.na(samp_unique_domains)]
   
   if (!setequal(pop_unique_domains, samp_unique_domains)) {
     stop("`domains` must contain all the same unique domain values as xpop")
