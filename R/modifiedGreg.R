@@ -90,6 +90,10 @@ modifiedGreg <- function(y,
     stop("'y' must be the same length as 'domains'")
   }
   
+  if (sum(is.na(y)) > 0) {
+    stop("'y' cannot contain any NA values")
+  }
+  
   if (is.null(N)) {
     if (datatype == "raw") {
       N <- nrow(xpop)
