@@ -34,7 +34,7 @@ The available variance estimation techniques are:
 - LinHB
 - LinHH
 - LinHTSRS
-- LinHT,
+- LinHT
 - bootstrapSRS
 
 See `mase/inst/REFERENCES.bib` for sources related to each variance
@@ -165,20 +165,20 @@ All of the mase regression estimators can also perform variable
 selection internally using the parameter `modelselect`
 
 ``` r
-greg_est <- greg(y = samp$BA_TPA_ADJ,
-     N = pop$npixels,
-     xsample = xsample,
-     xpop = xpop,
-     modelselect = TRUE,
-     var_est = TRUE,
-     var_method = "LinHB",
-     datatype = "means")
+greg_select <- greg(y = samp$BA_TPA_ADJ,
+                    N = pop$npixels,
+                    xsample = xsample,
+                    xpop = xpop,
+                    modelselect = TRUE,
+                    var_est = TRUE,
+                    var_method = "LinHB",
+                    datatype = "means")
 ```
 
 And we can examine which predictors were chosen:
 
 ``` r
-greg_est["coefficients"]
+greg_select["coefficients"]
 #> $coefficients
 #>  (Intercept)          tcc         elev          ppt 
 #> -33.24787647   0.65151379   0.04209371   0.06643125
