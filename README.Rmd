@@ -35,7 +35,17 @@ The available estimators are currently:
   - modified generalized regression: `modifiedGreg()`
   - ratio estimator: `ratioEstimator()`
   - estimate of a ratio estimator: `ratio()`
+  
+The available variance estimation techniques are:
 
+  - LinHB
+  - LinHH
+  - LinHTSRS 
+  - LinHT,
+  - bootstrapSRS
+  
+See `mase/inst/REFERENCES.bib` for sources related to each variance estimator.
+  
 
 ## Installation
 
@@ -80,8 +90,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 We can also fit a linear regression estimator using that same data:
 
 ```{r example2, message = F}
-xsample <- select(samp, tcc, elev) %>%
-  as.data.frame()
+xsample <- select(samp, c(tcc, elev, ppt, tmean))
 
 xpop <- select(pop, names(xsample))
 
@@ -97,18 +106,40 @@ greg_est <- greg(y = samp$BA_TPA_ADJ,
 We still get the population total and mean estimates along with their variance estimates:
 
 ```{r}
-greg_est[1:4]
+greg_est[c('pop_total','pop_mean', 'pop_total_var', 'pop_mean_var')]
 ```
 
 But with this estimator we also get the weights
 
 ```{r}
-greg_est[5]
+greg_est["weights"]
 ```
 
 and the coefficients for the model
 
 ```{r}
-greg_est[6]
+greg_est["coefficients"]
+```
+
+
+### Variable Selection
+
+All of the mase regression estimators can also perform variable selection internally using the parameter `modelselect`
+
+```{r, message = FALSE}
+greg_est <- greg(y = samp$BA_TPA_ADJ,
+     N = pop$npixels,
+     xsample = xsample,
+     xpop = xpop,
+     modelselect = TRUE,
+     var_est = TRUE,
+     var_method = "LinHB",
+     datatype = "means")
+```
+
+And we can examine which predictors were chosen:
+
+```{r}
+greg_est["coefficients"]
 ```
 
