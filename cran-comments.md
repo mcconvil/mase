@@ -1,5 +1,29 @@
 # Resubmission
 
+This is an update to mase 0.1.5. The new version is mase 0.1.5.2
+
+The package has been tested on the following systems
+
+* macos-latest (release)
+* windows-latest (release)
+* ubuntu-latest (devel)
+* ububtu-latest (release)
+* ubuntu-latest (oldrel-1)
+
+And got 
+
+0 errors | 0 warnings | 0 notes
+
+We checked the strong reverse dependency: FIESTAutils, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 0 packages
+
+
+
+
+# Resubmission
+
 This is an update to mase 0.1.5. The new version is mase 0.1.5.1
 
 The package has been tested on the following systems
