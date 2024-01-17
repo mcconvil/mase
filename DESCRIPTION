@@ -2,11 +2,11 @@ Package: mase
 Type: Package
 Title: Model-Assisted Survey Estimators
 Version: 0.1.5.1
-Date: 2023-11-27
+Date: 2024-02-17
 Encoding: UTF-8
-Authors@R: c(person("Kelly", "McConville", role = c("cre", "aut", "cph"),
+Authors@R: c(person("Kelly", "McConville", role = c("aut", "cph"),
                     email = "kmcconville@fas.harvard.edu"),
-            person("Josh", "Yamamoto", role = c("aut"),
+            person("Josh", "Yamamoto", role = c("cre","aut"),
                     email = "joshuayamamoto5@gmail.com"),
             person("Becky", "Tang", role = "aut"),
             person("George", "Zhu", role = "aut"),
@@ -14,7 +14,7 @@ Authors@R: c(person("Kelly", "McConville", role = c("cre", "aut", "cph"),
             person("Shirley", "Chueng", role = "ctb"),
             person("Daniell", "Toth", role = "ctb")
             )
-Maintainer: Kelly McConville <kmcconville@fas.harvard.edu>
+Maintainer: Josh Yamamoto <joshuayamamoto5@gmail.com>
 Description: A set of model-assisted survey estimators and corresponding
     variance estimators for single stage, unequal probability, without replacement
     sampling designs.  All of the estimators can be written as a generalized 
