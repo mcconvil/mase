@@ -40,7 +40,6 @@ Imports: glmnet,
     ellipsis,
     Rcpp
 Suggests:
-    roxygen2,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
