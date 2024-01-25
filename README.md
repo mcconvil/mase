@@ -1,4 +1,6 @@
 
+# mase
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 <!-- badges: start -->
@@ -7,13 +9,13 @@
 status](https://www.r-pkg.org/badges/version/mase)](https://CRAN.R-project.org/package=mase)
 <!-- badges: end -->
 
-## Development Mode
+### Development Mode
 
 `mase` is still under development. Please use at your own risk!
 
-# mase
+### Overview
 
-mase contains a collection of model-assisted generalized regression
+`mase` contains a collection of model-assisted generalized regression
 estimators for finite population estimation of a total or mean from a
 single stage, unequal probability without replacement design. It also
 contains several variance estimators.
@@ -40,13 +42,12 @@ The available variance estimation techniques are:
 See `mase/inst/REFERENCES.bib` for sources related to each variance
 estimator.
 
-## Installation
+### Installation
 
 Install the latest CRAN release with:
 
 ``` r
 install.packages("mase")
-library(mase)
 ```
 
 You can also install the developmental version of `mase` from GitHub
@@ -57,9 +58,9 @@ with:
 pak::pkg_install("mcconvil/mase")
 ```
 
-## Example
+### Usage
 
-### Horvitz-Thompson
+##### Horvitz-Thompson
 
 Here’s an example of fitting the Horvitz-Thompson estimator using
 Forestry data in Idaho. The data comes from the Forestry Inventory &
@@ -92,7 +93,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 #> [1] 46.63093
 ```
 
-### Linear Regression Estimator
+##### Linear Regression Estimator
 
 We can also fit a linear regression estimator using that same data:
 
@@ -159,7 +160,7 @@ greg_est["coefficients"]
 #> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984714e-04
 ```
 
-### Variable Selection
+##### Variable Selection
 
 All of the mase regression estimators can also perform variable
 selection internally using the parameter `modelselect`

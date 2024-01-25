@@ -2,6 +2,7 @@
 output: github_document
 ---
 
+# mase
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
  <!-- badges: start -->
@@ -17,13 +18,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Development Mode
+### Development Mode
 
 `mase` is still under development.  Please use at your own risk!  
 
-# mase
+### Overview
 
-mase contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
+`mase` contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
 
 The available estimators are currently:
 
@@ -47,13 +48,12 @@ The available variance estimation techniques are:
 See `mase/inst/REFERENCES.bib` for sources related to each variance estimator.
   
 
-## Installation
+### Installation
 
 Install the latest CRAN release with:
 
 ```{r eval = FALSE}
 install.packages("mase")
-library(mase)
 ```
 
 You can also install the developmental version of `mase` from GitHub with:
@@ -63,9 +63,9 @@ You can also install the developmental version of `mase` from GitHub with:
 pak::pkg_install("mcconvil/mase")
 ```
 
-## Example
+### Usage
 
-### Horvitz-Thompson
+##### Horvitz-Thompson
 
 Here's an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory & Analysis department (FIA). 
 
@@ -85,7 +85,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
                 var_method = "LinHTSRS")
 ```
 
-### Linear Regression Estimator
+##### Linear Regression Estimator
 
 We can also fit a linear regression estimator using that same data:
 
@@ -122,7 +122,7 @@ greg_est["coefficients"]
 ```
 
 
-### Variable Selection
+##### Variable Selection
 
 All of the mase regression estimators can also perform variable selection internally using the parameter `modelselect`
 
