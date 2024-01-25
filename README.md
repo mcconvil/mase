@@ -53,8 +53,8 @@ You can also install the developmental version of `mase` from GitHub
 with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("mcconvil/mase")
+# install.packages("pak")
+pak::pkg_install("mcconvil/mase")
 ```
 
 ## Example
