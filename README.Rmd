@@ -3,6 +3,8 @@ output: github_document
 ---
 
 # mase
+
+#### (Model Assisted Survey Estimation)
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
  <!-- badges: start -->
@@ -67,7 +69,7 @@ pak::pkg_install("mcconvil/mase")
 
 ##### Horvitz-Thompson
 
-Here's an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory & Analysis department (FIA). 
+Here's an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory & Analysis (FIA) program. 
 
 ```{r example1, message=F}
 library(mase)
