@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-# mase
+# mase <a><img src='figs/mase_hex.png' align="right" height="280" /></a>
 
 #### (Model Assisted Survey Estimation)
 <!-- README.md is generated from README.Rmd. Please edit that file -->

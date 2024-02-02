@@ -1,5 +1,5 @@
 
-# mase
+# mase <a><img src='figs/mase_hex.png' align="right" height="280" /></a>
 
 #### (Model Assisted Survey Estimation)
 
@@ -159,7 +159,7 @@ and the coefficients for the model
 greg_est["coefficients"]
 #> $coefficients
 #>   (Intercept)           tcc          elev           ppt         tmean 
-#> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984714e-04
+#> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984713e-04
 ```
 
 ##### Variable Selection
