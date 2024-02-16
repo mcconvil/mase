@@ -55,7 +55,7 @@ See `mase/inst/REFERENCES.bib` for sources related to each variance estimator.
 Install the latest CRAN release with:
 
 ```{r eval = FALSE}
-install.packages("mase")
+pak::pkg_install("mase")
 ```
 
 You can also install the developmental version of `mase` from GitHub with:

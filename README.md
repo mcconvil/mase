@@ -49,7 +49,7 @@ estimator.
 Install the latest CRAN release with:
 
 ``` r
-install.packages("mase")
+pak::pkg_install("mase")
 ```
 
 You can also install the developmental version of `mase` from GitHub
@@ -159,7 +159,7 @@ and the coefficients for the model
 greg_est["coefficients"]
 #> $coefficients
 #>   (Intercept)           tcc          elev           ppt         tmean 
-#> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984713e-04
+#> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984714e-04
 ```
 
 ##### Variable Selection
