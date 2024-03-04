@@ -49,7 +49,7 @@ estimator.
 Install the latest CRAN release with:
 
 ``` r
-pak::pkg_install("mase")
+install.packages("mase")
 ```
 
 You can also install the developmental version of `mase` from GitHub
@@ -105,12 +105,12 @@ xsample <- select(samp, c(tcc, elev, ppt, tmean))
 xpop <- select(pop, names(xsample))
 
 greg_est <- greg(y = samp$BA_TPA_ADJ,
-     N = pop$npixels,
-     xsample = xsample,
-     xpop = xpop,
-     var_est = TRUE,
-     var_method = "LinHB",
-     datatype = "means")
+                 N = pop$npixels,
+                 xsample = xsample,
+                 xpop = xpop,
+                 var_est = TRUE,
+                 var_method = "LinHB",
+                 datatype = "means")
 ```
 
 We still get the population total and mean estimates along with their
