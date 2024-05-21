@@ -16,3 +16,6 @@ store_PS_ratio.2020_08_17.Rda
 ^CRAN-SUBMISSION$
 ^revdep$
 ^figs$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

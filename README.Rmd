@@ -2,10 +2,7 @@
 output: github_document
 ---
 
-# mase <a><img src='figs/mase_hex.png' align="right" height="280" /></a>
-
-#### (Model Assisted Survey Estimation)
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+# mase <img src='man/figures/mase_hex.png' align="right" width="150" />
 
  <!-- badges: start -->
   [![R-CMD-check](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml)
