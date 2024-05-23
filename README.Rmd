@@ -7,6 +7,7 @@ output: github_document
  <!-- badges: start -->
   [![R-CMD-check](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml)
    [![CRAN status](https://www.r-pkg.org/badges/version/mase)](https://CRAN.R-project.org/package=mase)
+   [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mase?color=blue)](https://cran.r-project.org/package=mase)
   <!-- badges: end -->
 
 ```{r, echo = FALSE}
