@@ -101,7 +101,7 @@
 <p>Install the latest CRAN release with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"mase"</span><span class="op">)</span></span></code></pre></div>
-<p>You can also install the developmental version of <code>mase</code> from GitHub with:</p>
+<p>You can also install the development version of <code>mase</code> from GitHub as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"mcconvil/mase"</span><span class="op">)</span></span></code></pre></div>
@@ -109,10 +109,10 @@
 <div class="section level3">
 <h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h3>
-<div class="section level5">
-<h5 id="horvitz-thompson">Horvitz-Thompson<a class="anchor" aria-label="anchor" href="#horvitz-thompson"></a>
-</h5>
-<p>Here’s an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data comes from the Forestry Inventory &amp; Analysis (FIA) program.</p>
+<div class="section level4">
+<h4 id="horvitz-thompson">Horvitz-Thompson<a class="anchor" aria-label="anchor" href="#horvitz-thompson"></a>
+</h4>
+<p>Here’s an example of fitting the Horvitz-Thompson estimator using Forestry data in Idaho. The data is publicly available and comes from the Forestry Inventory &amp; Analysis (FIA) program.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mcconvil/mase" class="external-link">mase</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -139,9 +139,9 @@
 <span><span class="co">#&gt; $pop_mean_var</span></span>
 <span><span class="co">#&gt; [1] 46.63093</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="linear-regression-estimator">Linear Regression Estimator<a class="anchor" aria-label="anchor" href="#linear-regression-estimator"></a>
-</h5>
+<div class="section level4">
+<h4 id="linear-regression-estimator">Linear Regression Estimator<a class="anchor" aria-label="anchor" href="#linear-regression-estimator"></a>
+</h4>
 <p>We can also fit a linear regression estimator using that same data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">xsample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">samp</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tcc</span>, <span class="va">elev</span>, <span class="va">ppt</span>, <span class="va">tmean</span><span class="op">)</span><span class="op">)</span></span>
@@ -195,9 +195,9 @@
 <span><span class="co">#&gt;   (Intercept)           tcc          elev           ppt         tmean </span></span>
 <span><span class="co">#&gt; -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984714e-04</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="variable-selection">Variable Selection<a class="anchor" aria-label="anchor" href="#variable-selection"></a>
-</h5>
+<div class="section level4">
+<h4 id="variable-selection">Variable Selection<a class="anchor" aria-label="anchor" href="#variable-selection"></a>
+</h4>
 <p>All of the mase regression estimators can also perform variable selection internally using the parameter <code>modelselect</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">greg_select</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/greg.html">greg</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">samp</span><span class="op">$</span><span class="va">BA_TPA_ADJ</span>,</span>
