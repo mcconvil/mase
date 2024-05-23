@@ -72,7 +72,7 @@ Collate:
 RoxygenNote: 7.3.1
 RdMacros: Rdpack
 Config/testthat/edition: 3
-URL: https://github.com/mcconvil/mase
+URL: https://github.com/mcconvil/mase, https://mcconvil.github.io/mase/
 BugReports: https://github.com/mcconvil/mase/issues
 LazyData: true
 LinkingTo: 
