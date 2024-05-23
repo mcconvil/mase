@@ -2,3 +2,25 @@ url: https://mcconvil.github.io/mase/
 template:
   bootstrap: 5
 
+home:
+  title: Model Assisted Survey Estimation
+  sidebar:
+    structure: [dev, links, authors, license, citation]
+    
+reference:
+- title: Package Data 
+- contents:
+  - IdahoPop
+  - IdahoSamp
+  
+- title: Estimators
+- contents:
+  - greg
+  - gregElasticNet
+  - gregTree
+  - horvitzThompson
+  - modifiedGreg
+  - postStrat
+  - ratio
+  - ratioEstimator
+ 
