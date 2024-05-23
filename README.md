@@ -45,8 +45,8 @@ Install the latest CRAN release with:
 install.packages("mase")
 ```
 
-You can also install the developmental version of `mase` from GitHub
-with:
+You can also install the development version of `mase` from GitHub as
+follows:
 
 ``` r
 # install.packages("pak")
@@ -55,11 +55,11 @@ pak::pkg_install("mcconvil/mase")
 
 ### Usage
 
-##### Horvitz-Thompson
+#### Horvitz-Thompson
 
 Here’s an example of fitting the Horvitz-Thompson estimator using
-Forestry data in Idaho. The data comes from the Forestry Inventory &
-Analysis (FIA) program.
+Forestry data in Idaho. The data is publicly available and comes from
+the Forestry Inventory & Analysis (FIA) program.
 
 ``` r
 library(mase)
@@ -88,7 +88,7 @@ horvitzThompson(y = samp$BA_TPA_ADJ,
 #> [1] 46.63093
 ```
 
-##### Linear Regression Estimator
+#### Linear Regression Estimator
 
 We can also fit a linear regression estimator using that same data:
 
@@ -155,7 +155,7 @@ greg_est["coefficients"]
 #> -3.355552e+01  6.515276e-01  4.215046e-02  6.647252e-02  2.984714e-04
 ```
 
-##### Variable Selection
+#### Variable Selection
 
 All of the mase regression estimators can also perform variable
 selection internally using the parameter `modelselect`
