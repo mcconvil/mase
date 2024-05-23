@@ -17,10 +17,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Development Mode
-
-`mase` is still under development.  Please use at your own risk!  
-
 ### Overview
 
 `mase` contains a collection of model-assisted generalized regression estimators for finite population estimation of a total or mean from a single stage, unequal probability without replacement design.  It also contains several variance estimators.
