@@ -44,7 +44,7 @@
 #' @import boot
 #' @importFrom stats as.formula
 #' @include varMase.R
-#' @include gregt.R
+#' @include bootHelpers.R
 
 gregTree  <- function(y,
                       xsample,

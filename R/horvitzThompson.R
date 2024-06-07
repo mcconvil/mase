@@ -43,7 +43,7 @@
 #' @import boot
 #' @importFrom Rdpack reprompt
 #' @include varMase.R
-#' @include htt.R
+#' @include bootHelpers.R
 #'
 horvitzThompson <- function(y,
                             pi = NULL,

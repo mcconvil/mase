@@ -41,6 +41,7 @@
 #' @import glmnet
 #' @import boot
 #' @importFrom stats model.matrix predict quasibinomial var aggregate 
+#' @include bootHelpers.R
 #' @include varMase.R
 
 modifiedGreg <- function(y,

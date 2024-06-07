@@ -51,7 +51,7 @@
 #' @import boot
 #' @importFrom stats model.matrix predict quasibinomial var
 #' @include varMase.R
-#' @include gregt.R
+#' @include bootHelpers.R
 
 greg  <- function(y,
                   xsample,

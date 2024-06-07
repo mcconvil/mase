@@ -46,28 +46,19 @@ Suggests:
 Depends:
     R (>= 4.1.0)
 Collate:
-    'gregt.R'
-    'varMase.R'
-    'GREG.R'
     'IdahoPop.R'
     'IdahoSamp.R'
     'RcppExports.R'
-    'gregElasticNett.R'
+    'bootHelpers.R'
+    'varMase.R'
+    'greg.R'
     'gregElasticNet.R'
     'gregTree.R'
-    'gregtreet.R'
-    'htt.R'
     'horvitzThompson.R'
-    'logisticGregElasticNett.R'
-    'logisticGregt.R'
     'mase-package.R'
     'modifiedGreg.R'
-    'modifiedGregt.R'
-    'modifiedLogisticGregt.R'
-    'postStratt.R'
     'postStrat.R'
     'ratio.R'
-    'ratioEstimatort.R'
     'ratioEstimator.R'
 RoxygenNote: 7.3.1
 RdMacros: Rdpack

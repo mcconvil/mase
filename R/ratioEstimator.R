@@ -39,7 +39,7 @@
 #' 
 #' @export ratioEstimator
 #' @import boot
-#' @include ratioEstimatort.R
+#' @include bootHelpers.R
 #' @include varMase.R
 
 

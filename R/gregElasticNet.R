@@ -49,7 +49,7 @@
 #' @importFrom stats model.matrix predict quasibinomial var
 #' @export gregElasticNet
 #' @include varMase.R
-#' @include gregElasticNett.R
+#' @include bootHelpers.R
 
 gregElasticNet  <- function(y,
                             xsample,

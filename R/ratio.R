@@ -27,6 +27,7 @@
 #' 
 #' @importFrom ellipsis check_dots_used
 #' @export ratio
+#' @include bootHelpers.R
 #' @include varMase.R
 
 ratio <- function(y_num,

@@ -56,7 +56,7 @@
 #' @import dplyr
 #' @import tidyr
 #' @export postStrat
-#' @include postStratt.R
+#' @include bootHelpers.R
 #' @include varMase.R
 
 
