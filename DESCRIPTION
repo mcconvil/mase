@@ -46,12 +46,12 @@ Suggests:
 Depends:
     R (>= 4.1.0)
 Collate:
+    'bootHelpers.R'
+    'varMase.R'
+    'GREG.R'
     'IdahoPop.R'
     'IdahoSamp.R'
     'RcppExports.R'
-    'bootHelpers.R'
-    'varMase.R'
-    'greg.R'
     'gregElasticNet.R'
     'gregTree.R'
     'horvitzThompson.R'
