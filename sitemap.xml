@@ -1,45 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mcconvil.github.io/mase/404.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/IdahoPop.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/IdahoSamp.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/greg.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/gregElasticNet.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/gregTree.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/horvitzThompson.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/modifiedGreg.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/postStrat.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/ratio.html</loc>
-  </url>
-  <url>
-    <loc>https://mcconvil.github.io/mase/reference/ratioEstimator.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://mcconvil.github.io/mase/404.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/authors.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/index.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/IdahoPop.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/IdahoSamp.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/greg.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/gregElasticNet.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/gregTree.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/horvitzThompson.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/index.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/modifiedGreg.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/postStrat.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/ratio.html</loc></url>
+<url><loc>https://mcconvil.github.io/mase/reference/ratioEstimator.html</loc></url>
 </urlset>
+

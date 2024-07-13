@@ -1,9 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-06-07T17:12Z
+last_built: 2024-07-13T21:15Z
 urls:
   reference: https://mcconvil.github.io/mase/reference
   article: https://mcconvil.github.io/mase/articles
-
