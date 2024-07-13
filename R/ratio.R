@@ -25,7 +25,7 @@
 #' 
 #' * ratio_var_est: Estimate of the variance of the ratio of two estimators.
 #' 
-#' @importFrom ellipsis check_dots_used
+#' @importFrom rlang check_dots_used
 #' @export ratio
 #' @include bootHelpers.R
 #' @include varMase.R

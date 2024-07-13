@@ -1,5 +1,5 @@
 
-# mase <img src='man/figures/mase_hex.png' align="right" width="150" />
+# mase <img src='man/figures/logo.png' align="right" width="150" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcconvil/mase/actions/workflows/R-CMD-check.yaml)

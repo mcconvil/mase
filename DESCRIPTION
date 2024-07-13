@@ -37,7 +37,7 @@ Imports: glmnet,
     boot,
     stats,
     Rdpack,
-    ellipsis,
+    rlang,
     Rcpp
 Suggests:
     testthat (>= 3.0.0),
