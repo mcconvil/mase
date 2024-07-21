@@ -20,7 +20,7 @@ authors:
   - name: George Zhu
     affiliation: 4
   - name: Grayson W. White
-    orcid: XXX
+    orcid: 0000-0003-4993-2792
     affiliation: 5
 affiliations:
  - name: Dominguez Center for Data Science, Bucknell University, USA
@@ -31,7 +31,7 @@ affiliations:
    index: 3
  - name: Independent Researcher, USA
    index: 4
- - name: XXX
+ - name: Department of Forestry, Michigan State University, USA
    index: 5
 date: 18 July 2024
 bibliography: paper.bib
