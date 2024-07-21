@@ -10,6 +10,7 @@ Authors@R: c(person("Kelly", "McConville", role = c("cre", "aut", "cph"),
                     email = "joshuayamamoto5@gmail.com"),
             person("Becky", "Tang", role = "aut"),
             person("George", "Zhu", role = "aut"),
+            person("Grayson", "White", role = "aut"),
             person("Sida", "Li", role = "ctb"),
             person("Shirley", "Chueng", role = "ctb"),
             person("Daniell", "Toth", role = "ctb")
