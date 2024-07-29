@@ -12,7 +12,7 @@ authors:
     affiliation: 1
     corresponding: true
   - name: Josh Yamamoto
-    orcid:
+    orcid: 0009-0007-9919-1685
     affiliation: 2
   - name: Becky Tang
     orcid: XXX
