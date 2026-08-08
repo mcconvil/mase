@@ -158,6 +158,9 @@ gregElasticNet  <- function(y,
     xpop <- dplyr::select(xpop, names(xsample))
     xpop_d <- model.matrix(~., data = xpop)
     
+    #No weights
+    w <- NULL
+    
     #Total estimate
     y.hats.U <- predict(cv,newx = xpop_d[,-1], s = lambda_opt, type = "response")
     t <- sum(y.hats.U) + t(y-y.hats.s)%*%pi^(-1)
