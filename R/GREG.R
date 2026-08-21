@@ -9,7 +9,9 @@
 #' @param model A string that specifies the regression model to utilize. Options are "linear" or "logistic".
 #' @param modelselect A logical for whether or not to run lasso regression first and then fit the model using only the predictors with non-zero lasso coefficients. Default is FALSE.  
 #' @param lambda A string specifying how to tune the lasso hyper-parameter.  Only used if modelselect = TRUE and defaults to "lambda.min". The possible values are "lambda.min", which is the lambda value associated with the minimum cross validation error or "lambda.1se", which is the lambda value associated with a cross validation error that is one standard error away from the minimum, resulting in a smaller model.
-#' 
+#' @param parallel The type of parallel processing to use, if any. Can take values of "multicore", "snow", or "no". Only used if var_method = "bootstrapSRS". See boot::boot() for more details on parallel processing types.
+#' @param ncpus The number of parallel workers to use. Only used if var_method = "bootstrapSRS" and parallel = "snow" or "multicore". 
+#'
 #' @examples 
 #' library(dplyr)
 #' data(IdahoPop)
@@ -67,7 +69,9 @@ greg  <- function(y,
                   lambda = "lambda.min",
                   B = 1000,
                   fpc = TRUE,
-                  messages = TRUE){
+                  messages = TRUE,
+                  parallel = "multicore",
+                  ncpus = 2){
   
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -243,10 +247,10 @@ greg  <- function(y,
         colnames(dat) <- c("y", "weight", colnames(xsample))
         t_boot <-  boot(data = dat,
                         statistic = logisticGregt,
-                        R = B, 
+                        R = B,
                         xpopd = xpop_d,
-                        parallel = "multicore",
-                        ncpus = 2)
+                        parallel = parallel,
+                        ncpus = ncpus)
     
         if (fpc == T) {
           varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1) 
@@ -315,8 +319,8 @@ greg  <- function(y,
                      statistic = gregt,
                      R = B,
                      xpopd = xpop_d,
-                     parallel = "multicore",
-                     ncpus = 2)
+                     parallel = parallel,
+                     ncpus = ncpus)
       
       if (fpc == T) {
         varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)

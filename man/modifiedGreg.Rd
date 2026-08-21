@@ -22,7 +22,9 @@ modifiedGreg(
   N = NULL,
   B = 1000,
   fpc = TRUE,
-  messages = TRUE
+  messages = TRUE,
+  parallel = "multicore",
+  ncpus = 2
 )
 }
 \arguments{
@@ -61,6 +63,10 @@ modifiedGreg(
 \item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
+
+\item{parallel}{The type of parallel processing to use, if any. Can take values of "multicore", "snow", or "no". Only used if var_method = "bootstrapSRS". See boot::boot() for more details on parallel processing types.}
+
+\item{ncpus}{The number of parallel workers to use. Only used if var_method = "bootstrapSRS" and parallel = "snow" or "multicore".}
 }
 \description{
 Calculates a modified generalized regression estimator for a finite population mean/proportion or total based on sample data collected from a complex sampling design and auxiliary population data.

@@ -20,7 +20,9 @@
 #' @param B The number of bootstrap iterations to perform when var_method = "bootstrapSRS"
 #' @param fpc Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.
 #' @param messages A logical indicating whether to output the messages internal to mase. Default is TRUE.
-#' 
+#' @param parallel The type of parallel processing to use, if any. Can take values of "multicore", "snow", or "no". Only used if var_method = "bootstrapSRS". See boot::boot() for more details on parallel processing types.
+#' @param ncpus The number of parallel workers to use. Only used if var_method = "bootstrapSRS" and parallel = "snow" or "multicore". 
+#'
 #' @examples
 #' library(dplyr)
 #' data(IdahoPop)
@@ -61,7 +63,9 @@ modifiedGreg <- function(y,
                          N = NULL,
                          B = 1000,
                          fpc = TRUE,
-                         messages = TRUE) {
+                         messages = TRUE,
+                         parallel = "multicore",
+                         ncpus = 2) {
 
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -271,7 +275,7 @@ modifiedGreg <- function(y,
     constant_component2 <- t(weight * xsample_d)
     betas <- get_coefs(xsample_d, as.vector(y), weight_mat)
     names(betas) <- colnames(xsample_d)
-    
+
     # internal function to compute estimates by domain
     by_domain_linear <- function(domain_id) {
 
@@ -330,8 +334,8 @@ modifiedGreg <- function(y,
                          ws = weight,
                          domain = domain_id,
                          domain_col_name = domain_col_name,
-                         parallel = "multicore",
-                         ncpus = 2)
+                         parallel = parallel,
+                         ncpus = ncpus)
 
           varEst <- var(t_boot$t)
           
@@ -380,7 +384,7 @@ modifiedGreg <- function(y,
     f <- paste(names(dat)[1], "~", paste(names(dat)[-c(1,2)], collapse = " + "))
     s_design <- survey::svydesign(ids = ~1, weights = ~weight, data = dat)
     mod <- survey::svyglm(f, design = s_design, family = quasibinomial())
-    
+
     by_domain_logistic <- function(domain_id) {
       
       domain_indic_vec <- as.integer(xsample[domain_col_name] == domain_id)
@@ -425,8 +429,8 @@ modifiedGreg <- function(y,
                domain = domain_id,
                domain_col_name = domain_col_name,
                lab = names(xpop)[1],
-               parallel = "multicore",
-               ncpus = 2)
+               parallel = parallel,
+               ncpus = ncpus)
           
           # need bias correction and fpc terms here, but not sure what they should be in this case
           varEst <- var(t_boot$t)
