@@ -19,7 +19,9 @@ greg(
   lambda = "lambda.min",
   B = 1000,
   fpc = TRUE,
-  messages = TRUE
+  messages = TRUE,
+  parallel = "multicore",
+  ncpus = 2
 )
 }
 \arguments{
@@ -52,6 +54,10 @@ greg(
 \item{fpc}{Default to TRUE, logical for whether or not the variance calculation should include a finite population correction when calculating the "LinHTSRS" or the "SRSbootstrap" variance estimator.}
 
 \item{messages}{A logical indicating whether to output the messages internal to mase. Default is TRUE.}
+
+\item{parallel}{The type of parallel processing to use, if any. Can take values of "multicore", "snow", or "no". Only used if var_method = "bootstrapSRS". See boot::boot() for more details on parallel processing types.}
+
+\item{ncpus}{The number of parallel workers to use. Only used if var_method = "bootstrapSRS" and parallel = "snow" or "multicore".}
 }
 \value{
 A list of output containing:

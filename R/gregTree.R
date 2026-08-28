@@ -58,7 +58,9 @@ gregTree  <- function(y,
                       perm_reps = 500,
                       bin_size = NULL,
                       fpc = TRUE,
-                      messages = TRUE){
+                      messages = TRUE,
+                      parallel = "multicore",
+                      ncpus = 2){
 
   if (!is.element(var_method, c("LinHB", "LinHH", "LinHTSRS", "LinHT", "bootstrapSRS"))) {
     stop("Variance method input incorrect. It has to be \"LinHB\", \"LinHH\", \"LinHT\", \"LinHTSRS\", or \"bootstrapSRS\".")
@@ -120,14 +122,14 @@ gregTree  <- function(y,
       dat <- cbind(y, pi, xsample)
       #Bootstrap total estimates
       t_boot <- boot(data = dat,
-                     statistic = gregTreet, 
+                     statistic = gregTreet,
                      R = B,
                      xpop = xpop,
                      pval= pval,
-                     perm_reps = perm_reps, 
+                     perm_reps = perm_reps,
                      bin_size = bin_size,
-                     parallel = "multicore",
-                     ncpus = 2)
+                     parallel = parallel,
+                     ncpus = ncpus)
 
       if (fpc == T) {
         varEst <- var(t_boot$t)*n/(n-1)*(N-n)/(N-1)        

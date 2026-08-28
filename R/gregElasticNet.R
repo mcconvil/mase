@@ -68,7 +68,9 @@ gregElasticNet  <- function(y,
                             weights_method = "ridge",
                             eta = 0.0001,
                             fpc = TRUE,
-                            messages = TRUE){
+                            messages = TRUE,
+                            parallel = "multicore",
+                            ncpus = 2){
   
   if (!(typeof(y) %in% c("numeric", "integer", "double"))) {
     stop("Must supply numeric y.  For binary variable, convert to 0/1's.")
@@ -158,6 +160,9 @@ gregElasticNet  <- function(y,
     xpop <- dplyr::select(xpop, names(xsample))
     xpop_d <- model.matrix(~., data = xpop)
     
+    #No weights
+    w <- NULL
+    
     #Total estimate
     y.hats.U <- predict(cv,newx = xpop_d[,-1], s = lambda_opt, type = "response")
     t <- sum(y.hats.U) + t(y-y.hats.s)%*%pi^(-1)
@@ -173,7 +178,8 @@ gregElasticNet  <- function(y,
         #Sample data
         dat <- cbind(y,pi, xsample.d)
         #Bootstrap total estimates
-        t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt, parallel = "multicore", ncpus = 2)
+        t_boot <- boot(data = dat, statistic = logisticGregElasticNett, R = B, xpopd = xpop_d, alpha=alpha, lambda=lambda_opt,
+                       parallel = parallel, ncpus = ncpus)
         
         #Adjust for bias and without replacement sampling
         if (fpc == T) {
@@ -236,8 +242,8 @@ gregElasticNet  <- function(y,
                        xpopd = xpop_d,
                        alpha = alpha,
                        lambda = lambda_opt,
-                       parallel = "multicore",
-                       ncpus = 2)
+                       parallel = parallel,
+                       ncpus = ncpus)
         
         #Adjust for bias and without replacement sampling
         if (fpc == T) {
