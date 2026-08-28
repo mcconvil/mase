@@ -461,15 +461,28 @@ modifiedGreg <- function(y,
     
   }
   
-  pop_res <- do.call(
-    rbind, lapply(
-      res, FUN = function(x) data.frame(
-        pop_total = x$domain_total,
-        pop_totalvar = x$domain_total_var
+  if (var_est == TRUE) {
+    pop_res <- do.call(
+      rbind, lapply(
+        res, FUN = function(x) data.frame(
+          pop_total = x$domain_total,
+          pop_totalvar = x$domain_total_var
+        )
       )
-    )
-  ) |>
-    colSums(na.rm = TRUE)
+    ) |>
+      colSums(na.rm = TRUE)
+  } else {
+    pop_res <- do.call(
+      rbind, lapply(
+        res, FUN = function(x) data.frame(
+          pop_total = x$domain_total
+        )
+      )
+    ) |>
+      colSums(na.rm = TRUE)
+  }
+  
+
   
   return(list(population_res = pop_res, raw_res = res))
   
