@@ -1,6 +1,5 @@
 gregt <- function(data,
                   xpopd,
-                  domain_id,
                   indices){
   
   d <- data[indices, ]
